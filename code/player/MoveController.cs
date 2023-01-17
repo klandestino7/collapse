@@ -169,7 +169,8 @@ public partial class MoveController
 		WishVelocity *= GetWishSpeed();
 
 		Duck.PreTick();
-		
+
+		// #TODO - Fazer com que o peso do inventário interfira na stamina
 		if ( Input.Down( InputButton.Run ) && !Input.Down( InputButton.Duck ) && WishVelocity.Length > 1f )
 			Player.ReduceStamina( 10f * Time.Delta );
 		else if (WishVelocity.Length >= 0.1f )
