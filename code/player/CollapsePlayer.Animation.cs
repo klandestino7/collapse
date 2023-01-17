@@ -20,38 +20,59 @@ public partial class CollapsePlayer
 		else
 			rotation = ViewAngles.ToRotation();
 
-		if (Input.Down(InputButton.Run))
+		var runButtonPressed = Input.Down(InputButton.Run);
+		var aimButtonPressed = Input.Down(InputButton.SecondaryAttack);
+
+		var animHelper = new CitizenAnimationHelper( this );
+
+		var aimActived = false;
+
+		if ( runButtonPressed && !aimButtonPressed )
+		{
+			var newRotation = Rotation.LookAt(InputDirection, Vector3.Up);
+			Rotation = Rotation.Lerp(Rotation, newRotation, Time.Delta * 10f);
+			aimActived = false;
+		} 
+		else if ( runButtonPressed && aimButtonPressed )
 		{
 			rotation = Rotation.LookAt(InputDirection, Vector3.Up);
+			aimActived = false;
 		}
-
-		if (Input.Down(InputButton.SecondaryAttack))
+		else if ( aimButtonPressed && !runButtonPressed )
 		{
 			Rotation = Rotation.Lerp(Rotation, rotation, Time.Delta * 10f);
+			aimActived = true;
 		}
 		else
 		{
-			var idealRotation = Rotation.LookAt(rotation.Forward.WithZ(0), Vector3.Up);
-			Rotation = Rotation.Slerp(Rotation, idealRotation, Time.Delta * turnSpeed);
-			Rotation = Rotation.Clamp(idealRotation, 45.0f, out var shuffle); // lock facing to within 45 degrees of look direction
+			var newRotation = Rotation.LookAt(InputDirection, Vector3.Up);
+			Rotation = Rotation.Lerp(Rotation, newRotation, Time.Delta * 10f);
+			aimActived = false;
 		}
-
-		var animHelper = new CitizenAnimationHelper( this );
 
 		animHelper.WithWishVelocity( Controller.WishVelocity );
 		animHelper.WithVelocity( Velocity );
 		animHelper.WithLookAt( EyePosition + EyeRotation.Forward * 100.0f, 1.0f, 1.0f, 0.5f );
 		animHelper.AimAngle = rotation;
+		
 		animHelper.DuckLevel = MathX.Lerp( animHelper.DuckLevel, Controller.HasTag( "ducked" ) ? 1 : 0, Time.Delta * 10.0f );
+
 		animHelper.VoiceLevel = (Game.IsClient && Client.IsValid()) ? Client.Voice.LastHeard < 0.5f ? Client.Voice.CurrentLevel : 0.0f : 0.0f;
 		animHelper.IsGrounded = GroundEntity != null;
+
 		animHelper.IsSitting = Controller.HasTag( "sitting" );
 		animHelper.IsNoclipping = Controller.HasTag( "noclip" );
 		animHelper.IsClimbing = Controller.HasTag( "climbing" );
 		animHelper.IsSwimming = false;
-		animHelper.IsWeaponLowered = false;
 
-		if ( Controller.HasEvent( "jump" ) ) animHelper.TriggerJump();
+
+
+		animHelper.IsWeaponLowered = false;
+		
+
+
+
+		// if ( Controller.HasEvent( "jump" ) ) animHelper.TriggerJump();
 
 		if ( ActiveChild != LastWeaponEntity ) animHelper.TriggerDeploy();
 
@@ -64,6 +85,7 @@ public partial class CollapsePlayer
 			animHelper.HoldType = CitizenAnimationHelper.HoldTypes.None;
 			animHelper.AimBodyWeight = 0.5f;
 		}
+
 
 		LastWeaponEntity = ActiveChild as Weapon;
 	}
