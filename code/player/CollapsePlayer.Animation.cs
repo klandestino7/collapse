@@ -1,8 +1,8 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-public partial class ForsakenPlayer
+public partial class CollapsePlayer
 {
 	private Weapon LastWeaponEntity { get; set; }
 
@@ -10,18 +10,31 @@ public partial class ForsakenPlayer
 	{
 		Rotation rotation;
 
+
+		// where should we be rotated to
+		var turnSpeed = 0.02f;
+
 		// If we're a bot, spin us around 180 degrees.
-		if ( Client.IsBot )
-			rotation = ViewAngles.WithYaw( ViewAngles.yaw + 180f ).ToRotation();
+		if (Client.IsBot)
+			rotation = ViewAngles.WithYaw(ViewAngles.yaw + 180f).ToRotation();
 		else
 			rotation = ViewAngles.ToRotation();
 
-		if ( Input.Down( InputButton.Run ) )
+		if (Input.Down(InputButton.Run))
 		{
-			rotation = Rotation.LookAt( InputDirection, Vector3.Up );
+			rotation = Rotation.LookAt(InputDirection, Vector3.Up);
 		}
 
-		Rotation = Rotation.Lerp( Rotation, rotation, Time.Delta * 10f );
+		if (Input.Down(InputButton.SecondaryAttack))
+		{
+			Rotation = Rotation.Lerp(Rotation, rotation, Time.Delta * 10f);
+		}
+		else
+		{
+			var idealRotation = Rotation.LookAt(rotation.Forward.WithZ(0), Vector3.Up);
+			Rotation = Rotation.Slerp(Rotation, idealRotation, Time.Delta * turnSpeed);
+			Rotation = Rotation.Clamp(idealRotation, 45.0f, out var shuffle); // lock facing to within 45 degrees of look direction
+		}
 
 		var animHelper = new CitizenAnimationHelper( this );
 
@@ -39,6 +52,7 @@ public partial class ForsakenPlayer
 		animHelper.IsWeaponLowered = false;
 
 		if ( Controller.HasEvent( "jump" ) ) animHelper.TriggerJump();
+
 		if ( ActiveChild != LastWeaponEntity ) animHelper.TriggerDeploy();
 
 		if ( ActiveChild is Weapon weapon )

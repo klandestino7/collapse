@@ -1,6 +1,6 @@
-﻿namespace Facepunch.Forsaken;
+﻿namespace Facepunch.Collapse;
 
-public partial class ForsakenPlayer
+public partial class CollapsePlayer
 {
 	private static string[] InvalidPlacementThoughts = new string[]
 	{

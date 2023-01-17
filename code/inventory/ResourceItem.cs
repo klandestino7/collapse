@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class ResourceItem<A,T> : InventoryItem, IResourceItem where A : ItemResource where T : ResourceItem<A,T>
 {

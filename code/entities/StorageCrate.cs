@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class StorageCrate : Deployable, IContextActionProvider, IPersistence
 {
@@ -61,23 +61,23 @@ public partial class StorageCrate : Deployable, IContextActionProvider, IPersist
 		return "Storage Crate";
 	}
 
-	public void Open( ForsakenPlayer player )
+	public void Open( CollapsePlayer player )
 	{
 		UI.Storage.Open( player, GetContextName(), this, Inventory );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
 	{
 		yield return OpenAction;
 		yield return PickupAction;
 	}
 
-	public ContextAction GetPrimaryAction( ForsakenPlayer player )
+	public ContextAction GetPrimaryAction( CollapsePlayer player )
 	{
 		return OpenAction;
 	}
 
-	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
+	public virtual void OnContextAction( CollapsePlayer player, ContextAction action )
 	{
 		if ( action == OpenAction )
 		{

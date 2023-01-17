@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-public partial class ForsakenPlayer
+public partial class CollapsePlayer
 {
 	private PersistenceHandle BedrollHandle { get; set; }
 

@@ -2,7 +2,7 @@
 using Sandbox.UI;
 using System.Linq;
 
-namespace Facepunch.Forsaken.UI;
+namespace Facepunch.Collapse.UI;
 
 [StyleSheet( "/ui/RadialMenu.scss" )]
 public partial class ReloadMenu : RadialMenu
@@ -19,7 +19,7 @@ public partial class ReloadMenu : RadialMenu
 
 	public override void Populate()
 	{
-		var player = ForsakenPlayer.Me;
+		var player = CollapsePlayer.Me;
 
 		if ( !player.IsValid() )
 			return;
@@ -33,7 +33,7 @@ public partial class ReloadMenu : RadialMenu
 		if ( weapon.WeaponItem.AmmoType == AmmoType.None )
 			return;
 
-		var items = ForsakenPlayer.Me.FindItems<AmmoItem>()
+		var items = CollapsePlayer.Me.FindItems<AmmoItem>()
 			.Where( i => i.AmmoType == weapon.WeaponItem.AmmoType )
 			.Select( i => i.UniqueId )
 			.Distinct();
@@ -53,10 +53,10 @@ public partial class ReloadMenu : RadialMenu
 
 	protected override bool ShouldOpen()
 	{
-		if ( !ForsakenPlayer.Me.IsValid() )
+		if ( !CollapsePlayer.Me.IsValid() )
 			return false;
 
-		var weaponItem = ForsakenPlayer.Me.GetActiveHotbarItem() as WeaponItem;
+		var weaponItem = CollapsePlayer.Me.GetActiveHotbarItem() as WeaponItem;
 		if ( !weaponItem.IsValid() )
 			return false;
 
@@ -69,6 +69,6 @@ public partial class ReloadMenu : RadialMenu
 	private void Select( string uniqueId )
 	{
 		var type = TypeLibrary.GetType( uniqueId );
-		ForsakenPlayer.Me.SetAmmoType( uniqueId );
+		CollapsePlayer.Me.SetAmmoType( uniqueId );
 	}
 }

@@ -3,7 +3,7 @@ using Sandbox.UI;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Facepunch.Forsaken.UI;
+namespace Facepunch.Collapse.UI;
 
 [StyleSheet( "/ui/ToolboxMenu.scss" )]
 public partial class ToolboxMenu : RadialMenu
@@ -25,7 +25,7 @@ public partial class ToolboxMenu : RadialMenu
 		descriptions.Add( TypeLibrary.GetType<Doorway>() );
 		descriptions.Add( TypeLibrary.GetType<Wall>() );
 
-		var player = ForsakenPlayer.Me;
+		var player = CollapsePlayer.Me;
 
 		foreach ( var type in descriptions )
 		{
@@ -58,10 +58,10 @@ public partial class ToolboxMenu : RadialMenu
 
 	protected override bool ShouldOpen()
 	{
-		if ( !ForsakenPlayer.Me.IsValid() )
+		if ( !CollapsePlayer.Me.IsValid() )
 			return false;
 
-		return (ForsakenPlayer.Me.GetActiveHotbarItem() is ToolboxItem);
+		return (CollapsePlayer.Me.GetActiveHotbarItem() is ToolboxItem);
 	}
 
 	private string GetCostString( KeyValuePair<string,int> pair )
@@ -73,6 +73,6 @@ public partial class ToolboxMenu : RadialMenu
 	private void Select( string typeName )
 	{
 		var type = TypeLibrary.GetType( typeName );
-		ForsakenPlayer.Me.SetStructureType( type );
+		CollapsePlayer.Me.SetStructureType( type );
 	}
 }

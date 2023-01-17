@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 [Title( "Wall" )]
 [Description( "Prevents anything getting in or out. Must be attached to a foundation." )]

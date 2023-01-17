@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 [AttributeUsage( AttributeTargets.Class, AllowMultiple = true )]
 public class ItemCostAttribute : Attribute

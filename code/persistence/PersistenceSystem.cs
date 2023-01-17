@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public static class PersistenceSystem
 {
@@ -18,7 +18,7 @@ public static class PersistenceSystem
 	[ConCmd.Admin( "fsk.save.me" )]
 	private static void SaveMe()
 	{
-		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is CollapsePlayer player )
 		{
 			Save( player );
 		}
@@ -27,7 +27,7 @@ public static class PersistenceSystem
 	[ConCmd.Admin( "fsk.load.me" )]
 	private static void LoadMe()
 	{
-		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is CollapsePlayer player )
 		{
 			Load( player );
 		}
@@ -38,7 +38,7 @@ public static class PersistenceSystem
 		return ++PersistentId;
 	}
 
-	public static void Save( ForsakenPlayer player )
+	public static void Save( CollapsePlayer player )
 	{
 		using ( var stream = new MemoryStream() )
 		{
@@ -51,7 +51,7 @@ public static class PersistenceSystem
 		}
 	}
 
-	public static void Load( ForsakenPlayer player )
+	public static void Load( CollapsePlayer player )
 	{
 		if ( PlayerData.TryGetValue( player.SteamId, out var data ) )
 		{
@@ -132,7 +132,7 @@ public static class PersistenceSystem
 		var entities = Entity.All
 			.OfType<IPersistence>()
 			.Where( e => e.ShouldSaveState() )
-			.Where( e => e is not ForsakenPlayer );
+			.Where( e => e is not CollapsePlayer );
 
 		writer.Write( entities.Count() );
 
@@ -202,13 +202,13 @@ public static class PersistenceSystem
 
 			PlayerData[playerId] = playerData;
 
-			var pawn = Entity.All.OfType<ForsakenPlayer>()
+			var pawn = Entity.All.OfType<CollapsePlayer>()
 				.Where( p => p.SteamId == playerId )
 				.FirstOrDefault();
 
 			if ( !pawn.IsValid() )
 			{
-				pawn = new ForsakenPlayer();
+				pawn = new CollapsePlayer();
 
 				var client = Game.Clients.FirstOrDefault( c => c.SteamId == playerId );
 
@@ -226,7 +226,7 @@ public static class PersistenceSystem
 	{
 		var players = Game.Clients
 			.Select( c => c.Pawn )
-			.OfType<ForsakenPlayer>();
+			.OfType<CollapsePlayer>();
 
 		foreach ( var player in players )
 		{

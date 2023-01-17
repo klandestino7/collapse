@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class MoveController
 {
@@ -34,12 +34,12 @@ public partial class MoveController
 	public Vector3 GroundNormal { get; set; }
 	public Vector3 WishVelocity { get; set; }
 
-	public ForsakenPlayer Player { get; private set; }
+	public CollapsePlayer Player { get; private set; }
 	public DuckController Duck { get; private set; }
 
 	private int StuckTries { get; set; } = 0;
 
-	public MoveController( ForsakenPlayer player )
+	public MoveController( CollapsePlayer player )
 	{
 		Duck = new DuckController( this );
 		Player = player;
@@ -169,9 +169,11 @@ public partial class MoveController
 		WishVelocity *= GetWishSpeed();
 
 		Duck.PreTick();
-
+		
 		if ( Input.Down( InputButton.Run ) && !Input.Down( InputButton.Duck ) && WishVelocity.Length > 1f )
 			Player.ReduceStamina( 10f * Time.Delta );
+		else if (WishVelocity.Length >= 0.1f )
+			Player.ReduceStamina(1f * Time.Delta);
 		else
 			Player.GainStamina( 15f * Time.Delta );
 

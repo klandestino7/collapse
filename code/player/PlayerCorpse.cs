@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 {
@@ -29,22 +29,22 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 		return $"{PlayerName}'s Corpse";
 	}
 
-	public void Search( ForsakenPlayer player )
+	public void Search( CollapsePlayer player )
 	{
 		UI.Storage.Open( player, GetContextName(), this, Inventory );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
 	{
 		yield break;
 	}
 
-	public ContextAction GetPrimaryAction( ForsakenPlayer player )
+	public ContextAction GetPrimaryAction( CollapsePlayer player )
 	{
 		return SearchAction;
 	}
 
-	public void CopyFrom( ForsakenPlayer player )
+	public void CopyFrom( CollapsePlayer player )
 	{
 		RenderColor = player.RenderColor;
 
@@ -86,7 +86,7 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 		Inventory = inventory;
 	}
 
-	public void OnContextAction( ForsakenPlayer player, ContextAction action )
+	public void OnContextAction( CollapsePlayer player, ContextAction action )
 	{
 		if ( action == SearchAction )
 		{

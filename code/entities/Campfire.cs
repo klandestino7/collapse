@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity, IPersistence
 {
@@ -67,18 +67,18 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		Processor.Deserialize( reader );
 	}
 
-	public void Open( ForsakenPlayer player )
+	public void Open( CollapsePlayer player )
 	{
 		UI.Cooking.Open( player, GetContextName(), this );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
 	{
 		yield return OpenAction;
 		yield return PickupAction;
 	}
 
-	public ContextAction GetPrimaryAction( ForsakenPlayer player )
+	public ContextAction GetPrimaryAction( CollapsePlayer player )
 	{
 		if ( Processor.IsActive )
 			return ExtinguishAction;
@@ -86,7 +86,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 			return IgniteAction;
 	}
 
-	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
+	public virtual void OnContextAction( CollapsePlayer player, ContextAction action )
 	{
 		if ( action == OpenAction )
 		{
@@ -147,7 +147,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		base.Spawn();
 	}
 
-	public override void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
+	public override void OnPlacedByPlayer( CollapsePlayer player, TraceResult trace )
 	{
 		var fuel = InventorySystem.CreateItem<WoodItem>();
 		fuel.StackSize = 40;

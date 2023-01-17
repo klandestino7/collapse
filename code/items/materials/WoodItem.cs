@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class WoodItem : InventoryItem
 {

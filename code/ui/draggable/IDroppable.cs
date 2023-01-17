@@ -1,4 +1,4 @@
-﻿namespace Facepunch.Forsaken.UI;
+﻿namespace Facepunch.Collapse.UI;
 
 public interface IDroppable
 {

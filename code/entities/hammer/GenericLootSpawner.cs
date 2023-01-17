@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using Editor;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 [HammerEntity]
 [Title( "Loot Spawner" )]

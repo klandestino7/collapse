@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public static partial class InventorySystem
 {
@@ -557,13 +557,13 @@ public static partial class InventorySystem
 
 		if ( ResourceLibrary == null )
 		{
-			Log.Info( "Unable to reload Forsaken item definitions because ResourceLibrary is null!" );
+			Log.Info( "Unable to reload Collapse item definitions because ResourceLibrary is null!" );
 			return;
 		}
 
 		if ( TypeLibrary == null )
 		{
-			Log.Info( "Unable to reload Forsaken item definitions because TypeLibrary is null!" );
+			Log.Info( "Unable to reload Collapse item definitions because TypeLibrary is null!" );
 			return;
 		}
 

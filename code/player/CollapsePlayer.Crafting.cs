@@ -3,16 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-public partial class ForsakenPlayer
+public partial class CollapsePlayer
 {
 	[Net] public IList<CraftingQueueEntry> CraftingQueue { get; set; }
 
 	[ConCmd.Server( "fsk.crafting.add" )]
 	public static void AddCraftingCmd( string recipeName, int quantity )
 	{
-		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is not CollapsePlayer player )
 			return;
 
 		var recipe = ResourceLibrary.GetAll<RecipeResource>()
@@ -25,7 +25,7 @@ public partial class ForsakenPlayer
 	[ConCmd.Server( "fsk.crafting.cancel" )]
 	public static void CancelCraftingCmd( int index )
 	{
-		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is not CollapsePlayer player )
 			return;
 
 		if ( player.CraftingQueue.Count >= index )

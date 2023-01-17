@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootTableItem, IConsumableItem, ICookableItem
 {
@@ -20,7 +20,7 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 	public virtual int CookedQuantity => Resource?.CookedQuantity ?? default;
 	public virtual bool IsCookable => Resource?.IsCookable ?? default;
 
-	public async void Consume( ForsakenPlayer player )
+	public async void Consume( CollapsePlayer player )
 	{
 		StackSize--;
 
@@ -55,7 +55,7 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 		}
 	}
 
-	public virtual void OnActivated( ForsakenPlayer player )
+	public virtual void OnActivated( CollapsePlayer player )
 	{
 		foreach ( var effect in Effects )
 		{

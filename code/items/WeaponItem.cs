@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem, ILootTableItem
 {

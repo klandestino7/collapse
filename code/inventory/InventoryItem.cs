@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class InventoryItem : IValid
 {
@@ -21,6 +21,7 @@ public class InventoryItem : IValid
 	public virtual Color IconTintColor => Color.White;
 	public virtual string UniqueId => string.Empty;
 	public virtual string Icon => string.Empty;
+	public virtual string Weight => string.Empty;
 
 	public virtual IReadOnlySet<string> Tags => InternalTags;
 	public virtual Dictionary<string, int> RequiredItems => null;

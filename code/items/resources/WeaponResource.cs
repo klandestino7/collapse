@@ -1,8 +1,8 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-[GameResource( "Weapon", "weapon", "A weapon for use with Forsaken.", Icon = "crisis_alert" )]
+[GameResource( "Weapon", "weapon", "A weapon for use with Collapse.", Icon = "crisis_alert" )]
 [ItemClass( typeof( WeaponItem ) )]
 public class WeaponResource : LootTableResource
 {

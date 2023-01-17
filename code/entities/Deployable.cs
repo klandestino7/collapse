@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class Deployable : ModelEntity
 {
@@ -34,7 +34,7 @@ public partial class Deployable : ModelEntity
 		Ghost = null;
 	}
 
-	public virtual void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
+	public virtual void OnPlacedByPlayer( CollapsePlayer player, TraceResult trace )
 	{
 
 	}

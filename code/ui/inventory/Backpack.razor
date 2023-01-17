@@ -1,24 +1,24 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
-@using Facepunch.Forsaken;
+@using Facepunch.Collapse;
 
-@namespace Facepunch.Forsaken.UI
+@namespace Facepunch.Collapse.UI
 @attribute [StyleSheet( "/ui/inventory/Backpack.scss" )]
 @inherits Panel
 @implements IDialog
 @implements IDroppable
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !CollapsePlayer.Me.IsValid() ) return;
 
 @{
-    var equipment = ForsakenPlayer.Me.Equipment;
+    var equipment = CollapsePlayer.Me.Equipment;
     if (!equipment.IsValid()) return;
 
-    var backpack = ForsakenPlayer.Me.Backpack;
+    var backpack = CollapsePlayer.Me.Backpack;
     if ( !backpack.IsValid() ) return;
 
-    var hotbar = ForsakenPlayer.Me.Hotbar;
+    var hotbar = CollapsePlayer.Me.Hotbar;
     if ( !hotbar.IsValid() ) return;
 }
 
@@ -135,7 +135,7 @@
     {
         if ( draggable is InventorySlot slot )
         {
-            ForsakenPlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
+            CollapsePlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
         }
     }
 
@@ -178,9 +178,9 @@
 
     protected override int BuildHash()
     {
-        var equipment = ForsakenPlayer.Me?.Equipment;
-        var backpack = ForsakenPlayer.Me?.Backpack;
-        var hotbar = ForsakenPlayer.Me?.Hotbar;
+        var equipment = CollapsePlayer.Me?.Equipment;
+        var backpack = CollapsePlayer.Me?.Backpack;
+        var hotbar = CollapsePlayer.Me?.Hotbar;
 
         InventoryContainer childContainer = null;
         if (Selected != null && Selected.Item is IContainerItem selected )
@@ -188,6 +188,6 @@
             childContainer = selected.Container;
         }
 
-        return HashCode.Combine( ForsakenPlayer.Me, Selected, childContainer, equipment, backpack, hotbar );
+        return HashCode.Combine( CollapsePlayer.Me, Selected, childContainer, equipment, backpack, hotbar );
     }
 }

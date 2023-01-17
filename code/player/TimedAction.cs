@@ -1,17 +1,17 @@
 ﻿using Sandbox;
 using System;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public struct TimedActionInfo
 {
-	public Action<ForsakenPlayer> OnFinished { get; private set; }
+	public Action<CollapsePlayer> OnFinished { get; private set; }
 	public float Duration { get; set; }
 	public Vector3 Origin { get; set; }
 	public string Title { get; set; }
 	public string Icon { get; set; }
 
-	public TimedActionInfo( Action<ForsakenPlayer> callback )
+	public TimedActionInfo( Action<CollapsePlayer> callback )
 	{
 		OnFinished = callback;
 		Duration = default;
@@ -29,7 +29,7 @@ public partial class TimedAction : BaseNetworkable
 	[Net] public string Title { get; private set; }
 	[Net] public string Icon { get; private set; }
 
-	public Action<ForsakenPlayer> OnFinished { get; private set; }
+	public Action<CollapsePlayer> OnFinished { get; private set; }
 
 	public TimedAction()
 	{

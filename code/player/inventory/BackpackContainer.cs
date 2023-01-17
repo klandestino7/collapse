@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class BackpackContainer : InventoryContainer
 {
@@ -30,13 +30,13 @@ public partial class BackpackContainer : InventoryContainer
 			return storage.Container;
 		}
 
-		var equipment = ForsakenPlayer.Me.Equipment;
+		var equipment = CollapsePlayer.Me.Equipment;
 
 		if ( item is ArmorItem && equipment.CouldTakeAny( item ) )
 		{
 			return equipment;
 		}
 
-		return ForsakenPlayer.Me.Hotbar;
+		return CollapsePlayer.Me.Hotbar;
 	}
 }

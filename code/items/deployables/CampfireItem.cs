@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class CampfireItem : DeployableItem
 {

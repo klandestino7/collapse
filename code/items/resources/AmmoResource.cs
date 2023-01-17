@@ -1,8 +1,8 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-[GameResource( "Ammo", "ammo", "A type of weapon ammunition for use with Forsaken.", Icon = "bento" )]
+[GameResource( "Ammo", "ammo", "A type of weapon ammunition for use with Collapse.", Icon = "bento" )]
 [ItemClass( typeof( AmmoItem ) )]
 public class AmmoResource : LootTableResource
 {

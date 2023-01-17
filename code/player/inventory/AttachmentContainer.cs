@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class AttachmentContainer : InventoryContainer
 {

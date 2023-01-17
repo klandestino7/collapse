@@ -1,9 +1,9 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-[GameResource( "Consumable", "cons", "A type of consumable item for use with Forsaken.", Icon = "food-apple" )]
+[GameResource( "Consumable", "cons", "A type of consumable item for use with Collapse.", Icon = "food-apple" )]
 [ItemClass( typeof( ConsumableItem ) )]
 public class ConsumableResource : LootTableResource
 {

@@ -2,14 +2,14 @@
 using System;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public interface ICodeLockable : IValid
 {
 	[ConCmd.Server( "fsk.code.apply" )]
 	public static void ApplyLock( int entityId, string code )
 	{
-		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is not CollapsePlayer player )
 			return;
 
 		if ( !code.All( char.IsDigit ) || code.Length != 4 )
@@ -27,7 +27,7 @@ public interface ICodeLockable : IValid
 	[ConCmd.Server( "fsk.code.authorize" )]
 	public static void Authorize( int entityId, string code )
 	{
-		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is not CollapsePlayer player )
 			return;
 
 		var lockable = Entity.FindByIndex( entityId ) as ICodeLockable;
@@ -46,9 +46,9 @@ public interface ICodeLockable : IValid
 		}
 	}
 
-	public bool IsAuthorized( ForsakenPlayer player );
-	public bool ApplyLock( ForsakenPlayer player, string code );
-	public void Authorize( ForsakenPlayer player );
+	public bool IsAuthorized( CollapsePlayer player );
+	public bool ApplyLock( CollapsePlayer player, string code );
+	public void Authorize( CollapsePlayer player );
 	public int NetworkIdent { get; }
 	public bool IsLocked { get; }
 	public string Code { get; }

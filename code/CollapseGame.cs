@@ -2,11 +2,11 @@
 using System;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-public partial class ForsakenGame : GameManager
+public partial class CollapseGame : GameManager
 {
-	public static ForsakenGame Entity => Current as ForsakenGame;
+	public static CollapseGame Entity => Current as CollapseGame;
 
 	[ConVar.Server( "fsk.autosave", Saved = true )]
 	public static bool ShouldAutoSave { get; set; } = true;
@@ -15,7 +15,7 @@ public partial class ForsakenGame : GameManager
 	private TopDownCamera Camera { get; set; }
 	private bool HasLoadedWorld { get; set; }
 
-	public ForsakenGame() : base()
+	public CollapseGame() : base()
 	{
 
 	}
@@ -46,13 +46,13 @@ public partial class ForsakenGame : GameManager
 	{
 		InventorySystem.ClientJoined( client );
 
-		var pawn = All.OfType<ForsakenPlayer>()
+		var pawn = All.OfType<CollapsePlayer>()
 			.Where( p => p.SteamId == client.SteamId )
 			.FirstOrDefault();
 
 		if ( !pawn.IsValid() )
 		{
-			pawn = new ForsakenPlayer();
+			pawn = new CollapsePlayer();
 			pawn.MakePawnOf( client );
 			pawn.Respawn();
 		}
@@ -68,7 +68,7 @@ public partial class ForsakenGame : GameManager
 
 	public override void MoveToSpawnpoint( Entity pawn )
 	{
-		if ( pawn is ForsakenPlayer player && player.Bedroll.IsValid() )
+		if ( pawn is CollapsePlayer player && player.Bedroll.IsValid() )
 		{
 			player.Position = player.Bedroll.Position + Vector3.Up * 10f;
 			return;
@@ -79,7 +79,7 @@ public partial class ForsakenGame : GameManager
 
 	public override void ClientDisconnect( IClient client, NetworkDisconnectionReason reason )
 	{
-		if ( client.Pawn is ForsakenPlayer player )
+		if ( client.Pawn is CollapsePlayer player )
 		{
 			PersistenceSystem.Save( player );
 		}
@@ -129,7 +129,7 @@ public partial class ForsakenGame : GameManager
 			spawner.Interval = 90f;
 		}
 
-		Log.Info( "[Forsaken] Loading world..." );
+		Log.Info( "[Collapse] Loading world..." );
 		PersistenceSystem.LoadAll();
 
 		HasLoadedWorld = true;
@@ -143,7 +143,7 @@ public partial class ForsakenGame : GameManager
 	{
 		if ( HasLoadedWorld && NextAutoSave && ShouldAutoSave )
 		{
-			Log.Info( "[Forsaken] Saving world..." );
+			Log.Info( "[Collapse] Saving world..." );
 			PersistenceSystem.SaveAll();
 			NextAutoSave = 60f;
 		}

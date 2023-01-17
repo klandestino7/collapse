@@ -1,24 +1,24 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
-@using Facepunch.Forsaken;
+@using Facepunch.Collapse;
 @using System.Collections.Generic;
 
-@namespace Facepunch.Forsaken.UI
+@namespace Facepunch.Collapse.UI
 @attribute [StyleSheet( "/ui/crafting/Crafting.scss" )]
 @inherits Panel
 @implements IDialog
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !CollapsePlayer.Me.IsValid() ) return;
 
 @{
-    var equipment = ForsakenPlayer.Me.Equipment;
+    var equipment = CollapsePlayer.Me.Equipment;
     if (!equipment.IsValid()) return;
 
-    var backpack = ForsakenPlayer.Me.Backpack;
+    var backpack = CollapsePlayer.Me.Backpack;
     if ( !backpack.IsValid() ) return;
 
-    var hotbar = ForsakenPlayer.Me.Hotbar;
+    var hotbar = CollapsePlayer.Me.Hotbar;
     if ( !hotbar.IsValid() ) return;
 }
 
@@ -83,7 +83,7 @@
 
                             var canAfford = false;
 
-                            if ( ForsakenPlayer.Me.HasItems( kv.Key, kv.Value * Quantity ) )
+                            if ( CollapsePlayer.Me.HasItems( kv.Key, kv.Value * Quantity ) )
                                 canAfford = true;
 
                             <div class="input">
@@ -115,7 +115,7 @@
             <div class="title">Queue</div>
 		    <div class="queue-items">
                 @{
-                    var craftingQueue = ForsakenPlayer.Me.CraftingQueue;
+                    var craftingQueue = CollapsePlayer.Me.CraftingQueue;
                 }
 
                 @for ( var i = 0; i < 10; i++ )
@@ -169,8 +169,8 @@
 
     protected override int BuildHash()
     {
-        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
-        return HashCode.Combine( ForsakenPlayer.Me, SelectedRecipe, SelectedCategory, SearchQuery, Quantity, ForsakenPlayer.Me.CraftingQueue.Count );
+        if ( !CollapsePlayer.Me.IsValid() ) return 0;
+        return HashCode.Combine( CollapsePlayer.Me, SelectedRecipe, SelectedCategory, SearchQuery, Quantity, CollapsePlayer.Me.CraftingQueue.Count );
     }
 
     private void OnSearchQueryChanged( string value )
@@ -188,15 +188,15 @@
     {
         if ( SelectedRecipe == null ) return;
 
-        if ( ForsakenPlayer.Me.CanCraftRecipe( SelectedRecipe, Quantity + 1 ) )
+        if ( CollapsePlayer.Me.CanCraftRecipe( SelectedRecipe, Quantity + 1 ) )
             Quantity++;
     }
 
     private void OnCraftClicked()
     {
         if ( SelectedRecipe == null ) return;
-        if ( !ForsakenPlayer.Me.CanCraftRecipe( SelectedRecipe, Quantity ) ) return;
-        ForsakenPlayer.AddCraftingCmd( SelectedRecipe.ResourceName, Quantity );
+        if ( !CollapsePlayer.Me.CanCraftRecipe( SelectedRecipe, Quantity ) ) return;
+        CollapsePlayer.AddCraftingCmd( SelectedRecipe.ResourceName, Quantity );
     }
 
     private IEnumerable<RecipeResource> GetCategoryRecipes()
@@ -223,10 +223,10 @@
 
     private void OnCraftingEntrySelected( CraftingQueueEntry entry )
     {
-        var index = ForsakenPlayer.Me.CraftingQueue.IndexOf( entry );
+        var index = CollapsePlayer.Me.CraftingQueue.IndexOf( entry );
         if ( index < 0 ) return;
 
-        ForsakenPlayer.CancelCraftingCmd( index );
+        CollapsePlayer.CancelCraftingCmd( index );
     }
 
     private void OnRecipeSelected( RecipeResource recipe )

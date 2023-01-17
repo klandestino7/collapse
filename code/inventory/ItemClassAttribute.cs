@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class ItemClassAttribute : Attribute
 {

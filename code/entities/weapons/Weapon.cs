@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public abstract partial class Weapon : BaseWeapon
 {
@@ -78,7 +78,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public int AvailableAmmo()
 	{
-		if ( Owner is not ForsakenPlayer owner )
+		if ( Owner is not CollapsePlayer owner )
 			return 0;
 
 		if ( !WeaponItem.IsValid() )
@@ -96,7 +96,7 @@ public abstract partial class Weapon : BaseWeapon
 
 		if ( !WeaponItem.IsValid() ) return false;
 		if ( WeaponItem.AmmoDefinition == item ) return false;
-		if ( Owner is not ForsakenPlayer player ) return false;
+		if ( Owner is not CollapsePlayer player ) return false;
 
 		if ( WeaponItem.AmmoDefinition.IsValid() && AmmoClip > 0 )
 		{
@@ -186,7 +186,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public override void BuildInput()
 	{
-		var player = ForsakenPlayer.Me;
+		var player = CollapsePlayer.Me;
 
 		if ( !player.IsValid() ) return;
 
@@ -217,7 +217,7 @@ public abstract partial class Weapon : BaseWeapon
 		if ( !WeaponItem.AmmoDefinition.IsValid() )
 			return;
 
-		if ( Owner is ForsakenPlayer player )
+		if ( Owner is CollapsePlayer player )
 		{
 			if ( !UnlimitedAmmo )
 			{
@@ -248,7 +248,7 @@ public abstract partial class Weapon : BaseWeapon
 			TimeSincePrimaryHeld = 0f;
 		}
 
-		var pawn = owner.Pawn as ForsakenPlayer;
+		var pawn = owner.Pawn as CollapsePlayer;
 
 		if ( pawn.LifeState == LifeState.Alive )
 		{
@@ -467,7 +467,7 @@ public abstract partial class Weapon : BaseWeapon
 
 		IsReloading = false;
 
-		if ( Owner is not ForsakenPlayer player )
+		if ( Owner is not CollapsePlayer player )
 			return;
 
 		if ( !WeaponItem.IsValid() )
@@ -562,7 +562,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	protected void UpdateAmmoItem()
 	{
-		if ( Owner is not ForsakenPlayer player )
+		if ( Owner is not CollapsePlayer player )
 			return;
 
 		if ( !WeaponItem.IsValid() )

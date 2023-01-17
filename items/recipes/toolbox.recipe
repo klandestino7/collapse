@@ -2,7 +2,7 @@
 {
 	data = 
 	{
-		Category = "Building"
+		Category = "Tools"
 		Output = "toolbox"
 		StackSize = 1
 		Inputs = 

@@ -1,9 +1,9 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
-@using Facepunch.Forsaken;
+@using Facepunch.Collapse;
 
-@namespace Facepunch.Forsaken.UI
+@namespace Facepunch.Collapse.UI
 @attribute [StyleSheet( "/ui/nametags/Nametag.scss" )]
 @inherits Panel
 
@@ -17,7 +17,7 @@
 
 @code
 {
-    public ForsakenPlayer Player { get; set; }
+    public CollapsePlayer Player { get; set; }
 
     public override void Tick()
     {

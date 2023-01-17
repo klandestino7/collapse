@@ -1,8 +1,8 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-[GameResource( "Armor", "armor", "A piece of armor or clothing for use with Forsaken.", Icon = "checkroom" )]
+[GameResource( "Armor", "armor", "A piece of armor or clothing for use with Collapse.", Icon = "checkroom" )]
 [ItemClass( typeof( ArmorItem ) )]
 public class ArmorResource : LootTableResource
 {

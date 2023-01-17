@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public interface IContextActionProvider : IValid
 {
-	public static IEnumerable<ContextAction> GetAllActions( ForsakenPlayer player, IContextActionProvider provider )
+	public static IEnumerable<ContextAction> GetAllActions( CollapsePlayer player, IContextActionProvider provider )
 	{
 		var primary = provider.GetPrimaryAction( player );
 
@@ -26,10 +26,10 @@ public interface IContextActionProvider : IValid
 	public float InteractionRange { get; }
 	public Color GlowColor { get; }
 	public float GlowWidth { get;}
-	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player );
+	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player );
 	public int NetworkIdent { get; }
-	public ContextAction GetPrimaryAction( ForsakenPlayer player );
+	public ContextAction GetPrimaryAction( CollapsePlayer player );
 	public Vector3 Position { get; }
 	public string GetContextName();
-	public void OnContextAction( ForsakenPlayer player, ContextAction action );
+	public void OnContextAction( CollapsePlayer player, ContextAction action );
 }

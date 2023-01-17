@@ -1,25 +1,25 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
-@using Facepunch.Forsaken;
+@using Facepunch.Collapse;
 
-@namespace Facepunch.Forsaken.UI
+@namespace Facepunch.Collapse.UI
 @attribute [StyleSheet( "/ui/inventory/Storage.scss" )]
 @inherits Panel
 @implements IDialog
 @implements IDroppable
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !CollapsePlayer.Me.IsValid() ) return;
 @if ( !Container.IsValid() ) return;
 
 @{
-    var equipment = ForsakenPlayer.Me.Equipment;
+    var equipment = CollapsePlayer.Me.Equipment;
     if ( !equipment.IsValid() ) return;
 
-    var backpack = ForsakenPlayer.Me.Backpack;
+    var backpack = CollapsePlayer.Me.Backpack;
     if ( !backpack.IsValid() ) return;
 
-    var hotbar = ForsakenPlayer.Me.Hotbar;
+    var hotbar = CollapsePlayer.Me.Hotbar;
     if ( !hotbar.IsValid() ) return;
 }
 
@@ -157,7 +157,7 @@
 
     public void SetContainer( InventoryContainer container )
     {
-        if ( !ForsakenPlayer.Me.IsValid() ) return;
+        if ( !CollapsePlayer.Me.IsValid() ) return;
 
         Container = container;
         Container.SetTransferHandler( GetTransferTarget );
@@ -172,7 +172,7 @@
     {
         if ( draggable is InventorySlot slot )
         {
-            ForsakenPlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
+            CollapsePlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
         }
     }
 
@@ -215,8 +215,8 @@
 
     protected override int BuildHash()
     {
-        var backpack = ForsakenPlayer.Me?.Backpack;
-        var hotbar = ForsakenPlayer.Me?.Hotbar;
+        var backpack = CollapsePlayer.Me?.Backpack;
+        var hotbar = CollapsePlayer.Me?.Hotbar;
 
         InventoryContainer childContainer = null;
         if ( Selected != null && Selected.Item is IContainerItem selected )
@@ -224,11 +224,11 @@
             childContainer = selected.Container;
         }
 
-        return HashCode.Combine( ForsakenPlayer.Me, Selected, childContainer, backpack, hotbar, Container );
+        return HashCode.Combine( CollapsePlayer.Me, Selected, childContainer, backpack, hotbar, Container );
     }
 
     private InventoryContainer GetTransferTarget( InventoryItem item )
     {
-        return ForsakenPlayer.Me?.Backpack;
+        return CollapsePlayer.Me?.Backpack;
     }
 }

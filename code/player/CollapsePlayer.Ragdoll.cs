@@ -1,8 +1,8 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-public partial class ForsakenPlayer
+public partial class CollapsePlayer
 {
 	public PlayerCorpse Ragdoll { get; set; }
 

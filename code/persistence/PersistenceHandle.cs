@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class PersistenceHandle : IEqualityComparer<PersistenceHandle>, IValid
 {

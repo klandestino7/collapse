@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Facepunch.Forsaken.UI;
+using Facepunch.Collapse.UI;
 using Sandbox;
 using Sandbox.Component;
 using Sandbox.Diagnostics;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-public partial class ForsakenPlayer : AnimatedEntity, IPersistence
+public partial class CollapsePlayer : AnimatedEntity, IPersistence
 {
+	private TimeSince timeSinceJumpReleased;
 	private class ActiveEffect
 	{
 		public ConsumableEffect Type { get; set; }
@@ -17,12 +18,12 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		public float AmountGiven { get; set; }
 	}
 
-	public static ForsakenPlayer Me => Game.LocalPawn as ForsakenPlayer;
+	public static CollapsePlayer Me => Game.LocalPawn as CollapsePlayer;
 
 	[ConCmd.Server]
 	public static void KillMe()
 	{
-		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer pl )
+		if ( ConsoleSystem.Caller.Pawn is CollapsePlayer pl )
 		{
 			pl.TakeDamage( DamageInfo.FromBullet( pl.Position, Vector3.Zero, 1000f ) );
 		}
@@ -110,7 +111,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	[ConCmd.Server( "fsk.player.structuretype" )]
 	private static void SetStructureTypeCmd( int identity )
 	{
-		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is CollapsePlayer player )
 		{
 			player.StructureType = identity;
 		}
@@ -119,7 +120,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	[ConCmd.Server( "fsk.item.give" )]
 	public static void GiveItemCmd( string itemId, int amount )
 	{
-		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is not CollapsePlayer player )
 			return;
 
 		var definition = InventorySystem.GetDefinition( itemId );
@@ -142,7 +143,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		}
 	}
 
-	public ForsakenPlayer() : base()
+	public CollapsePlayer() : base()
 	{
 		Projectiles = new( this );
 
@@ -207,7 +208,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	public IEnumerable<IClient> GetChatRecipients()
 	{
 		var clientsNearby = FindInSphere( Position, 4000f )
-			.OfType<ForsakenPlayer>()
+			.OfType<CollapsePlayer>()
 			.Select( p => p.Client );
 
 		foreach ( var client in clientsNearby )
@@ -289,7 +290,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		InitializeWeapons();
 		ResetCursor();
 
-		ForsakenGame.Entity?.MoveToSpawnpoint( this );
+		CollapseGame.Entity?.MoveToSpawnpoint( this );
 		ResetInterpolation();
 	}
 
@@ -447,7 +448,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 	public override void TakeDamage( DamageInfo info )
 	{
-		if ( info.Attacker is ForsakenPlayer )
+		if ( info.Attacker is CollapsePlayer )
 		{
 			if ( info.Hitbox.HasTag( "head" ) )
 			{
@@ -555,6 +556,21 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 			{
 				if ( SimulateContextActions() )
 					return;
+			}
+
+			if (Input.Released(InputButton.Jump))
+			{
+				if (timeSinceJumpReleased < 0.3f)
+				{
+					
+				}
+
+				timeSinceJumpReleased = 0;
+			}
+
+			if (InputDirection.y != 0 || InputDirection.x != 0f)
+			{
+				timeSinceJumpReleased = 1;
 			}
 
 			SimulateAmmoType();

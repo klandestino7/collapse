@@ -1,14 +1,14 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
-@using Facepunch.Forsaken;
+@using Facepunch.Collapse;
 
-@namespace Facepunch.Forsaken.UI
+@namespace Facepunch.Collapse.UI
 @attribute [StyleSheet( "/ui/Vitals.scss" )]
 @inherits Panel
 
 @{
-    var player = ForsakenPlayer.Me;
+    var player = CollapsePlayer.Me;
     if ( !player.IsValid() ) return;
 }
 
@@ -22,15 +22,15 @@
 
 @code
 {
-    private float Health => ForsakenPlayer.Me.Health.CeilToInt();
-    private float Stamina => ForsakenPlayer.Me.Stamina.CeilToInt();
-    private float Calories => ForsakenPlayer.Me.Calories.CeilToInt();
-    private float Hydration => ForsakenPlayer.Me.Hydration.CeilToInt();
-    private float Temperature => ForsakenPlayer.Me.Temperature.CeilToInt();
+    private float Health => CollapsePlayer.Me.Health.CeilToInt();
+    private float Stamina => CollapsePlayer.Me.Stamina.CeilToInt();
+    private float Calories => CollapsePlayer.Me.Calories.CeilToInt();
+    private float Hydration => CollapsePlayer.Me.Hydration.CeilToInt();
+    private float Temperature => CollapsePlayer.Me.Temperature.CeilToInt();
 
     protected override int BuildHash()
     {
-        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
-        return HashCode.Combine( ForsakenPlayer.Me, Health, Stamina, Temperature, Calories, Hydration );
+        if ( !CollapsePlayer.Me.IsValid() ) return 0;
+        return HashCode.Combine( CollapsePlayer.Me, Health, Stamina, Temperature, Calories, Hydration );
     }
 }

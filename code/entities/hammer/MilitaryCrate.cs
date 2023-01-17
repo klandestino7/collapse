@@ -1,6 +1,6 @@
 ﻿using Editor;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 [HammerEntity]
 [Title( "Military Crate" )]

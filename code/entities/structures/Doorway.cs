@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 [Title( "Doorway" )]
 [Description( "Can have a door placed inside. Must be placed on a foundation." )]

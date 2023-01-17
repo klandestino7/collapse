@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class HotbarContainer : InventoryContainer
 {
@@ -11,9 +11,9 @@ public partial class HotbarContainer : InventoryContainer
 
 	public override InventoryContainer GetTransferTarget( InventoryItem item )
 	{
-		if ( Entity is ForsakenPlayer player )
+		if ( Entity is CollapsePlayer player )
 		{
-			return UI.Storage.Current.IsOpen ? UI.Storage.Current.Container : ForsakenPlayer.Me.Backpack;
+			return UI.Storage.Current.IsOpen ? UI.Storage.Current.Container : CollapsePlayer.Me.Backpack;
 		}
 
 		return base.GetTransferTarget( item );

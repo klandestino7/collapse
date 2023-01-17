@@ -1,23 +1,23 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
-@using Facepunch.Forsaken;
+@using Facepunch.Collapse;
 
-@namespace Facepunch.Forsaken.UI
+@namespace Facepunch.Collapse.UI
 @attribute [StyleSheet( "/ui/inventory/Cooking.scss" )]
 @inherits Panel
 @implements IDialog
 @implements IDroppable
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !CollapsePlayer.Me.IsValid() ) return;
 @if ( !Cooker.IsValid() ) return;
 @if ( Cooker.Processor is null ) return;
 
 @{
-    var backpack = ForsakenPlayer.Me.Backpack;
+    var backpack = CollapsePlayer.Me.Backpack;
     if ( !backpack.IsValid() ) return;
 
-    var hotbar = ForsakenPlayer.Me.Hotbar;
+    var hotbar = CollapsePlayer.Me.Hotbar;
     if ( !hotbar.IsValid() ) return;
 
     var fuel = Cooker.Processor.Fuel;
@@ -139,16 +139,16 @@
     {
         if ( draggable is InventorySlot slot )
         {
-            ForsakenPlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
+            CollapsePlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
         }
     }
 
     protected override int BuildHash()
     {
-        var backpack = ForsakenPlayer.Me?.Backpack;
-        var hotbar = ForsakenPlayer.Me?.Hotbar;
+        var backpack = CollapsePlayer.Me?.Backpack;
+        var hotbar = CollapsePlayer.Me?.Hotbar;
 
-        return HashCode.Combine( ForsakenPlayer.Me, backpack, hotbar, Cooker,
+        return HashCode.Combine( CollapsePlayer.Me, backpack, hotbar, Cooker,
             Cooker?.Processor?.Fuel ?? null,
             Cooker?.Processor?.Input ?? null,
             Cooker?.Processor?.Output ?? null,
@@ -162,6 +162,6 @@
 
     private InventoryContainer GetTransferTarget( InventoryItem item )
     {
-        return ForsakenPlayer.Me?.Backpack;
+        return CollapsePlayer.Me?.Backpack;
     }
 }

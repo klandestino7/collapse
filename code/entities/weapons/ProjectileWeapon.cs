@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile, new()
 {
@@ -27,7 +27,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 	public virtual void FireProjectile()
 	{
-		if ( Owner is not ForsakenPlayer player )
+		if ( Owner is not CollapsePlayer player )
 			return;
 
 		for ( var i = 0; i < ProjectileCount; i++ )

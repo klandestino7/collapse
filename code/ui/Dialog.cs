@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken.UI;
+namespace Facepunch.Collapse.UI;
 
 public static class Dialog
 {

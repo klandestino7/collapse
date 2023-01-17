@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter, IPersistence
 {
@@ -63,17 +63,17 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 		return "Bedroll";
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
 	{
 		yield return PickupAction;
 	}
 
-	public ContextAction GetPrimaryAction( ForsakenPlayer player )
+	public ContextAction GetPrimaryAction( CollapsePlayer player )
 	{
 		return MakeHomeAction;
 	}
 
-	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
+	public virtual void OnContextAction( CollapsePlayer player, ContextAction action )
 	{
 		if ( action == MakeHomeAction )
 		{
@@ -94,7 +94,7 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 		}
 	}
 
-	public override void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
+	public override void OnPlacedByPlayer( CollapsePlayer player, TraceResult trace )
 	{
 		OwnerId = player.Client.SteamId;
 		base.OnPlacedByPlayer( player, trace );

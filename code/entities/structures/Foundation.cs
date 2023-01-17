@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 [Title( "Foundation" )]
 [Description( "The most fundamental building block. Walls, doors and windows can be attached to it." )]

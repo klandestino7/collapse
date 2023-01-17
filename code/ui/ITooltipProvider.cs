@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken.UI;
+namespace Facepunch.Collapse.UI;
 
 public interface ITooltipProvider : IValid
 {

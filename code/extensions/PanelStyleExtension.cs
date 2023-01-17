@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public static class PanelStyleExtension
 {

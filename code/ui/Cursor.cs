@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Facepunch.Forsaken.UI;
+namespace Facepunch.Collapse.UI;
 
 public class CursorAction : Panel
 {
@@ -20,12 +20,12 @@ public class CursorAction : Panel
 		Name = Add.Label( "", "name" );
 
 		BindClass( "visible", () => Action.IsValid() );
-		BindClass( "unavailable", () => !Action.IsValid() || !Action.IsAvailable( ForsakenPlayer.Me ) );
+		BindClass( "unavailable", () => !Action.IsValid() || !Action.IsAvailable( CollapsePlayer.Me ) );
 	}
 
 	public bool Select()
 	{
-		var player = ForsakenPlayer.Me;
+		var player = CollapsePlayer.Me;
 
 		if ( Action.IsValid() && Action.IsAvailable( player ) )
 		{
@@ -82,7 +82,7 @@ public class Cursor : Panel
 
 	public override void Tick()
 	{
-		var player = ForsakenPlayer.Me;
+		var player = CollapsePlayer.Me;
 
 		if ( !player.IsValid() ) return;
 
@@ -110,12 +110,12 @@ public class Cursor : Panel
 
 		if ( primary.IsValid() )
 		{
-			hash = HashCode.Combine( hash, primary, primary.IsAvailable( ForsakenPlayer.Me ) );
+			hash = HashCode.Combine( hash, primary, primary.IsAvailable( CollapsePlayer.Me ) );
 		}
 
 		foreach ( var action in secondaries )
 		{
-			hash = HashCode.Combine( hash, action, action.IsAvailable( ForsakenPlayer.Me ) );
+			hash = HashCode.Combine( hash, action, action.IsAvailable( CollapsePlayer.Me ) );
 		}
 
 		return hash;
@@ -123,8 +123,8 @@ public class Cursor : Panel
 
 	private void SetActionProvider( IContextActionProvider provider )
 	{
-		var primary = provider.GetPrimaryAction( ForsakenPlayer.Me );
-		var secondaries = provider.GetSecondaryActions( ForsakenPlayer.Me );
+		var primary = provider.GetPrimaryAction( CollapsePlayer.Me );
+		var secondaries = provider.GetSecondaryActions( CollapsePlayer.Me );
 		var hash = GetActionHash( primary, secondaries );
 
 		if ( ActionProvider == provider && ActionHash == hash )
@@ -135,9 +135,9 @@ public class Cursor : Panel
 		ActionProvider = provider;
 		ActionHash = hash;
 
-		if ( !primary.IsValid() || !primary.IsAvailable( ForsakenPlayer.Me ) )
+		if ( !primary.IsValid() || !primary.IsAvailable( CollapsePlayer.Me ) )
 		{
-			primary = secondaries.FirstOrDefault( s => s.IsAvailable( ForsakenPlayer.Me ) );
+			primary = secondaries.FirstOrDefault( s => s.IsAvailable( CollapsePlayer.Me ) );
 
 			if ( !primary.IsValid() )
 			{
@@ -285,7 +285,7 @@ public class Cursor : Panel
 
 	private bool IsHidden()
 	{
-		var player = ForsakenPlayer.Me;
+		var player = CollapsePlayer.Me;
 
 		if ( !player.IsValid() || player.LifeState == LifeState.Dead )
 			return true;

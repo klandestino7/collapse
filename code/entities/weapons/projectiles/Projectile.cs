@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 [Library]
 public partial class Projectile : ModelEntity

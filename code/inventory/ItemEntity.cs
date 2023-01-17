@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersistence
 {
@@ -49,12 +49,12 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
 	{
 		yield break;
 	}
 
-	public ContextAction GetPrimaryAction( ForsakenPlayer player )
+	public ContextAction GetPrimaryAction( CollapsePlayer player )
 	{
 		return PickupAction;
 	}
@@ -122,7 +122,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 		return null;
 	}
 
-	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
+	public virtual void OnContextAction( CollapsePlayer player, ContextAction action )
 	{
 		if ( action == PickupAction )
 		{

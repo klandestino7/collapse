@@ -1,16 +1,16 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
-@using Facepunch.Forsaken;
+@using Facepunch.Collapse;
 
-@namespace Facepunch.Forsaken.UI
+@namespace Facepunch.Collapse.UI
 @attribute [StyleSheet( "/ui/inventory/Hotbar.scss" )]
 @inherits Panel
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !CollapsePlayer.Me.IsValid() ) return;
 
 @{
-    var hotbar = ForsakenPlayer.Me.Hotbar;
+    var hotbar = CollapsePlayer.Me.Hotbar;
     if ( !hotbar.IsValid() ) return;
 }
 
@@ -32,13 +32,13 @@
 
     protected override int BuildHash()
     {
-        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
-        return HashCode.Combine( ForsakenPlayer.Me, ForsakenPlayer.Me?.Hotbar, GetHotbarIndex() );
+        if ( !CollapsePlayer.Me.IsValid() ) return 0;
+        return HashCode.Combine( CollapsePlayer.Me, CollapsePlayer.Me?.Hotbar, GetHotbarIndex() );
     }
 
     private int GetHotbarIndex()
     {
-        return ForsakenPlayer.Me?.HotbarIndex ?? -1;
+        return CollapsePlayer.Me?.HotbarIndex ?? -1;
     }
 
     private bool IsHidden()

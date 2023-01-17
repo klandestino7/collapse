@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public abstract partial class Structure : ModelEntity, IPersistence
 {
@@ -35,7 +35,7 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		return Ghost;
 	}
 
-	public static bool CanAfford( ForsakenPlayer player, TypeDescription type )
+	public static bool CanAfford( CollapsePlayer player, TypeDescription type )
 	{
 		var costs = GetCostsFor( type );
 
@@ -131,7 +131,7 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		}
 	}
 
-	public virtual void OnPlacedByPlayer( ForsakenPlayer player )
+	public virtual void OnPlacedByPlayer( CollapsePlayer player )
 	{
 
 	}

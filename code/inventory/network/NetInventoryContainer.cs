@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class NetInventoryContainer : BaseNetworkable, INetworkSerializer, IValid
 {

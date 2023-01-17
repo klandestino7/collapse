@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public static partial class BinaryReaderExtension
 {

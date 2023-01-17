@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 
-namespace Facepunch.Forsaken.UI;
+namespace Facepunch.Collapse.UI;
 
 public partial class Chatbox : Panel
 {
@@ -17,7 +17,7 @@ public partial class Chatbox : Panel
 	{
 		if ( !ConsoleSystem.Caller.IsValid() ) return;
 
-		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is CollapsePlayer player )
 		{
 			var recipients = player.GetChatRecipients();
 			AddChat( To.Multiple( recipients ), ConsoleSystem.Caller.Name, message );

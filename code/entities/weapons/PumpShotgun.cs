@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 [Library( "weapon_pump_shotgun" )]
 public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
@@ -52,7 +52,7 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 		if ( AmmoClip >= ClipSize )
 			return;
 
-		if ( Owner is not ForsakenPlayer player )
+		if ( Owner is not CollapsePlayer player )
 			return;
 
 		if ( !WeaponItem.IsValid() )
@@ -90,7 +90,7 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 
 	protected override void OnProjectileHit( CrossbowBoltProjectile projectile, TraceResult trace )
 	{
-		if ( Game.IsServer && trace.Entity is ForsakenPlayer victim )
+		if ( Game.IsServer && trace.Entity is CollapsePlayer victim )
 		{
 			var info = new DamageInfo()
 				.WithAttacker( Owner )

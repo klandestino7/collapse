@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 [Library( "weapon_crossbow" )]
 public partial class Crossbow : ProjectileWeapon<CrossbowBoltProjectile>
@@ -40,7 +40,7 @@ public partial class Crossbow : ProjectileWeapon<CrossbowBoltProjectile>
 
 	protected override void OnProjectileHit( CrossbowBoltProjectile projectile, TraceResult trace )
 	{
-		if ( Game.IsServer && trace.Entity is ForsakenPlayer victim )
+		if ( Game.IsServer && trace.Entity is CollapsePlayer victim )
 		{
 			var info = new DamageInfo()
 				.WithAttacker( Owner )

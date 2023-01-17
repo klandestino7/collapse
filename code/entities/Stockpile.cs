@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class Stockpile : Deployable, IContextActionProvider, IPersistence, ICodeLockable
 {
@@ -93,12 +93,12 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		return "Stockpile";
 	}
 
-	public void Open( ForsakenPlayer player )
+	public void Open( CollapsePlayer player )
 	{
 		UI.Storage.Open( player, GetContextName(), this, Inventory );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
 	{
 		if ( !IsLocked )
 		{
@@ -106,7 +106,7 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		}
 	}
 
-	public ContextAction GetPrimaryAction( ForsakenPlayer player )
+	public ContextAction GetPrimaryAction( CollapsePlayer player )
 	{
 		if ( IsLocked && !IsAuthorized( player ) )
 			return AuthorizeAction;
@@ -114,7 +114,7 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		return OpenAction;
 	}
 
-	public bool ApplyLock( ForsakenPlayer player, string code )
+	public bool ApplyLock( CollapsePlayer player, string code )
 	{
 		if ( !player.HasItems<CodeLockItem>( 1 ) )
 			return false;
@@ -127,23 +127,23 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		return true;
 	}
 
-	public void Authorize( ForsakenPlayer player )
+	public void Authorize( CollapsePlayer player )
 	{
 		if ( IsAuthorized( player ) ) return;
 		Authorized.Add( player.SteamId );
 	}
 
-	public bool CanBeLockedBy( ForsakenPlayer player )
+	public bool CanBeLockedBy( CollapsePlayer player )
 	{
 		return IsAuthorized( player ) && player.HasItems<CodeLockItem>( 1 );
 	}
 
-	public void Deauthorize( ForsakenPlayer player )
+	public void Deauthorize( CollapsePlayer player )
 	{
 		Authorized.Remove( player.SteamId );
 	}
 
-	public bool IsAuthorized( ForsakenPlayer player )
+	public bool IsAuthorized( CollapsePlayer player )
 	{
 		return Authorized.Contains( player.SteamId );
 	}
@@ -154,7 +154,7 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		return Authorized.Contains( Game.LocalClient.SteamId );
 	}
 
-	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
+	public virtual void OnContextAction( CollapsePlayer player, ContextAction action )
 	{
 		if ( Game.IsClient ) return;
 
@@ -172,7 +172,7 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		}
 	}
 
-	public override void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
+	public override void OnPlacedByPlayer( CollapsePlayer player, TraceResult trace )
 	{
 		Authorize( player );
 

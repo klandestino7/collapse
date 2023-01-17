@@ -2,19 +2,19 @@
 @using System.Linq;
 @using Sandbox;
 @using Sandbox.UI;
-@using Facepunch.Forsaken;
+@using Facepunch.Collapse;
 
-@namespace Facepunch.Forsaken.UI
+@namespace Facepunch.Collapse.UI
 @attribute [StyleSheet( "/ui/nametags/Nametags.scss" )]
 @inherits Panel
 
 @{
-    if ( !ForsakenPlayer.Me.IsValid() ) return;
+    if ( !CollapsePlayer.Me.IsValid() ) return;
 }
 
 <root>
     @{
-        var players = Entity.All.OfType<ForsakenPlayer>();
+        var players = Entity.All.OfType<CollapsePlayer>();
     }
 
     @foreach ( var p in players )
@@ -30,7 +30,7 @@
 {
     protected override int BuildHash()
     {
-        var players = Entity.All.OfType<ForsakenPlayer>();
+        var players = Entity.All.OfType<CollapsePlayer>();
         return HashCode.Combine( players.Count(), ShowOwnNametag );
     }
 }

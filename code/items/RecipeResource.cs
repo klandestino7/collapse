@@ -1,9 +1,9 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-[GameResource( "Recipe", "recipe", "A crafting recipe to produce an item in Forsaken.", Icon = "auto_awesome" )]
+[GameResource( "Recipe", "recipe", "A crafting recipe to produce an item in Collapse.", Icon = "auto_awesome" )]
 public class RecipeResource : GameResource
 {
 	/// <summary>

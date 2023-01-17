@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public abstract partial class MeleeWeapon : Weapon
 {
@@ -25,7 +25,7 @@ public abstract partial class MeleeWeapon : Weapon
 
 	public override void AttackPrimary()
 	{
-		if ( Owner is not ForsakenPlayer player )
+		if ( Owner is not CollapsePlayer player )
 			return;
 
 		var damageScale = ScaleNonBlockDamage;
@@ -72,7 +72,7 @@ public abstract partial class MeleeWeapon : Weapon
 	{
 		ViewModelEntity?.SetAnimParameter( "attack_has_hit", true );
 
-		if ( victim is ForsakenPlayer target )
+		if ( victim is CollapsePlayer target )
 			target.PlaySound( HitPlayerSound );
 		else
 			victim.PlaySound( HitObjectSound );

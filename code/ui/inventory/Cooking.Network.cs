@@ -1,10 +1,10 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken.UI;
+namespace Facepunch.Collapse.UI;
 
 public partial class Cooking
 {
-    public static void Open( ForsakenPlayer player, string name, ICookerEntity entity )
+    public static void Open( CollapsePlayer player, string name, ICookerEntity entity )
     {
 		var processor = entity.Processor;
 
@@ -19,7 +19,7 @@ public partial class Cooking
     [ClientRpc]
     public static void OpenForClient( string name, Entity entity, byte[] fuel, byte[] input, byte[] output )
     {
-        if ( Game.LocalPawn is not ForsakenPlayer ) return;
+        if ( Game.LocalPawn is not CollapsePlayer ) return;
 		if ( entity is not ICookerEntity cooker ) return;
 
         var storage = Current;

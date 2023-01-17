@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-public partial class ForsakenPlayer
+public partial class CollapsePlayer
 {
 	[ConCmd.Server( "fsk.item.throw" )]
 	private static void ThrowItemCmd( ulong itemId, string directionCsv, bool splitStack )
 	{
-		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
+		if ( ConsoleSystem.Caller.Pawn is not CollapsePlayer player )
 			return;
 
 		var split = directionCsv.Split( ',' );
@@ -396,25 +396,25 @@ public partial class ForsakenPlayer
 		var currentSlotIndex = HotbarIndex;
 		var maxSlotIndex = Hotbar.SlotLimit - 1;
 
-		if ( IsHotbarSelected() )
-		{
-			if ( Input.MouseWheel > 0 )
-				currentSlotIndex++;
-			else if ( Input.MouseWheel < 0 )
-				currentSlotIndex--;
+		// if ( IsHotbarSelected() )
+		// {
+		// 	if ( Input.MouseWheel > 0 )
+		// 		currentSlotIndex++;
+		// 	else if ( Input.MouseWheel < 0 )
+		// 		currentSlotIndex--;
 
-			if ( currentSlotIndex < 0 )
-				currentSlotIndex = maxSlotIndex;
-			else if ( currentSlotIndex > maxSlotIndex )
-				currentSlotIndex = 0;
-		}
-		else
-		{
-			if ( Input.MouseWheel > 0 )
-				currentSlotIndex = 0;
-			else if ( Input.MouseWheel < 0 )
-				currentSlotIndex = maxSlotIndex;
-		}
+		// 	if ( currentSlotIndex < 0 )
+		// 		currentSlotIndex = maxSlotIndex;
+		// 	else if ( currentSlotIndex > maxSlotIndex )
+		// 		currentSlotIndex = 0;
+		// }
+		// else
+		// {
+		// 	if ( Input.MouseWheel > 0 )
+		// 		currentSlotIndex = 0;
+		// 	else if ( Input.MouseWheel < 0 )
+		// 		currentSlotIndex = maxSlotIndex;
+		// }
 
 		HotbarIndex = currentSlotIndex;
 		UpdateHotbarSlotKeys();

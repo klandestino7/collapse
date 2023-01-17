@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Buffers;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public struct VelocityClipPlanes : IDisposable
 {

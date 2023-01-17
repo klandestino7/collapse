@@ -2,7 +2,7 @@
 using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public abstract partial class ResourcePickup : ModelEntity, IContextActionProvider
 {
@@ -21,12 +21,12 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 		HarvestAction = new( "harvest", "Harvest", "textures/ui/actions/harvest.png" );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
 	{
 		yield break;
 	}
 
-	public ContextAction GetPrimaryAction( ForsakenPlayer player )
+	public ContextAction GetPrimaryAction( CollapsePlayer player )
 	{
 		return HarvestAction;
 	}
@@ -36,7 +36,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 		return "Resource";
 	}
 
-	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
+	public virtual void OnContextAction( CollapsePlayer player, ContextAction action )
 	{
 		if ( action == HarvestAction )
 		{
@@ -69,7 +69,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 		base.Spawn();
 	}
 
-	private void OnHarvested( ForsakenPlayer player )
+	private void OnHarvested( CollapsePlayer player )
 	{
 		if ( IsValid )
 		{

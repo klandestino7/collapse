@@ -1,15 +1,15 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Forsaken.UI;
+namespace Facepunch.Collapse.UI;
 
 public partial class LockScreen
 {
-    public static void OpenToLock( ForsakenPlayer player, ICodeLockable entity )
+    public static void OpenToLock( CollapsePlayer player, ICodeLockable entity )
     {
         OpenForClient( To.Single(player), (Entity)entity, true );
     }
 
-	public static void OpenToUnlock( ForsakenPlayer player, ICodeLockable entity )
+	public static void OpenToUnlock( CollapsePlayer player, ICodeLockable entity )
 	{
 		OpenForClient( To.Single( player ), (Entity)entity, false );
 	}
@@ -17,7 +17,7 @@ public partial class LockScreen
 	[ClientRpc]
     public static void OpenForClient( Entity entity, bool isLockMode )
     {
-        if ( Game.LocalPawn is not ForsakenPlayer ) return;
+        if ( Game.LocalPawn is not CollapsePlayer ) return;
 		if ( entity is not ICodeLockable lockable ) return;
 
         var lockScreen = Current;

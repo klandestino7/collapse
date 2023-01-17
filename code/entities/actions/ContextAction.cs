@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class ContextAction : EqualityComparer<ContextAction>, IValid
 {
@@ -13,7 +13,7 @@ public class ContextAction : EqualityComparer<ContextAction>, IValid
 	public bool IsValid => !string.IsNullOrEmpty( Id );
 	public int Hash { get; private set; }
 
-	private Func<ForsakenPlayer,bool> Condition { get; set; }
+	private Func<CollapsePlayer,bool> Condition { get; set; }
 
 	public ContextAction( string id, string name, string icon )
 	{
@@ -23,12 +23,12 @@ public class ContextAction : EqualityComparer<ContextAction>, IValid
 		Hash = id.FastHash();
 	}
 
-	public void SetCondition( Func<ForsakenPlayer, bool> condition )
+	public void SetCondition( Func<CollapsePlayer, bool> condition )
 	{
 		Condition = condition;
 	}
 
-	public bool IsAvailable( ForsakenPlayer player )
+	public bool IsAvailable( CollapsePlayer player )
 	{
 		return Condition?.Invoke( player ) ?? true;
 	}

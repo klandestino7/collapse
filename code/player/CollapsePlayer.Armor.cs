@@ -1,9 +1,9 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
-public partial class ForsakenPlayer
+public partial class CollapsePlayer
 {
 	protected List<ArmorEntity> ArmorEntities { get; set; } = new();
 

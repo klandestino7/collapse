@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 /*
 [SceneCamera.AutomaticRenderHook]
@@ -21,7 +21,7 @@ public class PlayerViewer : RenderHook
 	[Event.Client.Frame]
 	private static void OnFrame()
 	{
-		if ( !ForsakenPlayer.Me.IsValid() ) return;
+		if ( !CollapsePlayer.Me.IsValid() ) return;
 		if ( !IsEnabled ) return;
 
 		RenderTexture = Texture.CreateRenderTarget( "Player Viewer", ImageFormat.RGBA8888, Screen.Size, RenderTexture );
@@ -52,7 +52,7 @@ public class PlayerViewer : RenderHook
 	{
 		if ( !IsEnabled ) return;
 		if ( IsRenderingToTexture ) return;
-		if ( !ForsakenPlayer.Me.IsValid() ) return;
+		if ( !CollapsePlayer.Me.IsValid() ) return;
 
 		if ( renderStage == Stage.BeforePostProcess )
 		{
@@ -60,7 +60,7 @@ public class PlayerViewer : RenderHook
 
 			Graphics.RenderTarget = null;
 
-			var cursor = ForsakenPlayer.Me.Cursor;
+			var cursor = CollapsePlayer.Me.Cursor;
 			var distance = cursor.Distance( LastCursorDistance );
 
 			if ( distance > 0.01f )

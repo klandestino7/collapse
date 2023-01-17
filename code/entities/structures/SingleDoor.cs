@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockable
 {
@@ -38,7 +38,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		AuthorizeAction = new( "authorize", "Authorize", "textures/ui/actions/authorize.png" );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
 	{
 		if ( !IsLocked )
 		{
@@ -46,7 +46,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		}
 	}
 
-	public ContextAction GetPrimaryAction( ForsakenPlayer player )
+	public ContextAction GetPrimaryAction( CollapsePlayer player )
 	{
 		if ( IsLocked && !IsAuthorized( player ) )
 			return AuthorizeAction;
@@ -57,7 +57,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 			return OpenAction;
 	}
 
-	public bool ApplyLock( ForsakenPlayer player, string code )
+	public bool ApplyLock( CollapsePlayer player, string code )
 	{
 		if ( !player.HasItems<CodeLockItem>( 1 ) )
 			return false;
@@ -70,23 +70,23 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		return true;
 	}
 
-	public void Authorize( ForsakenPlayer player )
+	public void Authorize( CollapsePlayer player )
 	{
 		if ( IsAuthorized( player ) ) return;
 		Authorized.Add( player.SteamId );
 	}
 
-	public bool CanBeLockedBy( ForsakenPlayer player )
+	public bool CanBeLockedBy( CollapsePlayer player )
 	{
 		return IsAuthorized( player ) && player.HasItems<CodeLockItem>( 1 );
 	}
 
-	public void Deauthorize( ForsakenPlayer player )
+	public void Deauthorize( CollapsePlayer player )
 	{
 		Authorized.Remove( player.SteamId );
 	}
 
-	public bool IsAuthorized( ForsakenPlayer player )
+	public bool IsAuthorized( CollapsePlayer player )
 	{
 		return Authorized.Contains( player.SteamId );
 	}
@@ -102,7 +102,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		return "Door";
 	}
 
-	public void OnContextAction( ForsakenPlayer player, ContextAction action )
+	public void OnContextAction( CollapsePlayer player, ContextAction action )
 	{
 		if ( Game.IsClient ) return;
 
@@ -136,7 +136,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		Tags.Add( "hover", "solid", "door" );
 	}
 
-	public override void OnPlacedByPlayer( ForsakenPlayer player )
+	public override void OnPlacedByPlayer( CollapsePlayer player )
 	{
 		Authorize( player );
 		base.OnPlacedByPlayer( player );

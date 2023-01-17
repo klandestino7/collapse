@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.IO;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Collapse;
 
 public class WeaponFlashlightItem : AttachmentItem
 {
