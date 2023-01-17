@@ -1,0 +1,270 @@
+﻿Crafting {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    pointer-events: all;
+    backdrop-filter-blur: 24px;
+    background-color: rgba(0, 0, 0, 0.9);
+    transition: backdrop-filter-blur 0.15s ease-in;
+    transition: opacity 0.15s ease-in;
+    z-index: 100;
+    opacity: 1;
+
+    > .vertical {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: 80%;
+
+        > .title {
+            color: white;
+            font-family: Vollkorn;
+            font-size: 40px;
+            display: none;
+        }
+
+        > .queue {
+            flex-direction: column;
+            margin-top: 32px;
+
+            > .title {
+                color: white;
+                font-family: Vollkorn;
+                font-size: 40px;
+            }
+
+            > .queue-items {
+                margin-top: 16px;
+            }
+        }
+
+        > .horizontal {
+            flex-direction: row;
+            margin-top: 16px;
+            height: 100%;
+
+            > .left {
+                flex-direction: column;
+                border-radius: 4px;
+                margin-right: 64px;
+                height: 100%;
+                width: 20%;
+
+                TextEntry {
+                    background-color: rgba( 0 0 0 0.6 );
+                    align-items: center;
+                    border-radius: 4px;
+                    padding: 12px;
+                    font-size: 24px;
+                    font-family: Vollkorn;
+                    transition: all 0.15s ease-in;
+                    color: white;
+
+                    .placeholder {
+                        pointer-events: none;
+                        color: rgba( white 0.5 );
+                        display: none;
+                    }
+
+                    .iconpanel {
+                        position: absolute;
+                        right: 0;
+                        font-size: 24px;
+                        padding-right: 10px;
+                        pointer-events: none;
+                        font-family: MaterialIcons;
+                        opacity: 0.5;
+                    }
+
+                    &.has-icon {
+                        padding-right: 30px;
+                    }
+
+                    &.has-placeholder {
+                        .placeholder {
+                            display: flex;
+                        }
+
+                        .content-label {
+                            display: none;
+                        }
+                    }
+
+                    &:active {
+                        sound-in: "ui.click";
+                    }
+
+                    &:hover {
+                        background-color: rgba( 0 0 0 0.7 );
+                        transform: scale( 1.05, 1.05 );
+                        sound-in: "ui.hover";
+                    }
+                }
+
+                > .categories {
+                    flex-direction: column;
+                    overflow: scroll;
+                    margin-top: 16px;
+                }
+            }
+
+            > .middle {
+                background-color: rgba( 0 0 0 0.3 );
+                flex-direction: column;
+                border-radius: 4px;
+                margin-right: 32px;
+                font-family: Vollkorn;
+                font-size: 24px;
+                color: white;
+                padding: 16px;
+                height: 100%;
+                width: 630px;
+
+                > .items {
+                    overflow: scroll;
+                    flex-direction: row;
+                    flex-shrink: 1;
+                    flex-wrap: wrap;
+                    display: flex;
+                }
+            }
+
+            > .right {
+                flex-direction: column;
+                border-radius: 4px;
+                padding: 16px;
+                height: 100%;
+                width: 30%;
+
+                > .item-name {
+                    font-family: Vollkorn;
+                    font-size: 40px;
+                    color: white;
+                }
+
+                > .item-description {
+                    font-family: Vollkorn;
+                    font-size: 24px;
+                    color: rgba( white 0.8 );
+                }
+
+                > .craft-box {
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 32px;
+
+                    > .more-button, .less-button, .craft-button {
+                        background-color: rgba( 0 0 0 0.4 );
+                        justify-content: center;
+                        transition: transform 0.15s ease-in;
+                        align-items: center;
+
+                        &:active {
+                            sound-in: "ui.click";
+                        }
+
+                        &:hover {
+                            background-color: rgba( 0 0 0 0.6 );
+                            transform: scale( 1.05 1.05 );
+                            sound-in: "ui.hover";
+                        }
+                    }
+
+                    > .less-button {
+                        background-color: rgba( 0 0 0 0.4 );
+                        border-top-left-radius: 4px;
+                        border-bottom-left-radius: 4px;
+                        width: 64px;
+                        height: 64px;
+
+                        label {
+                            font-family: Roboto;
+                            font-size: 32px;
+                            color: white;
+                        }
+                    }
+
+                    > .more-button {
+                        margin-right: 32px;
+                        margin-right: 32px;
+                        border-top-right-radius: 4px;
+                        border-bottom-right-radius: 4px;
+                        width: 64px;
+                        height: 64px;
+
+                        label {
+                            font-family: Roboto;
+                            font-size: 32px;
+                            color: white;
+                        }
+                    }
+
+                    > .current {
+                        background-color: rgba( 0 0 0 0.3 );
+                        justify-content: center;
+                        align-items: center;
+                        height: 64px;
+                        width: 80px;
+
+                        > .amount {
+                            font-family: Roboto;
+                            font-size: 20px;
+                            color: white;
+                        }
+                    }
+
+                    > .craft-button {
+                        margin-right: 32px;
+                        border-radius: 4px;
+                        height: 64px;
+                        padding-right: 48px;
+                        padding-left: 48px;
+
+                        label {
+                            font-family: Vollkorn;
+                            font-size: 24px;
+                            color: white;
+                        }
+                    }
+                }
+
+                > .inputs {
+                    background-color: rgba( 0 0 0 0.3 );
+                    border-radius: 4px;
+                    flex-direction: column;
+                    margin-top: 32px;
+                    padding: 16px;
+
+                    > .input {
+                        flex-direction: row;
+
+                        > .name {
+                            font-family: Vollkorn;
+                            margin-right: 32px;
+                            font-size: 24px;
+                            color: white;
+                        }
+
+                        > .quantity {
+                            font-family: Vollkorn;
+                            font-size: 24px;
+                            color: rgba( white 0.8 );
+
+                            &.cannot-afford {
+                                color: rgba( red 0.8 );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &.hidden {
+        pointer-events: none;
+        opacity: 0;
+    }
+}

@@ -1,0 +1,18 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		AmmoType = "Pistol"
+		MaxStackSize = 128
+		DefaultStackSize = 8
+		IsLootable = true
+		SpawnChance = 0.1
+		AmountToSpawn = "8.00,16.00,1"
+		ItemName = "9mm Ammo"
+		UniqueId = "ammo_pistol"
+		Description = "Ammunition typically used for pistols and SMGs."
+		Icon = resource:"textures/items/ammo_pistol.png"
+		WorldModel = null
+		Tags = [  ]
+	}
+}

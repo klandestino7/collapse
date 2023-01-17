@@ -1,0 +1,36 @@
+﻿@using System;
+@using System.Linq;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/nametags/Nametags.scss" )]
+@inherits Panel
+
+@{
+    if ( !ForsakenPlayer.Me.IsValid() ) return;
+}
+
+<root>
+    @{
+        var players = Entity.All.OfType<ForsakenPlayer>();
+    }
+
+    @foreach ( var p in players )
+    {
+        if ( !ShowOwnNametag && Game.LocalPawn == p )
+            continue;
+
+        <Nametag Player=@p></Nametag>
+    }
+</root>
+
+@code
+{
+    protected override int BuildHash()
+    {
+        var players = Entity.All.OfType<ForsakenPlayer>();
+        return HashCode.Combine( players.Count(), ShowOwnNametag );
+    }
+}

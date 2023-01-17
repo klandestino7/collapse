@@ -1,0 +1,54 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/inventory/Hotbar.scss" )]
+@inherits Panel
+
+@if ( !ForsakenPlayer.Me.IsValid() ) return;
+
+@{
+    var hotbar = ForsakenPlayer.Me.Hotbar;
+    if ( !hotbar.IsValid() ) return;
+}
+
+<root>
+    @for ( ushort i = 0; i < hotbar.SlotLimit; i++ )
+    {
+        var item = hotbar.GetFromSlot( i );
+        var index = i;
+        <InventorySlot IsSelected=@(GetHotbarIndex() == i) Container=@hotbar Slot=@i DisplaySlot=@(i + 1)></InventorySlot>
+    }
+</root>
+
+@code
+{
+    public Hotbar()
+    {
+        BindClass( "hidden", IsHidden );
+    }
+
+    protected override int BuildHash()
+    {
+        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
+        return HashCode.Combine( ForsakenPlayer.Me, ForsakenPlayer.Me?.Hotbar, GetHotbarIndex() );
+    }
+
+    private int GetHotbarIndex()
+    {
+        return ForsakenPlayer.Me?.HotbarIndex ?? -1;
+    }
+
+    private bool IsHidden()
+    {
+        if ( Game.LocalPawn.LifeState == LifeState.Dead )
+            return true;
+
+        if ( Dialog.IsActive() )
+            return true;
+
+        return false;
+    }
+}
