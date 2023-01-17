@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [GameResource( "Consumable", "cons", "A type of consumable item for use with Collapse.", Icon = "food-apple" )]
 [ItemClass( typeof( ConsumableItem ) )]

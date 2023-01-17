@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public partial class CollapsePlayer
 {
@@ -9,7 +9,6 @@ public partial class CollapsePlayer
 	protected void SimulateAnimation()
 	{
 		Rotation rotation;
-
 
 		// where should we be rotated to
 		var turnSpeed = 0.02f;
@@ -21,6 +20,7 @@ public partial class CollapsePlayer
 			rotation = ViewAngles.ToRotation();
 
 		var runButtonPressed = Input.Down(InputButton.Run);
+		var attackButtonPressed = Input.Down(InputButton.PrimaryAttack);
 		var aimButtonPressed = Input.Down(InputButton.SecondaryAttack);
 
 		var animHelper = new CitizenAnimationHelper( this );
@@ -43,12 +43,18 @@ public partial class CollapsePlayer
 			Rotation = Rotation.Lerp(Rotation, rotation, Time.Delta * 10f);
 			aimActived = true;
 		}
-		else
+		else if (Velocity.Length >= 1f )
 		{
 			var newRotation = Rotation.LookAt(InputDirection, Vector3.Up);
 			Rotation = Rotation.Lerp(Rotation, newRotation, Time.Delta * 10f);
 			aimActived = false;
 		}
+		else if (Velocity.Length <= 1f && attackButtonPressed )
+		{
+			Rotation = Rotation.Lerp(Rotation, rotation, Time.Delta * 10f);
+			aimActived = false;
+		}
+
 
 		animHelper.WithWishVelocity( Controller.WishVelocity );
 		animHelper.WithVelocity( Velocity );
@@ -65,14 +71,7 @@ public partial class CollapsePlayer
 		animHelper.IsClimbing = Controller.HasTag( "climbing" );
 		animHelper.IsSwimming = false;
 
-
-
-		animHelper.IsWeaponLowered = false;
-		
-
-
-
-		// if ( Controller.HasEvent( "jump" ) ) animHelper.TriggerJump();
+		if ( Controller.HasEvent( "jump" ) ) animHelper.TriggerJump();
 
 		if ( ActiveChild != LastWeaponEntity ) animHelper.TriggerDeploy();
 
@@ -82,7 +81,14 @@ public partial class CollapsePlayer
 		}
 		else
 		{
-			animHelper.HoldType = CitizenAnimationHelper.HoldTypes.None;
+			var holdType = CitizenAnimationHelper.HoldTypes.None;
+
+			if (aimButtonPressed)
+			{
+				holdType = CitizenAnimationHelper.HoldTypes.Punch;
+			}
+
+			animHelper.HoldType = holdType;
 			animHelper.AimBodyWeight = 0.5f;
 		}
 

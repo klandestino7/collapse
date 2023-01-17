@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [GameResource( "Weapon", "weapon", "A weapon for use with Collapse.", Icon = "crisis_alert" )]
 [ItemClass( typeof( WeaponItem ) )]

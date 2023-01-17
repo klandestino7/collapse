@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public interface ICodeLockable : IValid
 {

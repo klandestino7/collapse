@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public class DuckController
 {

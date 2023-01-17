@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public partial class CollapsePlayer
 {

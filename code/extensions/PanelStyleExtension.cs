@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public static class PanelStyleExtension
 {

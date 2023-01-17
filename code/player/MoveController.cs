@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public partial class MoveController
 {

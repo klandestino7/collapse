@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public abstract partial class Structure : ModelEntity, IPersistence
 {

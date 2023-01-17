@@ -1,4 +1,4 @@
-﻿namespace Facepunch.Collapse;
+﻿namespace NxtStudio.Collapse;
 
 public enum RecipeCategory
 {

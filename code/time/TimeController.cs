@@ -2,7 +2,7 @@
 using Editor;
 using System.Linq;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public abstract class TimeGradient<T>
 {

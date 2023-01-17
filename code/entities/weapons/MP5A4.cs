@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [Library( "weapon_mp5a4" )]
 public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>

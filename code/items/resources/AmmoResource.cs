@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [GameResource( "Ammo", "ammo", "A type of weapon ammunition for use with Collapse.", Icon = "bento" )]
 [ItemClass( typeof( AmmoItem ) )]

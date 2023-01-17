@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 
-namespace Facepunch.Collapse.UI;
+namespace NxtStudio.Collapse.UI;
 
 public partial class Chatbox : Panel
 {

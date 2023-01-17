@@ -1,10 +1,10 @@
 ﻿using System;
 using Sandbox;
 using Sandbox.UI;
-using Facepunch.Collapse;
+using NxtStudio.Collapse;
 using System.Collections.Generic;
 
-namespace Facepunch.Collapse.UI;
+namespace NxtStudio.Collapse.UI;
 
 public partial class InventorySlot
 {

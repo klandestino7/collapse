@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Collapse.UI;
+namespace NxtStudio.Collapse.UI;
 
 public interface ITooltipProvider : IValid
 {

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Facepunch.Collapse.UI;
+using NxtStudio.Collapse.UI;
 using Sandbox;
 using Sandbox.Component;
 using Sandbox.Diagnostics;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public partial class CollapsePlayer : AnimatedEntity, IPersistence
 {

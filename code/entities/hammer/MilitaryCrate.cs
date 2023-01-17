@@ -1,6 +1,6 @@
 ﻿using Editor;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [HammerEntity]
 [Title( "Military Crate" )]

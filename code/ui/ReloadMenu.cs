@@ -2,7 +2,7 @@
 using Sandbox.UI;
 using System.Linq;
 
-namespace Facepunch.Collapse.UI;
+namespace NxtStudio.Collapse.UI;
 
 [StyleSheet( "/ui/RadialMenu.scss" )]
 public partial class ReloadMenu : RadialMenu

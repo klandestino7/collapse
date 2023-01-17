@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public class InventoryItem : IValid
 {

@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Collapse.UI;
+namespace NxtStudio.Collapse.UI;
 
 public partial class Storage
 {

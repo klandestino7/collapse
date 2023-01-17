@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter, IPersistence
 {

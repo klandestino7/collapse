@@ -4,10 +4,10 @@
 	{
 		WorldModelMaterialGroup = 0
 		ViewModelMaterialGroup = 0
-		WorldModelPath = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
-		AmmoType = "Bolt"
+		WorldModelPath = resource:"weapons/rust_pistol/rust_pistol.vmdl"
+		AmmoType = "Pistol"
 		DefaultAmmo = 0
-		ClipSize = 10
+		ClipSize = 9
 		DamageFalloff = 
 		{
 			rangex = "0,4000"
@@ -22,22 +22,28 @@
 			]
 		}
 		RecoilCurve = 
-		[ 
+		[
+			{
+				y = 1
+			},
 			{
 				x = 0.5
-				y = 0.5
+			},
+			{
+				x = 1
+				y = 1
 			},
 		]
-		Damage = 40
-		ClassName = "weapon_crossbow"
+		Damage = 5
+		ClassName = "weapon_pistol"
 		IsLootable = true
 		SpawnChance = 0.05
 		AmountToSpawn = "1.00,0.00,0"
-		ItemName = "Crossbow"
-		UniqueId = "crossbow"
+		ItemName = "Pistol"
+		UniqueId = "pistol"
 		Description = "A light damage crossbow for dealing ranged damage."
 		Icon = resource:"textures/items/weapon_crossbow.png"
-		WorldModel = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
+		WorldModel = resource:"weapons/rust_pistol/rust_pistol.vmdl"
 		Tags = [  ]
 	}
 }

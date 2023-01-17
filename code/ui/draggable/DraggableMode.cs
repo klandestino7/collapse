@@ -1,4 +1,4 @@
-﻿namespace Facepunch.Collapse.UI;
+﻿namespace NxtStudio.Collapse.UI;
 
 public enum DraggableMode
 {

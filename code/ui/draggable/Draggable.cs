@@ -2,7 +2,7 @@
 using Sandbox.UI;
 using System.Linq;
 
-namespace Facepunch.Collapse.UI;
+namespace NxtStudio.Collapse.UI;
 
 [StyleSheet( "/ui/draggable/Draggable.scss" )]
 public partial class Draggable : Panel

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [AttributeUsage( AttributeTargets.Class, AllowMultiple = true )]
 public class ItemCostAttribute : Attribute

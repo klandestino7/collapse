@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public static partial class BinaryWriterExtension
 {

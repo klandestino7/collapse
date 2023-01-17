@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [GameResource( "Recipe", "recipe", "A crafting recipe to produce an item in Collapse.", Icon = "auto_awesome" )]
 public class RecipeResource : GameResource

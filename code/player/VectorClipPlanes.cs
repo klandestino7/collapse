@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Buffers;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public struct VelocityClipPlanes : IDisposable
 {

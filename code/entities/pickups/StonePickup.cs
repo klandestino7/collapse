@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public partial class StonePickup : ResourcePickup
 {

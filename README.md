@@ -1,2 +1,2 @@
-# sbox-forsaken
-A co-op game with a mysterious lore where players must adapt to survive
+# Collapse
+Um survival PVP e PVE com zumbis e um mundo pos apocaliptico

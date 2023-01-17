@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity, IPersistence
 {

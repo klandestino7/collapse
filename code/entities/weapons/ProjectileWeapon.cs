@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile, new()
 {

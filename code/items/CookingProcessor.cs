@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Sandbox;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public partial class CookingProcessor : BaseNetworkable
 {

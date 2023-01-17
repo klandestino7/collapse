@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity, IHeatEmitter, IPersistence
 {

@@ -3,7 +3,7 @@ using Sandbox.UI;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Facepunch.Collapse.UI;
+namespace NxtStudio.Collapse.UI;
 
 [StyleSheet( "/ui/ToolboxMenu.scss" )]
 public partial class ToolboxMenu : RadialMenu

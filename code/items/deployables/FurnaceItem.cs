@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public class FurnaceItem : DeployableItem
 {

@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public abstract partial class BaseWeapon : AnimatedEntity
 {

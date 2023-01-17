@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [Library]
 public partial class Projectile : ModelEntity

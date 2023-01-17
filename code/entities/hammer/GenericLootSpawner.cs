@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using Editor;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [HammerEntity]
 [Title( "Loot Spawner" )]

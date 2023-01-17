@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [Library( "weapon_crossbow" )]
 public partial class Crossbow : ProjectileWeapon<CrossbowBoltProjectile>

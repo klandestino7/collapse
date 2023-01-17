@@ -1,4 +1,4 @@
-﻿namespace Facepunch.Collapse;
+﻿namespace NxtStudio.Collapse;
 
 public partial class CollapsePlayer
 {

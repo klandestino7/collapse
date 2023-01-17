@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 [GameResource( "Armor", "armor", "A piece of armor or clothing for use with Collapse.", Icon = "checkroom" )]
 [ItemClass( typeof( ArmorItem ) )]

@@ -1,5 +1,5 @@
 ﻿
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public interface ICookableItem
 {

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public static class PersistenceSystem
 {

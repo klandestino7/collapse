@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Facepunch.Collapse;
+namespace NxtStudio.Collapse;
 
 public class AmmoItem : ResourceItem<AmmoResource, AmmoItem>, ILootTableItem
 {
