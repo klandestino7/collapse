@@ -20,10 +20,17 @@ public class DuckController
 	public void PreTick()
 	{
 		bool wants = Input.Down( InputButton.Duck );
+		
+		var runButtonPressed = Input.Down(InputButton.Run);
 
-		if ( wants != IsActive )
+		if ( IsActive && runButtonPressed)
 		{
-			if ( wants )
+			TryUnDuck();
+		}
+
+		if ( wants )
+		{
+			if ( !IsActive )
 				TryDuck();
 			else
 				TryUnDuck();
