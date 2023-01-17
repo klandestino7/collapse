@@ -1,16 +1,64 @@
 ﻿Hotbar {
     position: absolute;
-    bottom: 32px;
+    top: 20px;
     display: flex;
     flex-direction: row;
     transition: opacity 0.15s ease-in;
+    
     opacity: 1;
 
     InventorySlot {
-        margin-right: 8px;
+
+        padding: 3px 2px;
+
+        display: flex;
+        flex-direction: column;
+
+        justify-content: flex-start;
+        align-items: center;
+
+        width: 80px;
+        height: 80px;
+
+        border-radius: 0px;
+        // background-color: rgba(0,0,0, 0.9) !important;
+
+        .slot
+        {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+        
+            flex-direction: row;
+            background-color: #eee;
+            padding: 0 5px;
+            
+            color: #000;
+        }
+
+        .icon 
+        {
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stacksize
+        {
+            display:none;
+        }
 
         &:last-child {
             margin-right: 0px;
+        }
+
+        &.selected {
+            background-color:rgba(255,255,255,0.6);
+
+            .icon 
+            {
+                border: 1px solid transparent;
+                z-index: 99;
+            }
         }
     }
 

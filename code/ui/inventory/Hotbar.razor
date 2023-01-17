@@ -19,12 +19,15 @@
     {
         var item = hotbar.GetFromSlot( i );
         var index = i;
+
         <InventorySlot IsSelected=@(GetHotbarIndex() == i) Container=@hotbar Slot=@i DisplaySlot=@(i + 1)></InventorySlot>
     }
 </root>
 
 @code
 {
+    bool isHideHotbar = false;
+
     public Hotbar()
     {
         BindClass( "hidden", IsHidden );
@@ -44,11 +47,12 @@
     private bool IsHidden()
     {
         if ( Game.LocalPawn.LifeState == LifeState.Dead )
-            return true;
+            isHideHotbar = false;
 
         if ( Dialog.IsActive() )
-            return true;
+            isHideHotbar = false;
 
+        <!-- Log.Info( $"HideHotbar {isHideHotbar} "); -->
         return false;
     }
 }
