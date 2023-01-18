@@ -5,6 +5,7 @@ namespace NxtStudio.Collapse;
 public partial class CollapsePlayer
 {
 	private Weapon LastWeaponEntity { get; set; }
+    public Vector3 LookAt { get; set; }
 
 	protected void SimulateAnimation()
 	{
@@ -19,47 +20,13 @@ public partial class CollapsePlayer
 		else
 			rotation = ViewAngles.ToRotation();
 
-		var runButtonPressed = Input.Down(InputButton.Run);
-		var attackButtonPressed = Input.Down(InputButton.PrimaryAttack);
 		var aimButtonPressed = Input.Down(InputButton.SecondaryAttack);
-
 		var animHelper = new CitizenAnimationHelper( this );
-
-		var aimActived = false;
-
-		if ( runButtonPressed && !aimButtonPressed )
-		{
-			var newRotation = Rotation.LookAt(InputDirection, Vector3.Up);
-			Rotation = Rotation.Lerp(Rotation, newRotation, Time.Delta * 10f);
-			aimActived = false;
-		} 
-		else if ( runButtonPressed && aimButtonPressed )
-		{
-			rotation = Rotation.LookAt(InputDirection, Vector3.Up);
-			aimActived = false;
-		}
-		else if ( aimButtonPressed && !runButtonPressed )
-		{
-			Rotation = Rotation.Lerp(Rotation, rotation, Time.Delta * 10f);
-			aimActived = true;
-		}
-		else if (Velocity.Length >= 1f )
-		{
-			var newRotation = Rotation.LookAt(InputDirection, Vector3.Up);
-			Rotation = Rotation.Lerp(Rotation, newRotation, Time.Delta * 10f);
-			aimActived = false;
-		}
-		else if (Velocity.Length <= 1f && attackButtonPressed )
-		{
-			Rotation = Rotation.Lerp(Rotation, rotation, Time.Delta * 10f);
-			aimActived = false;
-		}
-
 
 		animHelper.WithWishVelocity( Controller.WishVelocity );
 		animHelper.WithVelocity( Velocity );
 		animHelper.WithLookAt( EyePosition + EyeRotation.Forward * 100.0f, 1.0f, 1.0f, 0.5f );
-		animHelper.AimAngle = rotation;
+		animHelper.AimAngle = Rotation;
 		
 		animHelper.DuckLevel = MathX.Lerp( animHelper.DuckLevel, Controller.HasTag( "ducked" ) ? 1 : 0, Time.Delta * 10.0f );
 
@@ -91,7 +58,6 @@ public partial class CollapsePlayer
 
 			animHelper.HoldType = holdType;
 		}
-
 
 		LastWeaponEntity = ActiveChild as Weapon;
 	}
