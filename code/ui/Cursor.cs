@@ -11,7 +11,7 @@ public class CursorAction : Panel
 {
 	public ContextAction Action { get; private set; }
 
-	private Image Icon { get; set; }
+	private Image Icon { get; set; } 
 	private Label Name { get; set; }
 
 	public CursorAction()
@@ -67,7 +67,7 @@ public class Cursor : Panel
 	private TimeSince LastActionTime { get; set; }
 	private int ActionHash { get; set; }
 	private Panel PlusMoreIcon { get; set; }
-	private Panel ActionCursor { get; set; }
+	public Panel ActionCursor { get; set; }
 	private Label Title { get; set; }
 
 	public Cursor()
