@@ -6,6 +6,7 @@ namespace NxtStudio.Collapse;
 public struct TimedActionInfo
 {
 	public Action<CollapsePlayer> OnFinished { get; private set; }
+	public string SoundName { get; set; }
 	public float Duration { get; set; }
 	public Vector3 Origin { get; set; }
 	public string Title { get; set; }
@@ -14,6 +15,7 @@ public struct TimedActionInfo
 	public TimedActionInfo( Action<CollapsePlayer> callback )
 	{
 		OnFinished = callback;
+		SoundName = default;
 		Duration = default;
 		Origin = default;
 		Title = default;
@@ -31,9 +33,26 @@ public partial class TimedAction : BaseNetworkable
 
 	public Action<CollapsePlayer> OnFinished { get; private set; }
 
+	private string SoundName { get; set; }
+	private Sound? Sound { get; set; }
+
 	public TimedAction()
 	{
 
+	}
+
+	public void StartSound()
+	{
+		if ( Sound.HasValue ) return;
+		if ( string.IsNullOrEmpty( SoundName ) ) return;
+
+		Sound = Sandbox.Sound.FromWorld( SoundName, Origin );
+	}
+
+	public void StopSound()
+	{
+		Sound?.Stop();
+		Sound = null;
 	}
 
 	public TimedAction( TimedActionInfo info )
@@ -41,6 +60,7 @@ public partial class TimedAction : BaseNetworkable
 		OnFinished = info.OnFinished;
 		Duration = info.Duration;
 		EndTime = info.Duration;
+		SoundName = info.SoundName;
 		Origin = info.Origin;
 		Title = info.Title;
 		Icon = info.Icon;

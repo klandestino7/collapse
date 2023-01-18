@@ -24,7 +24,7 @@
         var isHidden = true;
         var position = (Player.EyePosition - Player.Rotation.Forward * 20f).ToScreen();
 
-        if ( position.z >= 0f )
+        if ( distance < maxDistance && position.z >= 0f )
         {
             position.x *= Screen.Size.x * ScaleFromScreen;
             position.y *= Screen.Size.y * ScaleFromScreen;
@@ -34,7 +34,11 @@
 
             isHidden = false;
         }
-
+        else
+        {
+            Style.Opacity = distance.Remap( 0f, maxDistance, 1f, 0f );
+        }
+        
         SetClass( "hidden", isHidden );
 
         base.Tick();

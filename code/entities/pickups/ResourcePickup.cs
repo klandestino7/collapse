@@ -8,10 +8,11 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
-	public float GlowWidth => 0.4f;
+	public float GlowWidth => 0.2f;
 
 	private ContextAction HarvestAction { get; set; }
 
+	public abstract string GatherSound { get; }
 	public abstract string ModelPath { get; }
 	public abstract Type ItemType { get; }
 	public abstract int StackSize { get; }
@@ -44,6 +45,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 			{
 				var timedAction = new TimedActionInfo( OnHarvested );
 
+				timedAction.SoundName = GatherSound;
 				timedAction.Title = "Harvesting";
 				timedAction.Origin = Position;
 				timedAction.Duration = 2f;
@@ -80,7 +82,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 
 			if ( remaining < StackSize )
 			{
-				player.PlaySound( "inventory.move" );
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
 			}
 
 			if ( remaining == StackSize ) return;

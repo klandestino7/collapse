@@ -8,7 +8,7 @@ public partial class StorageCrate : Deployable, IContextActionProvider, IPersist
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Green;
-	public float GlowWidth => 0.4f;
+	public float GlowWidth => 0.2f;
 
 	[Net] private NetInventoryContainer InternalInventory { get; set; }
 	public InventoryContainer Inventory => InternalInventory.Value;
@@ -90,9 +90,10 @@ public partial class StorageCrate : Deployable, IContextActionProvider, IPersist
 		{
 			if ( Game.IsServer )
 			{
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
+
 				var item = InventorySystem.CreateItem<StorageCrateItem>();
 				player.TryGiveItem( item );
-				player.PlaySound( "inventory.move" );
 				Delete();
 			}
 		}

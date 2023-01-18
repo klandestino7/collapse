@@ -6,6 +6,7 @@ global using Sandbox.UI.Construct;
 // system
 global using System;
 global using System.Collections.Generic;
+global using System.IO;
 global using System.ComponentModel;
 global using System.Linq;
 global using System.Threading.Tasks;
@@ -26,6 +27,19 @@ public partial class CollapseGame : GameManager
 	public CollapseGame() : base()
 	{
 
+	}
+	
+	public override void LoadSavedGame( SavedGame save )
+	{
+		Log.Info( "[Collapse] Loading world..." );
+
+		using var s = new MemoryStream( save.Data );
+		using var r = new BinaryReader( s );
+
+		PersistenceSystem.LoadAll( r );
+
+		HasLoadedWorld = true;
+		NextAutoSave = 60f;
 	}
 
 	public override void Spawn()
@@ -101,47 +115,41 @@ public partial class CollapseGame : GameManager
 	{
 		Game.WorldEntity.Tags.Add( "world" );
 
-		// {
-		// 	var spawner = new PickupSpawner();
-		// 	spawner.SetType<WoodPickup>();
-		// 	spawner.MaxPickups = 100;
-		// 	spawner.MaxPickupsPerSpawn = 20;
-		// 	spawner.MaxPickupsPerSpawn = 80;
-		// 	spawner.Interval = 60f;
-		// }
+		{
+			var spawner = new PickupSpawner();
+			spawner.SetType<WoodPickup>();
+			spawner.MaxPickups = 100;
+			spawner.MaxPickupsPerSpawn = 20;
+			spawner.MaxPickupsPerSpawn = 80;
+			spawner.Interval = 60f;
+		}
 
-		// {
-		// 	var spawner = new PickupSpawner();
-		// 	spawner.SetType<StonePickup>();
-		// 	spawner.MaxPickups = 70;
-		// 	spawner.MaxPickupsPerSpawn = 20;
-		// 	spawner.MaxPickupsPerSpawn = 60;
-		// 	spawner.Interval = 120f;
-		// }
+		{
+			var spawner = new PickupSpawner();
+			spawner.SetType<StonePickup>();
+			spawner.MaxPickups = 70;
+			spawner.MaxPickupsPerSpawn = 20;
+			spawner.MaxPickupsPerSpawn = 60;
+			spawner.Interval = 120f;
+		}
 
-		// {
-		// 	var spawner = new PickupSpawner();
-		// 	spawner.SetType<MetalOrePickup>();
-		// 	spawner.MaxPickups = 50;
-		// 	spawner.MaxPickupsPerSpawn = 20;
-		// 	spawner.MaxPickupsPerSpawn = 60;
-		// 	spawner.Interval = 180f;
-		// }
+		{
+			var spawner = new PickupSpawner();
+			spawner.SetType<MetalOrePickup>();
+			spawner.MaxPickups = 50;
+			spawner.MaxPickupsPerSpawn = 20;
+			spawner.MaxPickupsPerSpawn = 60;
+			spawner.Interval = 180f;
+		}
 
-		// {
-		// 	var spawner = new PickupSpawner();
-		// 	spawner.SetType<PlantFiberPickup>();
-		// 	spawner.MaxPickups = 40;
-		// 	spawner.MaxPickupsPerSpawn = 20;
-		// 	spawner.MaxPickupsPerSpawn = 60;
-		// 	spawner.Interval = 90f;
-		// }
-
-		Log.Info( "[Collapse] Loading world..." );
-		PersistenceSystem.LoadAll();
-
-		HasLoadedWorld = true;
-		NextAutoSave = 60f;
+		{
+			var spawner = new PickupSpawner();
+			spawner.SetType<PlantFiberPickup>();
+			spawner.MaxPickups = 40;
+			spawner.MaxPickupsPerSpawn = 20;
+			spawner.MaxPickupsPerSpawn = 60;
+			spawner.Interval = 90f;
+		}
 
 		base.PostLevelLoaded();
 	}

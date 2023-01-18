@@ -20,6 +20,16 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 
 	public static CollapsePlayer Me => Game.LocalPawn as CollapsePlayer;
 
+	public static Glow AddObscuredGlow( ModelEntity entity )
+	{
+		var glow = entity.Components.Create<Glow>();
+		glow.Width = 0.25f;
+		glow.Color = Color.Transparent;
+		glow.InsideObscuredColor = Color.White.WithAlpha( 0.8f );
+		glow.ObscuredColor = Color.Black.WithAlpha( 0.5f );
+		return glow;
+	}
+
 	[ConCmd.Server]
 	public static void KillMe()
 	{
@@ -86,6 +96,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 	private Entity LastHoveredEntity { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 	private TimeSince TimeSinceLastKilled { get; set; }
+	private Glow GlowComponent { get; set; }
 	private Entity LastActiveChild { get; set; }
 
 	public Vector3 EyePosition
@@ -240,11 +251,19 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 
 	public void StartTimedAction( TimedActionInfo info )
 	{
+		Game.AssertServer();
+
+		CancelTimedAction();
+
 		TimedAction = new( info );
+		TimedAction.StartSound();
 	}
 
 	public void CancelTimedAction()
 	{
+		Game.AssertServer();
+
+		TimedAction?.StopSound();
 		TimedAction = null;
 	}
 
@@ -307,6 +326,16 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 		Tags.Add( "player" );
 
 		base.Spawn();
+	}
+
+	public override void ClientSpawn()
+	{
+		if ( IsLocalPawn )
+		{
+			GlowComponent = AddObscuredGlow( this );
+		}
+
+		base.ClientSpawn();
 	}
 
 	private TimeSince TimeSinceLastFootstep { get; set; }
@@ -723,6 +752,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 		if ( TimedAction.EndTime )
 		{
 			TimedAction.OnFinished?.Invoke( this );
+			TimedAction.StopSound();
 			TimedAction = null;
 		}
 	}
@@ -834,10 +864,12 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 				if ( action.IsValid() )
 				{
 					actions.OnContextAction( this, action );
+					return true;
 				}
 			}
 
-			return true;
+			if ( Input.Down( InputButton.PrimaryAttack ) )
+				return true;
 		}
 
 		return false;
@@ -1081,15 +1113,6 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 					structure.OnPlacedByPlayer( this );
 					isValid = true;
 
-					var soundName = structure.PlaceSoundName;
-
-					if ( deployable.IsValid() && !string.IsNullOrEmpty( deployable.PlaceSoundName ) )
-						soundName = deployable.PlaceSoundName;
-
-					if ( !string.IsNullOrEmpty( soundName ) )
-					{
-						Sound.FromWorld( To.Everyone, soundName, trace.EndPosition );
-					}
 				}
 				else if ( !structure.RequiresSocket )
 				{
@@ -1104,6 +1127,16 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 				}
 				else
 				{
+					var soundName = structure.PlaceSoundName;
+
+					if ( deployable.IsValid() && !string.IsNullOrEmpty( deployable.PlaceSoundName ) )
+						soundName = deployable.PlaceSoundName;
+
+					if ( !string.IsNullOrEmpty( soundName ) )
+					{
+						Sound.FromWorld( To.Everyone, soundName, trace.EndPosition );
+					}
+
 					var costs = Structure.GetCostsFor( structureType );
 
 					foreach ( var kv in costs )

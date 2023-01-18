@@ -4,6 +4,7 @@ namespace NxtStudio.Collapse;
 
 public partial class MetalOrePickup : ResourcePickup
 {
+	public override string GatherSound => "rummage.metal";
 	public override string ModelPath => "models/resources/metal_vein.vmdl";
 	public override Type ItemType => typeof( MetalOre );
 	public override int StackSize => 15;

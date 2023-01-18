@@ -8,7 +8,7 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
-	public float GlowWidth => 0.4f;
+	public float GlowWidth => 0.2f;
 
 	private ContextAction MakeHomeAction { get; set; }
 	private ContextAction PickupAction { get; set; }
@@ -86,9 +86,10 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 		{
 			if ( Game.IsServer )
 			{
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
+				
 				var item = InventorySystem.CreateItem<BedrollItem>();
 				player.TryGiveItem( item );
-				player.PlaySound( "inventory.move" );
 				Delete();
 			}
 		}
