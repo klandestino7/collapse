@@ -32,7 +32,7 @@ public partial class Pistol : ProjectileWeapon<CrossbowBoltProjectile>
 
 		PlayAttackAnimation();
 		ShootEffects();
-		PlaySound( $"smg1_shoot" );
+		PlaySound( "rust_pistol.shoot" );
 		ApplyRecoil();
 
 		base.AttackPrimary();

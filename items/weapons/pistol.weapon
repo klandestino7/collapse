@@ -42,7 +42,7 @@
 		ItemName = "Pistol"
 		UniqueId = "pistol"
 		Description = "A light damage crossbow for dealing ranged damage."
-		Icon = resource:"textures/items/weapon_crossbow.png"
+		Icon = resource:"textures/items/weapon_pistol.png"
 		WorldModel = resource:"weapons/rust_pistol/rust_pistol.vmdl"
 		Tags = [  ]
 	}
