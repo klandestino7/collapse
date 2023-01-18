@@ -25,6 +25,9 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
         }
 	}
 
+	
+	public Vector3 cursorDirection { get; private set; }
+
 	public virtual void FireProjectile()
 	{
 		if ( Owner is not CollapsePlayer player )
@@ -48,8 +51,30 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 			OnCreateProjectile( projectile );
 
-			var forward = player.EyeRotation.Forward;
-			var position = player.EyePosition + forward * 40f;
+			// var p = new CollapsePlayer();
+			var Cursor = player.Cursor;
+
+			var cameraPosition = Camera.Position;
+
+			if (Game.IsClient)
+			{
+				cursorDirection = Screen.GetDirection( Screen.Size * Cursor );
+			}
+
+	
+			var startPosition = cameraPosition;
+			var endPosition = cameraPosition + cursorDirection * 1000f;
+
+			var cursor = Trace.Ray(cameraPosition, endPosition)
+				.WithAnyTags("world")
+				.WithoutTags("wall")
+				.Radius(2)
+				.Run();
+		
+
+			var forward = cursor.EndPosition;
+
+			var position = cameraPosition + forward * 40f;
 			var muzzle = GetMuzzlePosition();
 
 			if ( muzzle.HasValue )
@@ -57,8 +82,8 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 				position = muzzle.Value;
 			}
 
-			var endPosition = player.EyePosition + forward * BulletRange;
-			var trace = Trace.Ray( player.EyePosition, endPosition )
+			// endPosition = endPosition * BulletRange; 
+			var trace = Trace.Ray( cameraPosition, endPosition )
 				.Ignore( player )
 				.Ignore( this )
 				.Run();
@@ -71,7 +96,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 			velocity = AdjustProjectileVelocity( velocity );
 			position -= direction * Speed * Time.Delta;
 			projectile.Initialize( position, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
-
+			
 			OnProjectileFired( projectile );
 		}
 	}
