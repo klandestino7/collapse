@@ -70,6 +70,7 @@ public partial class CollapsePlayer
 		animHelper.IsNoclipping = Controller.HasTag( "noclip" );
 		animHelper.IsClimbing = Controller.HasTag( "climbing" );
 		animHelper.IsSwimming = false;
+		animHelper.IsWeaponLowered = false;
 
 		if ( Controller.HasEvent( "jump" ) ) animHelper.TriggerJump();
 
@@ -89,7 +90,6 @@ public partial class CollapsePlayer
 			}
 
 			animHelper.HoldType = holdType;
-			animHelper.AimBodyWeight = 0.5f;
 		}
 
 
