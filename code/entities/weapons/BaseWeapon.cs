@@ -131,7 +131,7 @@ public abstract partial class BaseWeapon : AnimatedEntity
 	{
 		anim.HoldType = CitizenAnimationHelper.HoldTypes.Pistol;
 		anim.Handedness = CitizenAnimationHelper.Hand.Both;
-		anim.AimBodyWeight = 1f;
+		anim.AimBodyWeight = 0f;
 	}
 
 	public virtual void OnCarryDrop( Entity dropper )

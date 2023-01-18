@@ -1,6 +1,14 @@
-﻿using Sandbox;
-using System;
-using System.Linq;
+﻿// sandbox
+global using Sandbox;
+global using Sandbox.Component;
+global using Sandbox.UI;
+global using Sandbox.UI.Construct;
+// system
+global using System;
+global using System.Collections.Generic;
+global using System.ComponentModel;
+global using System.Linq;
+global using System.Threading.Tasks;
 
 namespace NxtStudio.Collapse;
 
@@ -93,41 +101,41 @@ public partial class CollapseGame : GameManager
 	{
 		Game.WorldEntity.Tags.Add( "world" );
 
-		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<WoodPickup>();
-			spawner.MaxPickups = 100;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 80;
-			spawner.Interval = 60f;
-		}
+		// {
+		// 	var spawner = new PickupSpawner();
+		// 	spawner.SetType<WoodPickup>();
+		// 	spawner.MaxPickups = 100;
+		// 	spawner.MaxPickupsPerSpawn = 20;
+		// 	spawner.MaxPickupsPerSpawn = 80;
+		// 	spawner.Interval = 60f;
+		// }
 
-		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<StonePickup>();
-			spawner.MaxPickups = 70;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
-			spawner.Interval = 120f;
-		}
+		// {
+		// 	var spawner = new PickupSpawner();
+		// 	spawner.SetType<StonePickup>();
+		// 	spawner.MaxPickups = 70;
+		// 	spawner.MaxPickupsPerSpawn = 20;
+		// 	spawner.MaxPickupsPerSpawn = 60;
+		// 	spawner.Interval = 120f;
+		// }
 
-		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<MetalOrePickup>();
-			spawner.MaxPickups = 50;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
-			spawner.Interval = 180f;
-		}
+		// {
+		// 	var spawner = new PickupSpawner();
+		// 	spawner.SetType<MetalOrePickup>();
+		// 	spawner.MaxPickups = 50;
+		// 	spawner.MaxPickupsPerSpawn = 20;
+		// 	spawner.MaxPickupsPerSpawn = 60;
+		// 	spawner.Interval = 180f;
+		// }
 
-		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<PlantFiberPickup>();
-			spawner.MaxPickups = 40;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
-			spawner.Interval = 90f;
-		}
+		// {
+		// 	var spawner = new PickupSpawner();
+		// 	spawner.SetType<PlantFiberPickup>();
+		// 	spawner.MaxPickups = 40;
+		// 	spawner.MaxPickupsPerSpawn = 20;
+		// 	spawner.MaxPickupsPerSpawn = 60;
+		// 	spawner.Interval = 90f;
+		// }
 
 		Log.Info( "[Collapse] Loading world..." );
 		PersistenceSystem.LoadAll();
@@ -137,6 +145,7 @@ public partial class CollapseGame : GameManager
 
 		base.PostLevelLoaded();
 	}
+	
 
 	[Event.Tick.Server]
 	private void ServerTick()
@@ -153,5 +162,72 @@ public partial class CollapseGame : GameManager
 	private void OnFrame()
 	{
 		Camera?.Update();
+		// Camera?.FrameSimulate();
+	}
+		static async Task<string> SpawnPackageModel( string packageName, Vector3 pos, Rotation rotation, Entity source )
+	{
+		var package = await Package.Fetch( packageName, false );
+		if ( package == null || package.PackageType != Package.Type.Model || package.Revision == null )
+		{
+			// spawn error particles
+			return null;
+		}
+
+		if ( !source.IsValid ) return null; // source entity died or disconnected or something
+
+		var model = package.GetMeta( "PrimaryAsset", "models/dev/error.vmdl" );
+		var mins = package.GetMeta( "RenderMins", Vector3.Zero );
+		var maxs = package.GetMeta( "RenderMaxs", Vector3.Zero );
+
+		// downloads if not downloads, mounts if not mounted
+		await package.MountAsync();
+
+		return model;
+	}
+
+	[ConCmd.Server( "spawn" )]
+	public static async Task Spawn( string modelname )
+	{
+		var owner = ConsoleSystem.Caller?.Pawn as Player;
+
+		if ( ConsoleSystem.Caller == null )
+			return;
+
+		var tr = Trace.Ray( owner.EyePosition, owner.EyePosition + owner.EyeRotation.Forward * 500 )
+			.UseHitboxes()
+			.Ignore( owner )
+			.Run();
+
+		var modelRotation = Rotation.From( new Angles( 0, owner.EyeRotation.Angles().yaw, 0 ) ) * Rotation.FromAxis( Vector3.Up, 180 );
+
+		//
+		// Does this look like a package?
+		//
+		if ( modelname.Count( x => x == '.' ) == 1 && !modelname.EndsWith( ".vmdl", System.StringComparison.OrdinalIgnoreCase ) && !modelname.EndsWith( ".vmdl_c", System.StringComparison.OrdinalIgnoreCase ) )
+		{
+			modelname = await SpawnPackageModel( modelname, tr.EndPosition, modelRotation, owner as Entity );
+			if ( modelname == null )
+				return;
+		}
+
+		var model = Model.Load( modelname );
+		if ( model == null || model.IsError )
+			return;
+
+		var ent = new Prop
+		{
+			Position = tr.EndPosition + Vector3.Down * model.PhysicsBounds.Mins.z,
+			Rotation = modelRotation,
+			Model = model
+		};
+
+		// Let's make sure physics are ready to go instead of waiting
+		ent.SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
+
+		// If there's no physics model, create a simple OBB
+		if ( !ent.PhysicsBody.IsValid() )
+		{
+			ent.SetupPhysicsFromOBB( PhysicsMotionType.Dynamic, ent.CollisionBounds.Mins, ent.CollisionBounds.Maxs );
+		}
 	}
 }

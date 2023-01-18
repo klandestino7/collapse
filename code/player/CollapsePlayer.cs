@@ -273,7 +273,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 				Stamina = Math.Clamp( Stamina + effect.Amount, 0f, MaxStamina );
 		}
 	}
-
+	
 	public virtual void Respawn()
 	{
 		EnableAllCollisions = true;
@@ -290,9 +290,12 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 		InitializeWeapons();
 		ResetCursor();
 
+		// Camera = new TopDownCamera();
+
 		CollapseGame.Entity?.MoveToSpawnpoint( this );
 		ResetInterpolation();
 	}
+
 
 	public override void Spawn()
 	{
@@ -411,15 +414,25 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 				.Ignore( ActiveChild )
 				.Run();
 
+				
+
 			if ( !HasTimedAction && (visible.Entity == cursor.Entity || visible.Fraction > 0.9f) )
 				HoveredEntity = cursor.Entity;
 			else
 				HoveredEntity = null;
+				
 		}
 		else
 		{
 			HoveredEntity = null;
 		}
+
+
+		// Rotation.LookAt(startPosition, endPosition);
+
+		// DebugOverlay.Line(EyePosition, cursor.EndPosition, Color.Blue, 0);
+
+
 	}
 
 	public override void StartTouch( Entity other )
@@ -541,7 +554,9 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 
 			Projectiles.Simulate();
 
-			SimulateAnimation();
+			SimulateAnimation( );
+
+			CrossaimSimulation();
 
 			if ( Game.IsServer )
 			{
@@ -928,6 +943,23 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 			}
 		}
 	}
+
+	// //
+	// // Camera
+	// //
+
+	// public CameraMode Camera
+	// {
+	// 	get => Components.Get<CameraMode>();
+	// 	set
+	// 	{
+	// 		var current = Camera;
+	// 		if ( current == value ) return;
+
+	// 		Components.RemoveAny<CameraMode>();
+	// 		Components.Add( value );
+	// 	}
+	// }
 
 	private bool CanSeePosition( Vector3 position )
 	{
