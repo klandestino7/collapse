@@ -902,9 +902,17 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 			return;
 		}
 
-		var startPosition = CameraPosition;
-		var endPosition = CameraPosition + CursorDirection * 1000f;
-		var trace = Trace.Ray( startPosition, endPosition )
+		var cameraPosition = Camera.Position;
+
+		if (Game.IsClient)
+		{
+			cursorDirection = Screen.GetDirection( Screen.Size * Cursor );
+		}
+
+		var startPosition = cameraPosition;
+		var endPosition = cameraPosition + cursorDirection * 1000f;
+
+		var trace = Trace.Ray( cameraPosition, endPosition )
 			.WithAnyTags( deployable.ValidTags )
 			.Run();
 
@@ -1048,7 +1056,18 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 			return;
 		}
 
-		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
+		var cameraPosition = Camera.Position;
+
+		if (Game.IsClient)
+		{
+			cursorDirection = Screen.GetDirection( Screen.Size * Cursor );
+		}
+
+		var startPosition = cameraPosition;
+		var endPosition = cameraPosition + cursorDirection * 1000f;
+
+
+		var trace = Trace.Ray( cameraPosition, endPosition )
 			.WorldOnly()
 			.Run();
 
