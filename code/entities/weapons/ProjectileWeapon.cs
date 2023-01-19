@@ -61,7 +61,6 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 				cursorDirection = Screen.GetDirection( Screen.Size * Cursor );
 			}
 
-	
 			var startPosition = cameraPosition;
 			var endPosition = cameraPosition + cursorDirection * 1000f;
 
@@ -70,8 +69,8 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 				.WithoutTags("wall")
 				.Radius(2)
 				.Run();
-		
 
+			var eyePosition = player.EyePosition;
 			var forward = cursor.EndPosition;
 
 			var position = cameraPosition + forward * 40f;
@@ -82,8 +81,19 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 				position = muzzle.Value;
 			}
 
+			var trace = Trace.Ray( eyePosition, position )
+				.Ignore( player )
+				.Ignore( this )
+				.Run();
+
+			if ( trace.Hit )
+			{
+				// Let's roll it back a bit because we may be poking through a wall.
+				position = trace.EndPosition - trace.Direction * 4f;
+			}
+
 			// endPosition = endPosition * BulletRange; 
-			var trace = Trace.Ray( cameraPosition, endPosition )
+			trace = Trace.Ray( cameraPosition, endPosition )
 				.Ignore( player )
 				.Ignore( this )
 				.Run();
