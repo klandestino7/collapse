@@ -8,9 +8,9 @@ public partial class ArmorEntity : ModelEntity
 
 	public override void ClientSpawn()
 	{
-		if ( Parent is ForsakenPlayer player && player.IsLocalPawn )
+		if ( Parent is CollapsePlayer player && player.IsLocalPawn )
 		{
-			ForsakenPlayer.AddObscuredGlow( this );
+			CollapsePlayer.AddObscuredGlow( this );
 		}
 
 		base.ClientSpawn();
