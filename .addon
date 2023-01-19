@@ -46,7 +46,8 @@
         "trigger": "Trigger",
         "ladder": "Ignore",
         "water": "Trigger",
-        "player": "Collide"
+        "player": "Collide",
+        "passplayers": "Collide"
       },
       "Pairs": [
         {
@@ -73,6 +74,11 @@
           "a": "playerclip",
           "b": "solid",
           "r": "Collide"
+        },
+        {
+          "a": "player",
+          "b": "passplayers",
+          "r": "Ignore"
         }
       ]
     },

@@ -15,7 +15,7 @@ public partial class CollapsePlayer
 		var turnSpeed = 0.02f;
 
 		// If we're a bot, spin us around 180 degrees.
-		if (Client.IsBot)
+		if ( Client.IsValid() && Client.IsBot )
 			rotation = ViewAngles.WithYaw(ViewAngles.yaw + 180f).ToRotation();
 		else
 			rotation = ViewAngles.ToRotation();

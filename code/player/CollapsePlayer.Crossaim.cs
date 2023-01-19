@@ -49,8 +49,11 @@ public partial class CollapsePlayer
 		// 	aimActived = false;
 		// }
 
+
+		var isSimulating = Prediction.CurrentHost.IsValid();
+
 		// # Fazer o player virar pare essa posição;
-		if (Game.IsClient)
+		if (Game.IsClient && isSimulating)
 		{
 			cursorDirection = Screen.GetDirection( Screen.Size * Cursor );
 			cameraPosition = Camera.Position;
