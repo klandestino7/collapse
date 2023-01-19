@@ -20,7 +20,7 @@
     "GameNetworkType": "Multiplayer",
     "MapSelect": "Official",
     "MapList": [
-      "facepunch.flatgrass"
+      "facepunch.construct"
     ],
     "RankType": "None",
     "PerMapRanking": false,
