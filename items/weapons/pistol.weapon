@@ -36,9 +36,15 @@
 		]
 		Damage = 5
 		ClassName = "weapon_pistol"
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = true
+		SalvageCost = 300
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.02
 		IsLootable = true
-		SpawnChance = 0.05
-		AmountToSpawn = "1.00,0.00,0"
+		LootChance = 0.01
+		LootStackSize = "1.00,0.00,0"
 		ItemName = "Pistol"
 		UniqueId = "pistol"
 		Description = "A light damage crossbow for dealing ranged damage."

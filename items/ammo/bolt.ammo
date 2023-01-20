@@ -5,9 +5,15 @@
 		AmmoType = "Bolt"
 		MaxStackSize = 10
 		DefaultStackSize = 2
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = true
+		SalvageCost = 2
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.3
 		IsLootable = true
-		SpawnChance = 0.2
-		AmountToSpawn = "2.00,8.00,1"
+		LootChance = 0
+		LootStackSize = "0.00,0.00,0"
 		ItemName = "Bolt"
 		UniqueId = "ammo_bolt"
 		Description = "Ammunition typically used for crossbows."

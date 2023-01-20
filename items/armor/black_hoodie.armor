@@ -7,9 +7,15 @@
 		SecondaryModel = null
 		PrimaryModel = resource:"models/citizen_clothes/jacket/hoodie/models/hoodie_black.vmdl"
 		TemperatureModifier = 3
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = false
+		SalvageCost = 0
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.05
 		IsLootable = true
-		SpawnChance = 0.2
-		AmountToSpawn = "1.00,0.00,0"
+		LootChance = 0.08
+		LootStackSize = "1.00,0.00,0"
 		ItemName = "Black Hoodie"
 		UniqueId = "black_hoodie"
 		Description = "A black hoodie. It will keep you moderately warm and it looks nice, too."

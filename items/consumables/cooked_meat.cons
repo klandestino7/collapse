@@ -8,24 +8,19 @@
 		ConsumeEffect = null
 		ActivateSound = null
 		ActivateDelay = 0
-		Effects = 
-		[
-			{
-				Amount = 40
-				Duration = 5
-			},
-			{
-				Target = "Health"
-				Amount = 5
-				Duration = 3
-			},
-		]
+		Effects = null
 		IsCookable = false
 		CookedItemId = ""
 		CookedQuantity = 0
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = true
+		SalvageCost = 20
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.1
 		IsLootable = false
-		SpawnChance = 0.5
-		AmountToSpawn = "0.00,0.00,0"
+		LootChance = 0
+		LootStackSize = "0.00,0.00,0"
 		ItemName = "Cooked Meat"
 		UniqueId = "cooked_meat"
 		Description = "Cooked meat. It looks delicious!"
