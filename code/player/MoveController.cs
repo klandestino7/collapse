@@ -170,11 +170,11 @@ public partial class MoveController
 
 		Duck.PreTick();
 
-		// #TODO - Fazer com que o peso do inventário interfira na stamina
+		// #TODO - Drenar stamina com multiplicador de peso do inventario
 		if ( Input.Down( InputButton.Run ) && !Input.Down( InputButton.Duck ) && WishVelocity.Length > 1f )
-			Player.ReduceStamina( 10f * Time.Delta );
+			Player.ReduceStamina( 1f * Time.Delta );
 		else if (WishVelocity.Length >= 0.1f )
-			Player.ReduceStamina(1f * Time.Delta);
+			Player.ReduceStamina(.01f * Time.Delta);
 		else
 			Player.GainStamina( 15f * Time.Delta );
 
