@@ -214,7 +214,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		SetStructureTypeCmd( type.Identity );
 	}
 
-	public bool IsHeadshotTarget( ForsakenPlayer other )
+	public bool IsHeadshotTarget( CollapsePlayer other )
 	{
 		var startPosition = CameraPosition;
 		var endPosition = CameraPosition + CursorDirection * 1000f;
