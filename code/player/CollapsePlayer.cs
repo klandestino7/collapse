@@ -8,7 +8,7 @@ using Sandbox.Diagnostics;
 
 namespace NxtStudio.Collapse;
 
-public partial class CollapsePlayer : AnimatedEntity, IPersistence
+public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProvider
 {
 	private TimeSince timeSinceJumpReleased;
 	private class ActiveEffect
@@ -35,7 +35,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 	{
 		if ( ConsoleSystem.Caller.Pawn is CollapsePlayer pl )
 		{
-			pl.TakeDamage( DamageInfo.FromBullet( pl.Position, Vector3.Zero, 1000f ) );
+			pl.TakeDamage( DamageInfo.FromBullet( pl.Position, Vector3.Random * 80f, 1000f ) );
 		}
 	}
 
@@ -87,6 +87,10 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 	[Net] private int StructureType { get; set; }
 	[Net] public long SteamId { get; private set; }
 	[Net] public Bedroll Bedroll { get; private set; }
+
+	public Color? NametagColor => null;
+	public bool ShowNametag => LifeState == LifeState.Alive && ( Nametags.ShowOwnNametag || !IsLocalPawn );
+	public bool IsInactive => IsSleeping;
 
 	private TimeUntil NextCalculateTemperature { get; set; }
 	private float CalculatedTemperature { get; set; }
@@ -208,6 +212,25 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 		Game.AssertClient();
 		Assert.NotNull( type );
 		SetStructureTypeCmd( type.Identity );
+	}
+
+	public bool IsHeadshotTarget( ForsakenPlayer other )
+	{
+		var startPosition = CameraPosition;
+		var endPosition = CameraPosition + CursorDirection * 1000f;
+		var cursor = Trace.Ray( startPosition, endPosition )
+			.EntitiesOnly()
+			.UseHitboxes()
+			.WithTag( "player" )
+			.Size( 4f )
+			.Run();
+
+		if ( cursor.Entity == other && cursor.Hitbox.HasTag( "head" ) )
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	[ClientRpc]
@@ -490,11 +513,19 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 
 	public override void TakeDamage( DamageInfo info )
 	{
-		if ( info.Attacker is CollapsePlayer )
+		if ( info.Attacker is CollapsePlayer attacker )
 		{
-			if ( info.Hitbox.HasTag( "head" ) )
+			if ( info.HasTag( "bullet" ) )
 			{
-				info.Damage *= 2f;
+				if ( attacker.IsHeadshotTarget( this ) )
+				{
+					Sound.FromScreen( To.Single( attacker ), "hitmarker.headshot" );
+					info.Damage *= 2f;
+				}
+				else
+				{
+					Sound.FromScreen( To.Single( attacker ), "hitmarker.hit" );
+				}
 			}
 
 			using ( Prediction.Off() )
@@ -515,7 +546,6 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 			return;
 
 		base.TakeDamage( info );
-
 		this.ProceduralHitReaction( info );
 	}
 
@@ -525,6 +555,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence
 
 		GameManager.Current?.OnKilled( this );
 
+		TimeSinceLastKilled = 0f;
 		EnableAllCollisions = false;
 		EnableDrawing = false;
 		LifeState = LifeState.Dead;

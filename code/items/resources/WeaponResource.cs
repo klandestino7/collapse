@@ -4,7 +4,7 @@ namespace NxtStudio.Collapse;
 
 [GameResource( "Weapon", "weapon", "A weapon for use with Collapse.", Icon = "crisis_alert" )]
 [ItemClass( typeof( WeaponItem ) )]
-public class WeaponResource : LootTableResource
+public class WeaponResource : CollapseItemResource
 {
 	[Property]
 	public int WorldModelMaterialGroup { get; set; }

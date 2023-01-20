@@ -5,7 +5,7 @@ namespace NxtStudio.Collapse;
 
 [GameResource( "Consumable", "cons", "A type of consumable item for use with Collapse.", Icon = "food-apple" )]
 [ItemClass( typeof( ConsumableItem ) )]
-public class ConsumableResource : LootTableResource
+public class ConsumableResource : CollapseItemResource
 {
 	[Property]
 	public int MaxStackSize { get; set; } = 1;

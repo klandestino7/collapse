@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace NxtStudio.Collapse;
 
-public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
+public abstract partial class LootSpawner : ModelEntity, IContextActionProvider, IPersistence
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Green;
@@ -17,8 +17,8 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 	public virtual string Title { get; set; } = "Loot Spawner";
 	public virtual float RestockTime { get; set; } = 30f;
 	public virtual int SlotLimit { get; set; } = 6;
-	public virtual float MinSpawnChance { get; set; } = 0f;
-	public virtual float MaxSpawnChance { get; set; } = 1f;
+	public virtual float MinStockChance { get; set; } = 0f;
+	public virtual float MaxStockChance { get; set; } = 1f;
 
 	private ContextAction OpenAction { get; set; }
 	private bool IsHidden { get; set; }
@@ -59,6 +59,42 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 		}
 	}
 
+	public virtual bool ShouldSaveState()
+	{
+		return true;
+	}
+
+	public virtual void SerializeState( BinaryWriter writer )
+	{
+		writer.Write( IsHidden );
+		writer.Write( NextRestockTime.Fraction );
+		writer.Write( Inventory );
+	}
+
+	public virtual void DeserializeState( BinaryReader reader )
+	{
+		IsHidden = reader.ReadBoolean();
+		NextRestockTime = RestockTime * reader.ReadSingle();
+
+		Inventory = reader.ReadInventoryContainer();
+		Inventory.IsTakeOnly = true;
+		Inventory.SlotChanged += OnSlotChanged;
+		Inventory.SetSlotLimit( (ushort)SlotLimit );
+	}
+
+	public virtual void BeforeStateLoaded()
+	{
+
+	}
+
+	public virtual void AfterStateLoaded()
+	{
+		if ( IsHidden )
+			Hide();
+		else
+			Show();
+	}
+
 	public override void OnNewModel( Model model )
 	{
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
@@ -87,9 +123,9 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 	protected virtual void Restock()
 	{
 		var possibleItems = InventorySystem.GetDefinitions()
-			.OfType<ILootTableItem>()
+			.OfType<ILootSpawnerItem>()
 			.Where( i => i.IsLootable )
-			.Where( i => i.SpawnChance > 0f && i.SpawnChance > MinSpawnChance && i.SpawnChance < MaxSpawnChance );
+			.Where( i => i.StockChance > 0f && i.StockChance > MinStockChance && i.StockChance < MaxStockChance );
 
 		if ( !possibleItems.Any() ) return;
 
@@ -97,18 +133,18 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 
 		for ( var i = 0; i < itemsToSpawn; i++ )
 		{
-			var u = possibleItems.Sum( p => p.SpawnChance );
+			var u = possibleItems.Sum( p => p.StockChance );
 			var r = Game.Random.Float() * u;
 			var s = 0f;
 
 			foreach ( var item in possibleItems )
 			{
-				s += item.SpawnChance;
+				s += item.StockChance;
 
 				if ( r < s )
 				{
 					var instance = InventorySystem.CreateItem( item.UniqueId );
-					instance.StackSize = (ushort)item.AmountToSpawn;
+					instance.StackSize = (ushort)item.AmountToStock;
 					Inventory.Stack( instance );
 					break;
 				}
@@ -134,7 +170,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 
 	private void OnSlotChanged( ushort slot )
 	{
-		if ( Inventory.IsEmpty )
+		if ( IsValid && Inventory.IsEmpty )
 		{
 			NextRestockTime = RestockTime;
 			Hide();

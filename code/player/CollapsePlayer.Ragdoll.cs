@@ -16,6 +16,7 @@ public partial class CollapsePlayer
 		};
 
 		ragdoll.CopyFrom( this );
+		ragdoll.ApplyAbsoluteImpulse( Velocity );
 		ragdoll.ApplyForceToBone( force, forceBone );
 
 		Ragdoll = ragdoll;
@@ -30,6 +31,7 @@ public partial class CollapsePlayer
 		};
 
 		ragdoll.CopyFrom( this );
+		ragdoll.ApplyAbsoluteImpulse( Velocity );
 		ragdoll.ApplyForceToBone( force, forceBone );
 
 		Ragdoll = ragdoll;

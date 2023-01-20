@@ -4,7 +4,7 @@ namespace NxtStudio.Collapse;
 
 [GameResource( "Armor", "armor", "A piece of armor or clothing for use with Collapse.", Icon = "checkroom" )]
 [ItemClass( typeof( ArmorItem ) )]
-public class ArmorResource : LootTableResource
+public class ArmorResource : CollapseItemResource
 {
 	[Property]
 	public float DamageMultiplier { get; set; } = 1f;

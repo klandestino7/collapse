@@ -11,6 +11,11 @@ global using System.ComponentModel;
 global using System.Linq;
 global using System.Threading.Tasks;
 
+using Sandbox.Component;
+using System.ComponentModel;
+using Sandbox.UI;
+
+
 namespace NxtStudio.Collapse;
 
 public partial class CollapseGame : GameManager
@@ -26,8 +31,8 @@ public partial class CollapseGame : GameManager
 
 	public CollapseGame() : base()
 	{
-
-	}
+		
+	} 
 	
 	public override void LoadSavedGame( SavedGame save )
 	{
