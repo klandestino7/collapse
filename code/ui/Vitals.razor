@@ -13,11 +13,11 @@
 }
 
 <root>
-    <label class="health">Health: @(Health)</label>
-    <label class="stamina">Stamina: @(Stamina)</label>
-    <label class="calories">Calories: @(Calories)</label>
-    <label class="hydration">Hydration: @(Hydration)</label>
-    <label class="temperature">Temperature: @(Temperature)&deg;C</label>
+    <label class="health">@(healthIcon) @(Health)</label>
+    <label class="stamina">@(staminaIcon) @(Stamina)</label>
+    <label class="calories">@(caloriesIcon) @(Calories)</label>
+    <label class="hydration">@(hydrationIcon) @(Hydration)</label>
+    <label class="temperature">@(temperatureIcon) @(Temperature)&deg;C</label>
 </root>
 
 @code
@@ -28,9 +28,17 @@
     private float Hydration => CollapsePlayer.Me.Hydration.CeilToInt();
     private float Temperature => CollapsePlayer.Me.Temperature.CeilToInt();
 
+    private string healthIcon = "health";
+    private string staminaIcon = "stamina";
+    private string caloriesIcon = "calories";
+    private string hydrationIcon = "hydration";
+    private string temperatureIcon = "temperature";
+
     protected override int BuildHash()
     {
         if ( !CollapsePlayer.Me.IsValid() ) return 0;
+
+
         return HashCode.Combine( CollapsePlayer.Me, Health, Stamina, Temperature, Calories, Hydration );
     }
 }

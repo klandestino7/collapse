@@ -1,7 +1,7 @@
 ﻿InventorySlot {
     transition: all 0.1s ease-in;
-    border: 2px solid rgba(0, 0, 0, 0.2);
-    background-color:rgba(43, 43, 43, 0.75); 
+    border: 1px solid rgba(200,200,200,0.04);
+    background-color:rgba(30, 30, 30, 0.75); 
     border-radius: 2px;
     justify-content: center;
     align-items: center;
@@ -44,7 +44,7 @@
     .slot {
         position: absolute;
         pointer-events: none;
-        font-family: Vollkorn;
+        font-family: Rubik;
         font-size: 16px;
         top: 7px;
         left: 6px;
@@ -55,7 +55,7 @@
     .stacksize {
         position: absolute;
         pointer-events: none;
-        font-family: Vollkorn;
+        font-family: Rubik;
         text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
         font-size: 20px;
         color: white;
