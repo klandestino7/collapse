@@ -54,15 +54,16 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 			// var p = new CollapsePlayer();
 			var Cursor = player.Cursor;
 
-			var cameraPosition = Camera.Position;
+			var cameraPosition = player.AimRay.Position;
 
 			if (Game.IsClient)
 			{
 				cursorDirection = Screen.GetDirection( Screen.Size * Cursor );
 			}
 
+			/*
 			var startPosition = cameraPosition;
-			var endPosition = cameraPosition + cursorDirection * 1000f;
+			var endPosition = cameraPosition + player.m_v3PawnCursorDir * 1000f;
 
 			var cursor = Trace.Ray(cameraPosition, endPosition)
 				.WithAnyTags("world")
@@ -100,16 +101,32 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 			// var direction = (trace.EndPosition - position).Normal;
 			// direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * Spread * 0.25f;
+			*/
 
-			var direction = (trace.EndPosition - position).Normal;
+			Vector3? muzzlePos = GetMuzzlePosition();
+
+			Vector3 fallbackMuzzlePos = muzzlePos.HasValue ? muzzlePos.Value : player.EyePosition;
+
+			var endTrace = Trace.Ray(player.AimRay.Position, player.AimRay.Position + (GetAttachment( MuzzleAttachment ).Value.Rotation.Forward * 1000.0f) )
+				.WithAnyTags("world")
+				.WithoutTags("wall")
+				.Radius(2)
+				.Run();
+
+			var trace = Trace.Ray(fallbackMuzzlePos, endTrace.EndPosition)
+				.Ignore( player )
+				.Ignore( this )
+				.Run();
+
+			var direction = (trace.EndPosition - fallbackMuzzlePos).Normal;
 			direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random).WithZ( 0f ) * Spread * 0.25f;
 			direction = direction.Normal;
 
 			var velocity = (direction * Speed) + (player.Velocity * InheritVelocity);
 			velocity = AdjustProjectileVelocity( velocity );
 
-			position -= direction * Speed * Time.Delta;
-			projectile.Initialize( position, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
+			fallbackMuzzlePos -= direction * Speed * Time.Delta;
+			projectile.Initialize( fallbackMuzzlePos, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
 			
 			OnProjectileFired( projectile );
 		}

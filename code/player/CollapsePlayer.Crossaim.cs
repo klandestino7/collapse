@@ -7,7 +7,7 @@ public partial class CollapsePlayer
 	public Rotation lookToRotation;
 	public Vector3 cursorDirection { get; private set; }
 
-	public Vector3 WorldAimPosition { get; private set; }
+	public Vector3 m_v3PawnCursorDir { get; private set ; }
 
     public void CrossaimSimulation()
     {
@@ -28,22 +28,32 @@ public partial class CollapsePlayer
 			cursorDirection = Screen.GetDirection( Screen.Size * Cursor );
 		}
 
-		var startPosition = Camera.Position;
-		var endPosition = startPosition + cursorDirection * 1000f;
+		var cursorTraceStartPos = Camera.Position;
+		var cursorTraceEndPos = cursorTraceStartPos + (cursorDirection * 1000.0f);
 
-		var cursor = Trace.Ray(startPosition, endPosition)
+		var cursorTrace = Trace.Ray(cursorTraceStartPos, cursorTraceEndPos)
 			.WithAnyTags("world")
 			.WithoutTags("wall")
 			.Radius(8)
 			.Run();
 
-		var pawnPosToCursorDirection = (cursor.EndPosition - this.Position).Normal;
+		bool inCombat = aimButtonPressed; // !Input.MouseDelta.IsNearZeroLength()
 
-		var justWalking = playerOnMovement && !aimButtonPressed;
+		Vector3 cursorTraceHitPos = cursorTrace.EndPosition; // cursorTrace.Value;
 
-		var lookAtRotation = justWalking ? Rotation.LookAt(InputDirection, Vector3.Up) : Rotation.LookAt(pawnPosToCursorDirection.WithZ(0f));
+		Vector3 aimrayDirToCursor = (cursorTraceHitPos - this.AimRay.Position).Normal;
 
-		var animHelperWithLookAt = justWalking ? EyePosition : cursor.EndPosition;
+		bool walkingInCombat = playerOnMovement && inCombat;
+		var walkingNotInCombat = playerOnMovement; // && !aimButtonPressed;
+
+		Rotation lookAtRotation = Rotation.LookAt(InputDirection, Vector3.Up); 
+		Vector3 lookAtPos = this.EyePosition;
+
+		if (inCombat)
+		{
+			lookAtRotation = Rotation.LookAt(aimrayDirToCursor.WithZ(0f));
+			lookAtPos = cursorTraceHitPos;
+		}
 
 		var animHelper = new CitizenAnimationHelper( this );
 
@@ -52,33 +62,41 @@ public partial class CollapsePlayer
 			animHelper.IsWeaponLowered = false;
 		}
 
-		if ( justWalking )
+		if ( walkingNotInCombat )
 		{
-			lookToRotation = Rotation.Lerp(Rotation, lookAtRotation, Time.Delta * 2f);
 		}
 
 		// MIRANDO E PARADO
 		if (aimButtonPressed && !playerOnMovement ) 
 		{
-			lookToRotation = Rotation.Lerp(Rotation, lookAtRotation, Time.Delta * 2f);
 		}
 
 		// CLICAR E PARADO
 		if ( attackButtonPressed && !playerOnMovement ) 
 		{
-			lookToRotation = Rotation.Lerp(Rotation, lookAtRotation, Time.Delta * 2f);
 		}
 
 		// ANDANDO E MIRANDO
 		if ( aimButtonPressed && playerOnMovement && !runButtonPressed) 
 		{
-			lookToRotation = Rotation.Lerp(Rotation, lookAtRotation, Time.Delta * 2f);
 		}
 
-		animHelper.WithLookAt( animHelperWithLookAt , 1.0f, 1.0f, 0.5f ); 
+		lookAtRotation = Rotation.Lerp(Rotation, lookAtRotation, Time.Delta * 5f);
 
-		Rotation = lookToRotation;
+		if ( inCombat /* && (m_v3PawnCursorDir == null || m_v3PawnCursorDir.Distance(aimrayDirToCursor) >= 0.01f) */)
+		{
+			Velocity = Velocity + aimrayDirToCursor * 10.0f;
 
-		WorldAimPosition = cursor.EndPosition;
+			m_v3PawnCursorDir = aimrayDirToCursor;
+		}
+		else
+		{
+			m_v3PawnCursorDir = this.AimRay.Forward;
+		}
+
+		animHelper.WithVelocity( Velocity );
+		animHelper.WithLookAt( lookAtPos, 1.0f, 1.0f, 0.5f );
+
+		Rotation = lookAtRotation;
     }
 }
