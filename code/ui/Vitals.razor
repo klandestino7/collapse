@@ -13,11 +13,11 @@
 }
 
 <root>
-    <label class="health">@(healthIcon) @(Health)</label>
-    <label class="stamina">@(staminaIcon) @(Stamina)</label>
-    <label class="calories">@(caloriesIcon) @(Calories)</label>
-    <label class="hydration">@(hydrationIcon) @(Hydration)</label>
-    <label class="temperature">@(temperatureIcon) @(Temperature)&deg;C</label>
+    <label class="health"><img @ref="healthIcon" src="/textures/ui/vitals/hearth.png" class="icon" /> @(Health)</label>
+    <label class="stamina"><img  @ref="staminaIcon" src="/textures/ui/vitals/stamina.png" class="icon" /> @(Stamina)</label>
+    <label class="calories"><img  @ref="caloriesIcon" src="/textures/ui/vitals/calories.png" class="icon" /> @(Calories)</label>
+    <label class="hydration"><img  @ref="hydrationIcon" src="/textures/ui/vitals/hydration.png" class="icon" /> @(Hydration)</label>
+    <label class="temperature"><img  @ref="temperatureIcon" src="/textures/ui/vitals/temperature.png" class="icon" /> @(Temperature)&deg;C</label>
 </root>
 
 @code
@@ -28,12 +28,11 @@
     private float Hydration => CollapsePlayer.Me.Hydration.CeilToInt();
     private float Temperature => CollapsePlayer.Me.Temperature.CeilToInt();
 
-    private string healthIcon = "health";
-    private string staminaIcon = "stamina";
-    private string caloriesIcon = "calories";
-    private string hydrationIcon = "hydration";
-    private string temperatureIcon = "temperature";
-
+    public Image healthIcon { get; set; }
+    public Image staminaIcon { get; set; }
+    public Image caloriesIcon { get; set; }
+    public Image hydrationIcon { get; set; }
+    public Image temperatureIcon { get; set; }
     protected override int BuildHash()
     {
         if ( !CollapsePlayer.Me.IsValid() ) return 0;
