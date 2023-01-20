@@ -41,7 +41,7 @@ public partial class CollapsePlayer
 
 		var justWalking = playerOnMovement && !aimButtonPressed;
 
-		var lookAtRotation = justWalking ? Rotation.LookAt(InputDirection, Vector3.Up) : Rotation.LookAt(pawnPosToCursorDirection);
+		var lookAtRotation = justWalking ? Rotation.LookAt(InputDirection, Vector3.Up) : Rotation.LookAt(pawnPosToCursorDirection.WithZ(0f));
 
 		var animHelperWithLookAt = justWalking ? EyePosition : cursor.EndPosition;
 
