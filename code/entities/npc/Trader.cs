@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace NxtStudio.Collapse;
+namespace NxtStudio.Collapse.NPC;
+
 [HammerEntity]
 [Title( "Trader" )]
 [Model( Model = "models/citizen/citizen.vmdl" )]

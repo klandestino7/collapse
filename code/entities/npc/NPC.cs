@@ -2,9 +2,8 @@ using Sandbox;
 using System.Collections.Generic;
 using System.IO;
 
-namespace NxtStudio.Collapse;
+namespace NxtStudio.Collapse.NPC;
 
-[Category( "NPC" )]
 public partial class NPC : AnimatedEntity
 {
 	/// <summary>
