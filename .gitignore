@@ -20,3 +20,4 @@ release.zip
 *.vsnd_c
 *.vpcf_c
 *.vpost_c
+*.*_c
