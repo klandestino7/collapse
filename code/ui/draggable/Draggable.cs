@@ -56,8 +56,8 @@ public partial class Draggable : Panel
 
 	public void UpdatePosition()
 	{
-		Style.Left = Length.Pixels( (Mouse.Position.x - 120f) * ScaleFromScreen );
-		Style.Top = Length.Pixels( (Mouse.Position.y - 120f) * ScaleFromScreen );
+		Style.Left = Length.Pixels( (Mouse.Position.x - 80f) * ScaleFromScreen );
+		Style.Top = Length.Pixels( (Mouse.Position.y - 80f) * ScaleFromScreen );
 	}
 
 	public void SetMode( DraggableMode mode )
@@ -69,8 +69,8 @@ public partial class Draggable : Panel
 	{
 		ActiveDraggable = draggable;
 		Style.SetBackgroundImage( draggable.GetIconTexture() );
-		Style.Width = Length.Pixels( 80 * ScaleFromScreen );
-		Style.Height = Length.Pixels( 80 * ScaleFromScreen );
+		Style.Width = Length.Pixels( 70 * ScaleFromScreen );
+		Style.Height = Length.Pixels( 70 * ScaleFromScreen );
 	}
 
 	public override void Tick()
