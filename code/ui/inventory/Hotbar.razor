@@ -47,10 +47,10 @@
     private bool IsHidden()
     {
         if ( Game.LocalPawn.LifeState == LifeState.Dead )
-            isHideHotbar = false;
+            return true;
 
         if ( Dialog.IsActive() )
-            isHideHotbar = false;
+            return true;
 
         <!-- Log.Info( $"HideHotbar {isHideHotbar} "); -->
         return false;
