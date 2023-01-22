@@ -114,6 +114,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 				.Run();
 
 			var trace = Trace.Ray(fallbackMuzzlePos, endTrace.EndPosition)
+				.WithoutTags( "trigger" )
 				.Ignore( player )
 				.Ignore( this )
 				.Run();

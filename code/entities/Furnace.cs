@@ -99,7 +99,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		{
 			if ( Game.IsServer )
 			{
-				var item = InventorySystem.CreateItem<CampfireItem>();
+				var item = InventorySystem.CreateItem<FurnaceItem>();
 				player.TryGiveItem( item );
 				player.PlaySound( "inventory.move" );
 				Delete();

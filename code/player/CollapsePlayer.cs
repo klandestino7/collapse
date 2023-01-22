@@ -221,6 +221,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		var cursor = Trace.Ray( startPosition, endPosition )
 			.EntitiesOnly()
 			.UseHitboxes()
+			.WithoutTags( "trigger" )
 			.WithTag( "player" )
 			.Size( 4f )
 			.Run();
@@ -378,7 +379,8 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		TimeSinceLastFootstep = 0f;
 
 		var tr = Trace.Ray( position, position + Vector3.Down * 20f )
-			.Radius( 1 )
+			.WithoutTags( "trigger" )
+			.Radius( 1f )
 			.Ignore( this )
 			.Run();
 
@@ -454,6 +456,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		var endPosition = CameraPosition + CursorDirection * 1000f;
 		var cursor = Trace.Ray( startPosition, endPosition )
 			.EntitiesOnly()
+			.WithoutTags( "trigger" )
 			.WithTag( "hover" )
 			.Ignore( this )
 			.Size( 16f )
@@ -462,6 +465,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		if ( cursor.Entity.IsValid() )
 		{
 			var visible = Trace.Ray( EyePosition, cursor.Entity.WorldSpaceBounds.Center )
+			.WithoutTags( "trigger" )
 				.Ignore( this )
 				.Ignore( ActiveChild )
 				.Run();
@@ -648,6 +652,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 				timeSinceJumpReleased = 1;
 			}
 
+			SimulateConsumable();
 			SimulateAmmoType();
 			SimulateHotbar();
 			SimulateInventory();
@@ -778,6 +783,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 	private void SimulateSleeping()
 	{
 		var trace = Trace.Ray( Position + Vector3.Up * 8f, Position + Vector3.Down * 100f )
+			.WithoutTags( "trigger" )
 			.Ignore( this )
 			.Run();
 
@@ -923,6 +929,16 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		return false;
 	}
 
+	private void SimulateConsumable()
+	{
+		var consumable = GetActiveHotbarItem() as ConsumableItem;
+
+		if ( consumable.IsValid() && Input.Released( InputButton.PrimaryAttack ) )
+		{
+			consumable.Consume( this );
+		}
+	}
+
 	private void SimulateDeployable()
 	{
 		var deployable = GetActiveHotbarItem() as DeployableItem;
@@ -944,6 +960,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		var endPosition = cameraPosition + cursorDirection * 1000f;
 
 		var trace = Trace.Ray( cameraPosition, endPosition )
+			.WithoutTags( "trigger" )
 			.WithAnyTags( deployable.ValidTags )
 			.Run();
 
@@ -959,16 +976,20 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 			ghost.Rotation = Rotation.FromYaw( DeployableYaw );
 			ghost.Position = hitPosition;
 
-			var collision = Trace.Body( ghost.PhysicsBody, ghost.Position ).Run();
-			var isPositionValid = !collision.Hit && deployable.CanPlaceOn( trace.Entity );
+			var isPositionValid = !Deployable.IsCollidingWithWorld( ghost ) && deployable.CanPlaceOn( trace.Entity );
 
 			if ( !isAuthorized || !isPositionValid || !isWithinSight || !isWithinRange )
 			{
 				var cursor = Trace.Ray( startPosition, endPosition )
+					.WithoutTags( "trigger" )
 					.WorldOnly()
 					.Run();
 
-				ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
+				if ( isAuthorized && isPositionValid )
+					ghost.RenderColor = Color.Orange.WithAlpha( 0.5f );
+				else
+					ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
+				
 				ghost.Position = cursor.EndPosition + Vector3.Up * 4f;
 			}
 			else
@@ -992,8 +1013,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 					ghost.PhysicsBody.Rotation = ghost.Rotation;
 					ghost.ResetInterpolation();
 
-					var collision = Trace.Body( ghost.PhysicsBody, ghost.Position ).Run();
-					var isPositionValid = !collision.Hit && deployable.CanPlaceOn( trace.Entity );
+					var isPositionValid = !Deployable.IsCollidingWithWorld( ghost ) && deployable.CanPlaceOn( trace.Entity );
 
 					if ( isPositionValid )
 					{
@@ -1052,6 +1072,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 	private bool CanSeePosition( Vector3 position )
 	{
 		var trace = Trace.Ray( EyePosition, position )
+			.WithoutTags( "trigger" )
 			.WithAnyTags( "solid" )
 			.Run();
 
@@ -1114,7 +1135,11 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		{
 			var ghost = Structure.GetOrCreateGhost( structureType );
 			var match = ghost.LocateSocket( trace.EndPosition );
-			var isValid = isAuthorized && Structure.CanAfford( this, structureType ) && IsPlacementRange( trace.EndPosition ) && CanSeePosition( trace.EndPosition );
+			var isCollisionError = false;
+
+			var isWithinRange = IsPlacementRange( trace.EndPosition );
+			var isWithinSight = CanSeePosition( trace.EndPosition );
+			var isValid = isAuthorized && Structure.CanAfford( this, structureType ) && isWithinRange && isWithinSight;
 
 			if ( match.IsValid )
 			{
@@ -1126,13 +1151,24 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 				ghost.ResetInterpolation();
 
 				if ( ghost.RequiresSocket || !ghost.IsValidPlacement( ghost.Position, trace.Normal ) )
+				{
+					isCollisionError = true;
 					isValid = false;
+				}
+			}
+			
+			if ( ghost.IsCollidingWithWorld() )
+			{
+				isCollisionError = true;
+				isValid = false;
 			}
 
 			if ( isValid )
 				ghost.RenderColor = Color.Cyan.WithAlpha( 0.5f );
-			else
+			else if ( isCollisionError )
 				ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
+			else
+				ghost.RenderColor = Color.Orange.WithAlpha( 0.5f );
 		}
 
 		if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
@@ -1174,10 +1210,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 
 				if ( match.IsValid )
 				{
-					match.Ours.Connect( match.Theirs );
 					structure.SnapToSocket( match );
-					structure.OnConnected( match.Ours, match.Theirs );
-					structure.OnPlacedByPlayer( this );
 					isValid = true;
 
 				}
@@ -1187,6 +1220,11 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 					isValid = structure.IsValidPlacement( structure.Position, trace.Normal );
 				}
 
+				if ( structure.IsCollidingWithWorld() )
+				{
+					isValid = false;
+				}
+
 				if ( !isValid )
 				{
 					Thoughts.Show( To.Single( this ), "invalid_placement", Game.Random.FromArray( InvalidPlacementThoughts ) );
@@ -1194,6 +1232,14 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 				}
 				else
 				{
+					if ( match.IsValid )
+					{
+						match.Ours.Connect( match.Theirs );
+						structure.OnConnected( match.Ours, match.Theirs );
+					}
+
+					structure.OnPlacedByPlayer( this );
+
 					var soundName = structure.PlaceSoundName;
 
 					if ( deployable.IsValid() && !string.IsNullOrEmpty( deployable.PlaceSoundName ) )

@@ -19,6 +19,8 @@ public class InventoryItem : IValid
 	public virtual Color Color => Color.White;
 	public virtual string Name => string.Empty;
 	public virtual Color IconTintColor => Color.White;
+	public virtual string PrimaryUseHint => string.Empty;
+	public virtual string SecondaryUseHint => string.Empty;
 	public virtual string UniqueId => string.Empty;
 	public virtual string Icon => string.Empty;
 	public virtual string Weight => string.Empty;

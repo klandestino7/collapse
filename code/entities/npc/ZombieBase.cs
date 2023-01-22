@@ -9,7 +9,7 @@ namespace NxtStudio.Collapse.NPC;
 [HammerEntity]
 [Title( "Zombie" )]
 [Model( Model = "models/zombie/citizen_zombie_mixamo.vmdl" )]
-public partial class ZombieBase : NPC, IContextActionProvider, IPersistence
+public partial class ZombieBase : NPC, IPersistence
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Cyan;
@@ -36,30 +36,53 @@ public partial class ZombieBase : NPC, IContextActionProvider, IPersistence
 		return DisplayName;
 	}
 
-	public void Search( CollapsePlayer player )
-	{
-		UI.Storage.Open( player, GetContextName(), this, Inventory );
-	}
+	// public void Search( ZombieBase zombie )
+	// {
+	// 	UI.Storage.Open( zombie, GetContextName(), this, Inventory );
+	// }
 
-	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
-	{
-		yield break;
-	}
+	// public IEnumerable<ContextAction> GetSecondaryActions( ZombieBase zombie )
+	// {
+	// 	yield break;
+	// }
 
-	public ContextAction GetPrimaryAction( CollapsePlayer player )
-	{
-		return SearchAction;
-	}
+	// public ContextAction GetPrimaryAction( ZombieBase zombie )
+	// {
+	// 	return SearchAction;
+	// }
+
+	// public virtual void OnContextAction( ZombieBase zombie, ContextAction action )
+	// {
+	// 	if ( action == SearchAction )
+	// 	{
+	// 		if ( Game.IsServer )
+	// 		{
+	// 			Search( zombie );
+	// 		}
+	// 	}
+	// }
 	
-	public void Search( CollapsePlayer player )
-	{
-		UI.Storage.Open( player, GetContextName(), this, Inventory );
-	}
+	// public void Search( ZombieBase zombie )
+	// {
+	// 	UI.Storage.Open( zombie, GetContextName(), this, Inventory );
+	// }
 	
 	public virtual bool ShouldSaveState()
 	{
 		return true;
 	}
+
+	public virtual void SerializeState( BinaryWriter writer )
+	{
+		writer.Write( Inventory );
+	}
+
+	public virtual void DeserializeState( BinaryReader reader )
+	{
+		Inventory = reader.ReadInventoryContainer();
+		Inventory.SetSlotLimit( 15 );
+	}
+
 
 	public virtual void BeforeStateLoaded()
 	{
@@ -76,7 +99,7 @@ public partial class ZombieBase : NPC, IContextActionProvider, IPersistence
 	{
 		var inventory = new InventoryContainer();
 		inventory.SetEntity( this );
-		inventory.SetSlotLimit( (ushort)MaxItemsForSale );
+		inventory.SetSlotLimit( 15 );
 		InventorySystem.Register( inventory );
 
 		Inventory = inventory;
@@ -87,8 +110,6 @@ public partial class ZombieBase : NPC, IContextActionProvider, IPersistence
 		AttachArmor( FeetArmor );
 
 		SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
-
-		NextRestockTime = 0f;
 
 		Tags.Add( "hover", "solid", "zombie" );
 
@@ -136,19 +157,19 @@ public partial class ZombieBase : NPC, IContextActionProvider, IPersistence
 	
 	private void ClientTick()
 	{
-		if ( IsClientOnly && TimeSinceSpawned > 120f )
-		{
-			Delete();
-		}
+		// if ( IsClientOnly && TimeSinceSpawned > 120f )
+		// {
+		// 	Delete();
+		// }
 	}
 
 	[Event.Tick.Server]
 	private void ServerTick()
 	{
-		if ( TimeSinceSpawned > 600f )
-		{
-			Delete();
-		}
+		// if ( TimeSinceSpawned > 600f )
+		// {
+		// 	Delete();
+		// }
 	}
 	
 	private void OnItemTaken( ushort slot, InventoryItem instance )

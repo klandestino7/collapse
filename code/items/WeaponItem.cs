@@ -6,6 +6,7 @@ namespace NxtStudio.Collapse;
 
 public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem, ILootSpawnerItem, IPurchasableItem
 {
+	public override string PrimaryUseHint => "Attack";
 	public override Color Color => ItemColors.Weapon;
 
 	public virtual int WorldModelMaterialGroup => Resource?.WorldModelMaterialGroup ?? 0;

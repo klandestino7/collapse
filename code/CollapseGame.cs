@@ -42,9 +42,6 @@ public partial class CollapseGame : GameManager
 		using var r = new BinaryReader( s );
 
 		PersistenceSystem.LoadAll( r );
-
-		HasLoadedWorld = true;
-		NextAutoSave = 60f;
 	}
 
 	public override void Spawn()
@@ -155,6 +152,9 @@ public partial class CollapseGame : GameManager
 			spawner.MaxPickupsPerSpawn = 60;
 			spawner.Interval = 90f;
 		}
+
+		HasLoadedWorld = true;
+		NextAutoSave = 60f;
 
 		base.PostLevelLoaded();
 	}

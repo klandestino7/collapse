@@ -1,0 +1,84 @@
+@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using NxtStudio.Collapse;
+
+@namespace NxtStudio.Collapse.UI
+@attribute [StyleSheet( "/ui/inputhints/InputHints.scss" )]
+@inherits Panel
+
+<root>
+    <div class="container">
+        @if ( HasPrimaryAttack() )
+        {
+            <InputHint Button=@InputButton.PrimaryAttack>@GetPrimaryAttackText()</InputHint>
+        }
+
+        @if ( HasSecondaryAttack() )
+        {
+            <InputHint Button=@InputButton.SecondaryAttack>@GetSecondaryAttackText()</InputHint>
+        }
+
+        <InputHint Button=@InputButton.Menu>Open Crafting</InputHint>
+        <InputHint Button=@InputButton.Score>Open Inventory</InputHint>
+        <InputHint Button=@InputButton.Use>@GetUseText()</InputHint>
+    </div>
+</root>
+
+@code
+{
+    protected override int BuildHash()
+    {
+        var player = CollapsePlayer.Me;
+        if ( !player.IsValid() ) return 0;
+
+        return HashCode.Combine( player, player.ActiveChild, player.HotbarIndex, player.LifeState, HasPrimaryAttack(), Cursor.Current.HasMoreOptions );
+    }
+
+    private string GetPrimaryAttackText()
+    {
+        if ( !CollapsePlayer.Me.IsValid() )
+            return string.Empty;
+
+        var hotbarItem = CollapsePlayer.Me.GetActiveHotbarItem();
+        return hotbarItem?.PrimaryUseHint ?? string.Empty;
+    }
+
+    private string GetSecondaryAttackText()
+    {
+        if ( !CollapsePlayer.Me.IsValid() )
+            return string.Empty;
+
+        var hotbarItem = CollapsePlayer.Me.GetActiveHotbarItem();
+        return hotbarItem?.SecondaryUseHint ?? string.Empty;
+    }
+
+    private bool HasSecondaryAttack()
+    {
+        if ( !CollapsePlayer.Me.IsValid() )
+            return false;
+
+        var hotbarItem = CollapsePlayer.Me.GetActiveHotbarItem();
+        return !string.IsNullOrEmpty( hotbarItem?.SecondaryUseHint ?? string.Empty );
+    }
+
+    private bool HasPrimaryAttack()
+    {
+        if (!CollapsePlayer.Me.IsValid())
+            return false;
+
+        var hotbarItem = CollapsePlayer.Me.GetActiveHotbarItem();
+        return !string.IsNullOrEmpty( hotbarItem?.PrimaryUseHint ?? string.Empty );
+    }
+
+    private string GetUseText()
+    {
+        if ( !CollapsePlayer.Me.IsValid() )
+            return string.Empty;
+
+        if ( Cursor.Current.HasMoreOptions )
+            return "(Hold) Options";
+        else
+            return "Interact";
+    }
+}
