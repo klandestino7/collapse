@@ -4,20 +4,17 @@ namespace NxtStudio.Collapse;
 
 public partial class TopDownCamera
 {
-
     public float MinZoom = 200f;//     
     public float MaxZoom = 900f;
-    
-    public float Radius = 50f;
     public float ZoomLevel { get; set; }
 
     public Vector3 LookAt { get; set; }
 
     public Vector3 camOffset { get; set; }
 
-    public float cos { get; set; }
-    public float sin { get; set; }
+    public Entity lastEntityDeleted {get; set;}
 
+    public PhysicsBody lastEntityTouch {get; set;}
 
     public void Update()
     {
@@ -44,15 +41,49 @@ public partial class TopDownCamera
         
         var tr = Trace.Ray(LookAt, camPos)
             .WithAnyTags("world")
-            .WithoutTags("wall")
+            .WithoutTags("solid")
             .Radius(2)
             .Run();
+
+
+        var roof = Trace.Ray(LookAt, camPos)
+            .WithAnyTags("roof")
+            .WithoutTags("hidden")
+            .Radius(2)
+            .Run();
+        
+        if ( roof.Hit || roof.Entity.IsValid() )
+        {   
+            if (roof.Entity is Roof )
+            {
+                if ( lastEntityTouch == null )
+                {
+                    // var cacheEntity = roof.Entity;
+                    
+                    var cacheEntity = (ModelEntity)roof.Entity;
+                    
+                    lastEntityTouch = roof.Body;
+                    Log.Info($"EU SETEI A Entidade { cacheEntity}"); 
+                    cacheEntity.Tags.Add( "hidden" );
+                }
+            }
+        }
+
+        if (!roof.Hit && lastEntityTouch != null )
+        {
+            var cacheEntity = lastEntityTouch.GetEntity();
+            
+            if (cacheEntity.IsValid())
+            {
+                Log.Info($" NÃO TENHO MAIS A ENTIDADE {cacheEntity}");
+                cacheEntity.Tags.Remove( "hidden" );
+                lastEntityTouch = null;
+            }
+        }
 
         camOffset = LookAt - camPos;
     
         Camera.Rotation = Rotation.Slerp( Camera.Rotation, Rotation.LookAt( camOffset, Vector3.Up ), Time.Delta * 8f );
-
-        // Camera.Rotation = Rotation.LookAt( Vector3.Down ); 
 
         Sound.Listener = new Transform()
         {
@@ -69,53 +100,5 @@ public partial class TopDownCamera
         // Camera.Position = Camera.Position.LerpTo( target, Time.Delta * 20f );
     
         Camera.FirstPersonViewer = null;
-
-
-
     }
-    //     ZoomLevel += Input.MouseWheel * Time.Delta * 8f;
-    //     ZoomLevel = ZoomLevel.Clamp( 0f, 1f );
-
-    //     Radius = 50f;
-    //     MinZoom = 70f;
-
-    //     var player = CollapsePlayer.Me;
-
-    //     var center = player.Position;
-
-    //     var lookAtX = center.x;
-    //     var lookAtY = center.y;
-    //     var zPos = center.z + MinZoom;
-    
-    //     // Log.Info( $"cos {cos} sin {sin}");
-
-    //     var X_deg0 = lookAtX + ( Radius * cos  );
-    //     var Y_deg0 = lookAtY + ( Radius * sin  );
-
-    //     var camPosition = new Vector3(X_deg0, Y_deg0, zPos + ( Radius * ZoomLevel ));
-
-    //     Sound.Listener = new Transform( center, Camera.Rotation );
-
-    //     Camera.Position = camPosition;
-	// 	Camera.FieldOfView = Screen.CreateVerticalFieldOfView( 50f );
-	// 	Camera.FirstPersonViewer = null; 
-
-    //     // Camera.Rotation = Rotation.Slerp( Camera.Rotation, Rotation.LookAt( center, Vector3.Up ), Time.Delta * 8f );
-
-    //     var rotationPos = new Vector3(Vector3.Down.x, Vector3.Down.x, Vector3.Down.z);
-
-    //     Camera.Rotation = Rotation.LookAt( Vector3.Down );
-    // }
-
-    
-
-    // public void FrameSimulate()
-	// {
-    //     for (float i = 0; i < 360; i += 0.5f ) 
-    //     {
-    //         double radians = (Math.PI / 180) * i;
-    //         cos = (float)Math.Cos(radians);
-    //         sin = (float)Math.Sin(radians);
-    //     }
-	// }
 }
