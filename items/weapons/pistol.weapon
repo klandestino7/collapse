@@ -4,7 +4,7 @@
 	{
 		WorldModelMaterialGroup = 0
 		ViewModelMaterialGroup = 0
-		WorldModelPath = resource:"weapons/rust_pistol/rust_pistol.vmdl"
+		WorldModelPath = resource:"models/m1911/w_m1911.vmdl"
 		AmmoType = "Pistol"
 		DefaultAmmo = 0
 		ClipSize = 9
@@ -49,7 +49,7 @@
 		UniqueId = "pistol"
 		Description = "A light damage crossbow for dealing ranged damage."
 		Icon = resource:"textures/items/weapon_pistol.png"
-		WorldModel = resource:"weapons/rust_pistol/rust_pistol.vmdl"
+		WorldModel = resource:"models/m1911/w_m1911.vmdl"
 		Tags = [  ]
 	}
 }
