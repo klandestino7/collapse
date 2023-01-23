@@ -46,10 +46,10 @@
                 background-tint: lighten( indianred, 0.2 );
             }
         }
-    }
 
-    .condition {
-        color: red;
+        .condition {
+            color: red;
+        }
     }
 
     &.is-hovered {
@@ -75,7 +75,7 @@
 
         width: 64px;
         height: 64px;
-        opacity: 1;
+        opacity: 1; 
     }
 }
 

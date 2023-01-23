@@ -36,7 +36,7 @@
 
                     @foreach ( var category in (RecipeCategory[])Enum.GetValues( typeof( RecipeCategory ) ) )
                     {
-                        if (category == RecipeCategory.None) continue;
+                        if ( category == RecipeCategory.None ) continue;
 
                         <CraftingCategory
                             Category=@category

@@ -11,7 +11,7 @@ public class CursorAction : Panel
 {
 	public ContextAction Action { get; private set; }
 
-	private Image Icon { get; set; } 
+	private Image Icon { get; set; }
 	private Label Name { get; set; }
 	private Label Condition { get; set; }
 
@@ -20,7 +20,7 @@ public class CursorAction : Panel
 		Icon = Add.Image( "", "icon" );
 		Name = Add.Label( "", "name" );
 		Condition = Add.Label( "", "condition" );
-	
+
 		BindClass( "visible", () => Action.IsValid() );
 	}
 
@@ -51,6 +51,8 @@ public class CursorAction : Panel
 
 		Name.Text = action.Name;
 		Action = action;
+
+		UpdateAvailability();
 	}
 
 	public override void Tick()
@@ -85,7 +87,7 @@ public class Cursor : Panel
 	private TimeSince LastActionTime { get; set; }
 	private int ActionHash { get; set; }
 	private Panel PlusMoreIcon { get; set; }
-	public Panel ActionCursor { get; set; }
+	private Panel ActionCursor { get; set; }
 	private Label Title { get; set; }
 
 	public bool HasMoreOptions => ActionContainer.ChildrenCount > 0;
@@ -98,6 +100,7 @@ public class Cursor : Panel
 		ActionContainer = Add.Panel( "actions" );
 		Title = Add.Label( "", "title" );
 		ActionCursor = Add.Panel( "action-cursor" );
+		Current = this;
 	}
 
 	public override void Tick()
