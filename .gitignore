@@ -12,6 +12,8 @@ release.zip
 .vs
 *.generated.*
 
+.idea/
+
 *.vpk
 *.vtex_c
 *.vmat_c
