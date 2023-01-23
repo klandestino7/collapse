@@ -1,14 +1,28 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace NxtStudio.Collapse;
 
 public abstract partial class LootSpawner : ModelEntity, IContextActionProvider, IPersistence
 {
-	public float InteractionRange => 150f;
+	[ConCmd.Server( "fsk.loot.restock" )]
+	public static void RestockAll()
+	{
+		foreach ( var s in All.OfType<LootSpawner>() )
+		{
+			if ( s.IsHidden )
+			{
+				s.Restock();
+				s.Show();
+			}
+		}
+	}
+
+	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Green;
-	public float GlowWidth => 0.2f;
+	public bool AlwaysGlow => true;
 
 	[Net] public TimeUntil NextRestockTime { get; private set; }
 
@@ -78,7 +92,6 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 
 		Inventory = reader.ReadInventoryContainer();
 		Inventory.IsTakeOnly = true;
-		Inventory.SlotChanged += OnSlotChanged;
 		Inventory.SetSlotLimit( (ushort)SlotLimit );
 	}
 
@@ -107,7 +120,6 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 		inventory.IsTakeOnly = true;
 		inventory.SetEntity( this );
 		inventory.SetSlotLimit( (ushort)SlotLimit );
-		inventory.SlotChanged += OnSlotChanged;
 		InventorySystem.Register( inventory );
 
 		Inventory = inventory;
@@ -125,19 +137,21 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 		var possibleItems = InventorySystem.GetDefinitions()
 			.OfType<ILootSpawnerItem>()
 			.Where( i => i.IsLootable )
-			.Where( i => i.LootChance > 0f && i.LootChance > MinLootChance && i.LootChance < MaxLootChance );
+			.Where( i => i.LootChance > 0f && i.LootChance >= MinLootChance && i.LootChance <= MaxLootChance );
 
 		if ( !possibleItems.Any() ) return;
 
-		var itemsToSpawn = Game.Random.Int( 1, SlotLimit );
+		var itemsToSpawn = Game.Random.Int( SlotLimit / 2, SlotLimit );
+		var spawnedItems = new HashSet<ILootSpawnerItem>();
 
 		for ( var i = 0; i < itemsToSpawn; i++ )
 		{
-			var u = possibleItems.Sum( p => p.LootChance );
+			var unspawnedItems = possibleItems.Except( spawnedItems );
+			var u = unspawnedItems.Sum( p => p.LootChance );
 			var r = Game.Random.Float() * u;
 			var s = 0f;
 
-			foreach ( var item in possibleItems )
+			foreach ( var item in unspawnedItems )
 			{
 				s += item.LootChance;
 
@@ -146,6 +160,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 					var instance = InventorySystem.CreateItem( item.UniqueId );
 					instance.StackSize = (ushort)item.LootStackSize;
 					Inventory.Stack( instance );
+					spawnedItems.Add( item );
 					break;
 				}
 			}
@@ -166,11 +181,8 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 			Restock();
 			Show();
 		}
-	}
 
-	private void OnSlotChanged( ushort slot )
-	{
-		if ( IsValid && Inventory.IsEmpty )
+		if ( !IsHidden && Inventory.IsEmpty )
 		{
 			NextRestockTime = RestockTime;
 			Hide();
@@ -179,7 +191,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 
 	private bool IsAreaClear()
 	{
-		var entities = FindInSphere( Position, 32f ).Where( e => !e.Equals( this ) );
+		var entities = FindInSphere( Position, 32f ).Where( e => !e.IsFromMap && !e.Equals( this ) );
 		return !entities.Any();
 	}
 

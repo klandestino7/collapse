@@ -12,7 +12,7 @@ public partial class CollapsePlayer
 		Rotation rotation;
 
 		// where should we be rotated to
-		var turnSpeed = 0.02f;
+		//var turnSpeed = 0.02f;
 
 		// If we're a bot, spin us around 180 degrees.
 		if ( Client.IsValid() && Client.IsBot )

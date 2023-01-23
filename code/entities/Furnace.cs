@@ -5,11 +5,11 @@ using System.IO;
 
 namespace NxtStudio.Collapse;
 
-public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity, IHeatEmitter, IPersistence
+public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity, IHeatEmitter
 {
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
+	public bool AlwaysGlow => false;
 	public Color GlowColor => Color.Orange;
-	public float GlowWidth => 0.2f;
 
 	[Net] public CookingProcessor Processor { get; private set; }
 
@@ -27,39 +27,18 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 	public Furnace()
 	{
 		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
-		PickupAction.SetCondition( p => Processor.IsEmpty && !Processor.IsActive );
+		PickupAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = Processor.IsEmpty && !Processor.IsActive
+			};
+		} );
 
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
 
 		IgniteAction = new( "ignore", "Ignite", "textures/ui/actions/ignite.png" );
 		ExtinguishAction = new( "extinguish", "Extinguish", "textures/ui/actions/disable.png" );
-	}
-
-	public bool ShouldSaveState()
-	{
-		return true;
-	}
-
-	public void BeforeStateLoaded()
-	{
-
-	}
-
-	public void AfterStateLoaded()
-	{
-
-	}
-
-	public void SerializeState( BinaryWriter writer )
-	{
-		writer.Write( Transform );
-		Processor.Serialize( writer );
-	}
-
-	public void DeserializeState( BinaryReader reader )
-	{
-		Transform = reader.ReadTransform();
-		Processor.Deserialize( reader );
 	}
 
 	public string GetContextName()
@@ -99,9 +78,10 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		{
 			if ( Game.IsServer )
 			{
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
+
 				var item = InventorySystem.CreateItem<FurnaceItem>();
 				player.TryGiveItem( item );
-				player.PlaySound( "inventory.move" );
 				Delete();
 			}
 		}
@@ -114,6 +94,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 					UI.Thoughts.Show( To.Single( player ), "fuel_empty", "It can't be ignited without something to burn." );
 					return;
 				}
+
 				Sound.FromWorld( To.Everyone, "fire.light", Position );
 				Processor.Start();
 			}
@@ -145,6 +126,20 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		Tags.Add( "hover", "solid" );
 
 		base.Spawn();
+	}
+
+	public override void SerializeState( BinaryWriter writer )
+	{
+		base.SerializeState( writer );
+
+		Processor.Serialize( writer );
+	}
+
+	public override void DeserializeState( BinaryReader reader )
+	{
+		base.DeserializeState( reader );
+
+		Processor.Deserialize( reader );
 	}
 
 	public override void ClientSpawn()

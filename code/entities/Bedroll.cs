@@ -4,11 +4,11 @@ using System.IO;
 
 namespace NxtStudio.Collapse;
 
-public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter, IPersistence
+public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter
 {
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
+	public bool AlwaysGlow => false;
 	public Color GlowColor => Color.White;
-	public float GlowWidth => 0.2f;
 
 	private ContextAction MakeHomeAction { get; set; }
 	private ContextAction PickupAction { get; set; }
@@ -16,46 +16,27 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 	public float EmissionRadius => 50f;
 	public float HeatToEmit => 5f;
 
-	public PersistenceHandle Handle { get; private set; }
-
 	[Net] private long OwnerId { get; set; }
 
 	public Bedroll()
 	{
 		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
-		PickupAction.SetCondition( p => p.Client.SteamId == OwnerId );
+		PickupAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = p.Client.SteamId == OwnerId
+			};
+		} );
 
 		MakeHomeAction = new( "home", "Make Home", "textures/ui/actions/make_home.png" );
-		MakeHomeAction.SetCondition( p => p.Client.SteamId == OwnerId && p.Bedroll != this );
-	}
-
-	public bool ShouldSaveState()
-	{
-		return true;
-	}
-
-	public void BeforeStateLoaded()
-	{
-
-	}
-
-	public void AfterStateLoaded()
-	{
-
-	}
-
-	public void SerializeState( BinaryWriter writer )
-	{
-		writer.Write( Handle );
-		writer.Write( Transform );
-		writer.Write( OwnerId );
-	}
-
-	public void DeserializeState( BinaryReader reader )
-	{
-		Handle = reader.ReadPersistenceHandle();
-		Transform = reader.ReadTransform();
-		OwnerId = reader.ReadInt64();
+		MakeHomeAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = p.Client.SteamId == OwnerId && p.Bedroll != this
+			};
+		} );
 	}
 
 	public string GetContextName()
@@ -87,12 +68,26 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 			if ( Game.IsServer )
 			{
 				Sound.FromScreen( To.Single( player ), "inventory.move" );
-				
+
 				var item = InventorySystem.CreateItem<BedrollItem>();
 				player.TryGiveItem( item );
 				Delete();
 			}
 		}
+	}
+
+	public override void SerializeState( BinaryWriter writer )
+	{
+		base.SerializeState( writer );
+
+		writer.Write( OwnerId );
+	}
+
+	public override void DeserializeState( BinaryReader reader )
+	{
+		base.DeserializeState( reader );
+
+		OwnerId = reader.ReadInt64();
 	}
 
 	public override void OnPlacedByPlayer( CollapsePlayer player, TraceResult trace )
@@ -109,8 +104,6 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 		SphereTrigger.Attach( this, EmissionRadius );
 
 		Tags.Add( "hover", "solid", "passplayers" );
-
-		Handle = new();
 
 		base.Spawn();
 	}

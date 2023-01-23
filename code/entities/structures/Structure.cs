@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace NxtStudio.Collapse;
 
-public abstract partial class Structure : ModelEntity, IPersistence
+public abstract partial class Structure : ModelEntity, IPersistence, IDamageable, IContextActionProvider
 {
 	[ConVar.Replicated( "fsk.privilege.range" )]
 	public static float PrivilegeRange { get; set; } = 512f;
@@ -59,6 +59,11 @@ public abstract partial class Structure : ModelEntity, IPersistence
 	public virtual string PlaceSoundName => "building.place";
 	public virtual bool RequiresSocket => true;
 	public virtual bool ShouldRotate => true;
+	public virtual float MaxHealth => 100f;
+
+	public virtual float InteractionRange => 100f;
+	public virtual bool AlwaysGlow => false;
+	public virtual Color GlowColor => Color.White;
 
 	public bool IsCollidingWithWorld()
 	{
@@ -95,7 +100,7 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		ResetInterpolation();
 	}
 
-	public bool ShouldSaveState()
+	public virtual bool ShouldSaveState()
 	{
 		return true;
 	}
@@ -108,7 +113,7 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		}
 	}
 
-	public void AfterStateLoaded()
+	public virtual void AfterStateLoaded()
 	{
 
 	}
@@ -139,6 +144,26 @@ public abstract partial class Structure : ModelEntity, IPersistence
 				socket.Deserialize( reader );
 			}
 		}
+	}
+
+	public virtual string GetContextName()
+	{
+		return $"Structure ({Health.CeilToInt()}HP)";
+	}
+
+	public virtual IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
+	{
+		yield break;
+	}
+
+	public virtual ContextAction GetPrimaryAction( CollapsePlayer player )
+	{
+		return default;
+	}
+
+	public virtual void OnContextAction( CollapsePlayer player, ContextAction action )
+	{
+
 	}
 
 	public virtual void OnPlacedByPlayer( CollapsePlayer player )
@@ -190,6 +215,15 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		}
 
 		return default;
+	}
+
+	public override void Spawn()
+	{
+		Health = MaxHealth;
+
+		Tags.Add( "hover" );
+
+		base.Spawn();
 	}
 
 	protected Socket AddSocket( string attachmentName )

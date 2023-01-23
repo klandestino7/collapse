@@ -9,9 +9,6 @@ public class WeaponResource : CollapseItemResource
 	[Property]
 	public int WorldModelMaterialGroup { get; set; }
 
-	[Property]
-	public int ViewModelMaterialGroup { get; set; }
-
 	[Property, ResourceType( "vmdl" )]
 	public string WorldModelPath { get; set; }
 

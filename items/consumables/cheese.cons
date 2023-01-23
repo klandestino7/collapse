@@ -1,0 +1,48 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		MaxStackSize = 5
+		DefaultStackSize = 1
+		ConsumeSound = null
+		ConsumeEffect = null
+		ActivateSound = null
+		ActivateDelay = 0
+		Effects = 
+		[
+			{
+				Amount = 20
+				Duration = 5
+			},
+			{
+				Target = "Hydration"
+				Amount = 5
+				Duration = 5
+			},
+			{
+				Target = "Health"
+				Amount = 10
+				Duration = 10
+			},
+		]
+		IsCookable = false
+		CookedItemId = ""
+		CookedQuantity = 0
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = true
+		SalvageCost = 15
+		StockStackSize = "1.00,10.00,1"
+		StockChance = 0.6
+		IsLootable = true
+		LootChance = 0.15
+		OncePerContainer = true
+		LootStackSize = "1.00,2.00,1"
+		ItemName = "Cheese"
+		UniqueId = "cheese"
+		Description = "Some lovely looking cheese. How is this still fresh\?"
+		Icon = resource:"textures/items/cheese.png"
+		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
+		Tags = [  ]
+	}
+}

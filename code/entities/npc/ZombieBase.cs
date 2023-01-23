@@ -163,13 +163,11 @@ public partial class ZombieBase : NPC, IPersistence
 		// }
 	}
 
-	[Event.Tick.Server]
-	private void ServerTick()
+	protected override void ServerTick()
 	{
-		// if ( TimeSinceSpawned > 600f )
-		// {
-		// 	Delete();
-		// }
+		base.ServerTick();
+
+
 	}
 	
 	private void OnItemTaken( ushort slot, InventoryItem instance )

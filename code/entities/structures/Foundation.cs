@@ -8,10 +8,14 @@ namespace NxtStudio.Collapse;
 [Description( "The most fundamental building block. Walls, doors and windows can be attached to it." )]
 [Icon( "textures/ui/foundation.png" )]
 [ItemCost( "wood", 100 )]
-public partial class Foundation : Structure
+public partial class Foundation : UpgradableStructure
 {
+	protected override int StoneUpgradeCost => 100;
+	protected override int MetalUpgradeCost => 50;
+
 	public override bool RequiresSocket => false;
 	public override bool ShouldRotate => false;
+	public override float MaxHealth => 250f;
 
 	public Stockpile Stockpile { get; private set; }
 
@@ -43,7 +47,24 @@ public partial class Foundation : Structure
 		SetModel( "models/structures/foundation.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
-		Tags.Add( "solid", "foundation" );
+		Tags.Add( "hammer", "solid", "foundation" );
+	}
+
+	public override void OnPlacedByPlayer( CollapsePlayer player )
+	{
+		var pickups = FindInBox( WorldSpaceBounds ).OfType<ResourcePickup>();
+
+		foreach ( var pickup in pickups )
+		{
+			pickup.Delete();
+		}
+
+		base.OnPlacedByPlayer( player );
+	}
+
+	public override string GetContextName()
+	{
+		return $"Foundation ({Health.CeilToInt()}HP)";
 	}
 
 	public override void OnConnected( Socket ours, Socket theirs )

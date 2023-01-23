@@ -9,7 +9,7 @@ namespace NxtStudio.Collapse;
 
 public static class PersistenceSystem
 {
-	public static int Version => 12;
+	public static int Version => 16;
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
 	private static ulong PersistentId { get; set; }
@@ -88,7 +88,6 @@ public static class PersistenceSystem
 		Game.Save( save );
 	}
 
-	[ConCmd.Admin( "fsk.load" )]
 	public static void LoadAll( BinaryReader reader )
 	{
 		foreach ( var p in Entity.All.OfType<IPersistence>() )

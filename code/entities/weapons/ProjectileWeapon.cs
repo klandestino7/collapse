@@ -25,9 +25,6 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
         }
 	}
 
-	
-	public Vector3 cursorDirection { get; private set; }
-
 	public virtual void FireProjectile()
 	{
 		if ( Owner is not CollapsePlayer player )
@@ -51,30 +48,9 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 			OnCreateProjectile( projectile );
 
-			// var p = new CollapsePlayer();
-			var Cursor = player.Cursor;
-
-			var cameraPosition = player.AimRay.Position;
-
-			if (Game.IsClient)
-			{
-				cursorDirection = Screen.GetDirection( Screen.Size * Cursor );
-			}
-
-			/*
-			var startPosition = cameraPosition;
-			var endPosition = cameraPosition + player.m_v3PawnCursorDir * 1000f;
-
-			var cursor = Trace.Ray(cameraPosition, endPosition)
-				.WithAnyTags("world")
-				.WithoutTags("wall")
-				.Radius(2)
-				.Run();
-
 			var eyePosition = player.EyePosition;
-			var forward = cursor.EndPosition;
-
-			var position = cameraPosition + forward * 40f;
+			var forward = player.EyeRotation.Forward;
+			var position = eyePosition + forward * 40f;
 			var muzzle = GetMuzzlePosition();
 
 			if ( muzzle.HasValue )
@@ -83,6 +59,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 			}
 
 			var trace = Trace.Ray( eyePosition, position )
+				.WithoutTags( "trigger" )
 				.Ignore( player )
 				.Ignore( this )
 				.Run();
@@ -93,42 +70,16 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 				position = trace.EndPosition - trace.Direction * 4f;
 			}
 
-			// endPosition = endPosition * BulletRange; 
-			trace = Trace.Ray( cameraPosition, endPosition )
-				.Ignore( player )
-				.Ignore( this )
-				.Run();
-
-			// var direction = (trace.EndPosition - position).Normal;
-			// direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * Spread * 0.25f;
-			*/
-
-			Vector3? muzzlePos = GetMuzzlePosition();
-
-			Vector3 fallbackMuzzlePos = muzzlePos.HasValue ? muzzlePos.Value : player.EyePosition;
-
-			var endTrace = Trace.Ray(player.AimRay.Position, player.AimRay.Position + (GetAttachment( MuzzleAttachment ).Value.Rotation.Forward * 1000.0f) )
-				.WithAnyTags("world")
-				.WithoutTags("wall")
-				.Radius(2)
-				.Run();
-
-			var trace = Trace.Ray(fallbackMuzzlePos, endTrace.EndPosition)
-				.WithoutTags( "trigger" )
-				.Ignore( player )
-				.Ignore( this )
-				.Run();
-
-			var direction = (trace.EndPosition - fallbackMuzzlePos).Normal;
+			var direction = forward;
 			direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random).WithZ( 0f ) * Spread * 0.25f;
 			direction = direction.Normal;
 
 			var velocity = (direction * Speed) + (player.Velocity * InheritVelocity);
 			velocity = AdjustProjectileVelocity( velocity );
 
-			fallbackMuzzlePos -= direction * Speed * Time.Delta;
-			projectile.Initialize( fallbackMuzzlePos, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
-			
+			position -= direction * Speed * Time.Delta;
+			projectile.Initialize( position, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
+
 			OnProjectileFired( projectile );
 		}
 	}

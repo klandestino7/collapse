@@ -6,9 +6,9 @@ namespace NxtStudio.Collapse;
 
 public abstract partial class ResourcePickup : ModelEntity, IContextActionProvider
 {
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
 	public Color GlowColor => Color.White;
-	public float GlowWidth => 0.2f;
+	public bool AlwaysGlow => false;
 
 	private ContextAction HarvestAction { get; set; }
 
@@ -59,6 +59,12 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 	public override void OnNewModel( Model model )
 	{
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+
+		if ( !PhysicsBody.IsValid() )
+		{
+			SetupPhysicsFromSphere( PhysicsMotionType.Keyframed, Vector3.Zero, 16f );
+		}
+
 		base.OnNewModel( model );
 	}
 

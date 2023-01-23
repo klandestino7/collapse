@@ -85,15 +85,31 @@
 				[
 					{
 						_class = "DefaultMaterialGroup"
+						remaps = [  ]
+						use_global_default = false
+						global_default_material = ""
+					},
+					{
+						_class = "MaterialGroup"
+						name = "stone"
 						remaps = 
 						[
 							{
-								from = "materials/dev/dev_measuregeneric01.vmat"
-								to = "models/rust_props/portacabins/portacabin_wood_panels.vmat"
+								from = "models/rust_props/portacabins/portacabin_wood_panels.vmat"
+								to = "materials/concrete_a_bld.vmat"
 							},
 						]
-						use_global_default = false
-						global_default_material = ""
+					},
+					{
+						_class = "MaterialGroup"
+						name = "metal"
+						remaps = 
+						[
+							{
+								from = "models/rust_props/portacabins/portacabin_wood_panels.vmat"
+								to = "models/rust_props/remnant_container/corrugated_a_cont.vmat"
+							},
+						]
 					},
 				]
 			},

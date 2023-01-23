@@ -8,18 +8,35 @@
 		ConsumeEffect = null
 		ActivateSound = null
 		ActivateDelay = 0
-		Effects = null
+		Effects = 
+		[
+			{
+				Amount = 25
+				Duration = 5
+			},
+			{
+				Target = "Health"
+				Amount = 15
+				Duration = 10
+			},
+			{
+				Target = "Hydration"
+				Amount = 10
+				Duration = 5
+			},
+		]
 		IsCookable = false
 		CookedItemId = ""
 		CookedQuantity = 0
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = true
-		SalvageCost = 25
-		StockStackSize = "1.00,1.00,0"
-		StockChance = 0.5
+		SalvageCost = 20
+		StockStackSize = "1.00,10.00,1"
+		StockChance = 0.75
 		IsLootable = true
-		LootChance = 0.06
+		LootChance = 0.15
+		OncePerContainer = true
 		LootStackSize = "1.00,0.00,0"
 		ItemName = "Tuna Can"
 		UniqueId = "tuna_can"

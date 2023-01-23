@@ -13,14 +13,15 @@ public class CursorAction : Panel
 
 	private Image Icon { get; set; } 
 	private Label Name { get; set; }
+	private Label Condition { get; set; }
 
 	public CursorAction()
 	{
 		Icon = Add.Image( "", "icon" );
 		Name = Add.Label( "", "name" );
-
+		Condition = Add.Label( "", "condition" );
+	
 		BindClass( "visible", () => Action.IsValid() );
-		BindClass( "unavailable", () => !Action.IsValid() || !Action.IsAvailable( CollapsePlayer.Me ) );
 	}
 
 	public bool Select()
@@ -49,8 +50,23 @@ public class CursorAction : Panel
 		}
 
 		Name.Text = action.Name;
-
 		Action = action;
+	}
+
+	public override void Tick()
+	{
+		UpdateAvailability();
+		base.Tick();
+	}
+
+	private void UpdateAvailability()
+	{
+		if ( Action.IsValid() )
+		{
+			var availability = Action.GetAvailability( CollapsePlayer.Me );
+			Condition.Text = availability.Message;
+			SetClass( "unavailable", !availability.IsAvailable );
+		}
 	}
 }
 
@@ -114,12 +130,14 @@ public class Cursor : Panel
 
 		if ( primary.IsValid() )
 		{
-			hash = HashCode.Combine( hash, primary, primary.IsAvailable( CollapsePlayer.Me ) );
+			var availability = primary.GetAvailability( CollapsePlayer.Me );
+			hash = HashCode.Combine( hash, primary, availability.IsAvailable );
 		}
 
 		foreach ( var action in secondaries )
 		{
-			hash = HashCode.Combine( hash, action, action.IsAvailable( CollapsePlayer.Me ) );
+			var availability = primary.GetAvailability( CollapsePlayer.Me );
+			hash = HashCode.Combine( hash, action, availability.IsAvailable );
 		}
 
 		return hash;
@@ -139,7 +157,7 @@ public class Cursor : Panel
 		ActionProvider = provider;
 		ActionHash = hash;
 
-		if ( !primary.IsValid() || !primary.IsAvailable( CollapsePlayer.Me ) )
+		if ( !primary.IsValid() )
 		{
 			primary = secondaries.FirstOrDefault( s => s.IsAvailable( CollapsePlayer.Me ) );
 

@@ -9,14 +9,14 @@ public partial class CollapsePlayer
 
 	public Vector3 m_v3PawnCursorDir { get; private set ; }
 
+	public bool aiming { get; private set;}
+
     public void CrossaimSimulation()
     {
 		var runButtonPressed = Input.Down(InputButton.Run);
 		var attackButtonPressed = Input.Down(InputButton.PrimaryAttack);
 		var aimButtonPressed = Input.Down(InputButton.SecondaryAttack);
 		var playerOnMovement = Velocity.Length >= 1f;
-
-		var aimActived = false;
 
 		var isSimulating = Prediction.CurrentHost.IsValid();
 
@@ -48,6 +48,8 @@ public partial class CollapsePlayer
 
 		Rotation lookAtRotation = Rotation.LookAt(InputDirection, Vector3.Up); 
 		Vector3 lookAtPos = this.EyePosition;
+		
+		aiming = false;
 
 		if (inCombat)
 		{
@@ -69,6 +71,7 @@ public partial class CollapsePlayer
 		// MIRANDO E PARADO
 		if (aimButtonPressed && !playerOnMovement ) 
 		{
+			aiming = true;
 		}
 
 		// CLICAR E PARADO
@@ -79,6 +82,7 @@ public partial class CollapsePlayer
 		// ANDANDO E MIRANDO
 		if ( aimButtonPressed && playerOnMovement && !runButtonPressed) 
 		{
+			aiming = true;
 		}
 
 		lookAtRotation = Rotation.Lerp(Rotation, lookAtRotation, Time.Delta * 5f);

@@ -50,7 +50,6 @@ public class InventoryContainer : IValid
 	public List<IClient> Connections { get; }
 	public List<InventoryItem> ItemList { get; }
 	public ushort SlotLimit { get; private set; }
-	public ushort MaxWeight { get; private set; }
 	public bool IsEmpty => !ItemList.Any( i => i.IsValid() );
 	public bool IsValid => true;
 

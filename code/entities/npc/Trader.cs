@@ -1,4 +1,4 @@
-using Editor;
+﻿using Editor;
 using Sandbox;
 using System.Collections.Generic;
 using System.IO;
@@ -11,9 +11,9 @@ namespace NxtStudio.Collapse.NPC;
 [Model( Model = "models/citizen/citizen.vmdl" )]
 public partial class Trader : NPC, IContextActionProvider, IPersistence, INametagProvider
 {
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Cyan;
-	public float GlowWidth => 0.2f;
+	public bool AlwaysGlow => true;
 
 	[ResourceType( "armor" ), Property] public ArmorResource HeadArmor { get; set; }
 	[ResourceType( "armor" ), Property] public ArmorResource ChestArmor { get; set; }
@@ -122,16 +122,16 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 					var instance = InventorySystem.CreateItem( item.UniqueId );
 					instance.StackSize = (ushort)item.StockStackSize;
 					Inventory.Give( instance );
-					Log.Info( "Gave Trader: " + instance.StackSize + " / " + instance.Name );
 					break;
 				}
 			}
 		}
 	}
 
-	[Event.Tick.Server]
-	protected virtual void ServerTick()
+	protected override void ServerTick()
 	{
+		base.ServerTick();
+
 		if ( NextRestockTime )
 		{
 			NextRestockTime = RestockTime;
@@ -157,7 +157,7 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 
 		NextRestockTime = 0f;
 
-		Tags.Add( "hover", "solid", "trader" );
+		Tags.Add( "hover", "trader" );
 
 		base.Spawn();
 	}

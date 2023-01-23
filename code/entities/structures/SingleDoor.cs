@@ -5,11 +5,9 @@ using System.Linq;
 
 namespace NxtStudio.Collapse;
 
-public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockable
+public partial class SingleDoor : Structure, ICodeLockable
 {
-	public float InteractionRange => 150f;
-	public Color GlowColor => IsAuthorized() ? Color.Green : Color.Red;
-	public float GlowWidth => 0.2f;
+	public override Color GlowColor => IsAuthorized() ? Color.Green : Color.Red;
 
 	private ContextAction OpenAction { get; set; }
 	private ContextAction CloseAction { get; set; }
@@ -27,34 +25,36 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 	public SingleDoor()
 	{
 		CloseAction = new( "close", "Close", "textures/ui/actions/close_door.png" );
-		CloseAction.SetCondition( IsAuthorized );
+		CloseAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = IsAuthorized( p )
+			};
+		} );
 
 		OpenAction = new( "open", "Open", "textures/ui/actions/open_door.png" );
-		OpenAction.SetCondition( IsAuthorized );
+		OpenAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = IsAuthorized( p )
+			};
+		} );
 
 		LockAction = new( "lock", "Lock", "textures/items/code_lock.png" );
-		LockAction.SetCondition( CanBeLockedBy );
+		LockAction.SetCondition( p =>
+		{
+			var isAvailable = p.HasItems<CodeLockItem>( 1 );
+
+			return new ContextAction.Availability
+			{
+				IsAvailable = isAvailable,
+				Message = isAvailable ? string.Empty : "Code Lock Required"
+			};
+		} );
 
 		AuthorizeAction = new( "authorize", "Authorize", "textures/ui/actions/authorize.png" );
-	}
-
-	public IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
-	{
-		if ( !IsLocked )
-		{
-			yield return LockAction;
-		}
-	}
-
-	public ContextAction GetPrimaryAction( CollapsePlayer player )
-	{
-		if ( IsLocked && !IsAuthorized( player ) )
-			return AuthorizeAction;
-
-		if ( IsOpen )
-			return CloseAction;
-		else
-			return OpenAction;
 	}
 
 	public bool ApplyLock( CollapsePlayer player, string code )
@@ -76,11 +76,6 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		Authorized.Add( player.SteamId );
 	}
 
-	public bool CanBeLockedBy( CollapsePlayer player )
-	{
-		return IsAuthorized( player ) && player.HasItems<CodeLockItem>( 1 );
-	}
-
 	public void Deauthorize( CollapsePlayer player )
 	{
 		Authorized.Remove( player.SteamId );
@@ -97,12 +92,31 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		return Authorized.Contains( Game.LocalClient.SteamId );
 	}
 
-	public string GetContextName()
+	public override IEnumerable<ContextAction> GetSecondaryActions( CollapsePlayer player )
+	{
+		if ( !IsLocked && IsAuthorized( player ) )
+		{
+			yield return LockAction;
+		}
+	}
+
+	public override ContextAction GetPrimaryAction( CollapsePlayer player )
+	{
+		if ( IsLocked && !IsAuthorized( player ) )
+			return AuthorizeAction;
+
+		if ( IsOpen )
+			return CloseAction;
+		else
+			return OpenAction;
+	}
+
+	public override string GetContextName()
 	{
 		return "Door";
 	}
 
-	public void OnContextAction( CollapsePlayer player, ContextAction action )
+	public override void OnContextAction( CollapsePlayer player, ContextAction action )
 	{
 		if ( Game.IsClient ) return;
 

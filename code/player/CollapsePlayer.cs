@@ -10,7 +10,6 @@ namespace NxtStudio.Collapse;
 
 public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProvider
 {
-	private TimeSince timeSinceJumpReleased;
 	private class ActiveEffect
 	{
 		public ConsumableEffect Type { get; set; }
@@ -97,7 +96,6 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 	private List<IHeatEmitter> HeatEmitters { get; set; } = new();
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
-	private Entity LastHoveredEntity { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 	private TimeSince TimeSinceLastKilled { get; set; }
 	private Glow GlowComponent { get; set; }
@@ -185,6 +183,21 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 	public void SetBedroll( Bedroll bedroll )
 	{
 		Bedroll = bedroll;
+	}
+
+	public bool HasPrivilegeAt( Vector3 position )
+	{
+		var foundationsInRange = FindInSphere( position, Structure.PrivilegeRange ).OfType<Foundation>();
+
+		foreach ( var foundation in foundationsInRange )
+		{
+			if ( foundation.Stockpile.IsValid() && !foundation.Stockpile.IsAuthorized( this ) )
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public void MakePawnOf( IClient client )
@@ -316,7 +329,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 				Stamina = Math.Clamp( Stamina + effect.Amount, 0f, MaxStamina );
 		}
 	}
-	
+
 	public virtual void Respawn()
 	{
 		EnableAllCollisions = true;
@@ -333,12 +346,9 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		InitializeWeapons();
 		ResetCursor();
 
-		// Camera = new TopDownCamera();
-
 		CollapseGame.Entity?.MoveToSpawnpoint( this );
 		ResetInterpolation();
 	}
-
 
 	public override void Spawn()
 	{
@@ -454,41 +464,39 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 
 		var startPosition = CameraPosition;
 		var endPosition = CameraPosition + CursorDirection * 1000f;
-		var cursor = Trace.Ray( startPosition, endPosition )
+		var query = Trace.Ray( startPosition, endPosition )
 			.EntitiesOnly()
 			.WithoutTags( "trigger" )
 			.WithTag( "hover" )
 			.Ignore( this )
-			.Size( 16f )
-			.Run();
+			.Size( 16f );
+
+		var hotbarItem = GetActiveHotbarItem();
+
+		if ( hotbarItem is not HammerItem )
+		{
+			query = query.WithoutTags( "hammer" );
+		}
+
+		var cursor = query.Run();
 
 		if ( cursor.Entity.IsValid() )
 		{
 			var visible = Trace.Ray( EyePosition, cursor.Entity.WorldSpaceBounds.Center )
-			.WithoutTags( "trigger" )
+				.WithoutTags( "trigger" )
 				.Ignore( this )
 				.Ignore( ActiveChild )
 				.Run();
-
-				
 
 			if ( !HasTimedAction && (visible.Entity == cursor.Entity || visible.Fraction > 0.9f) )
 				HoveredEntity = cursor.Entity;
 			else
 				HoveredEntity = null;
-				
 		}
 		else
 		{
 			HoveredEntity = null;
 		}
-
-
-		// Rotation.LookAt(startPosition, endPosition);
-
-		// DebugOverlay.Line(EyePosition, cursor.EndPosition, Color.Blue, 0);
-
-
 	}
 
 	public override void StartTouch( Entity other )
@@ -618,9 +626,8 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 
 			Projectiles.Simulate();
 
-			SimulateAnimation( );
-
 			CrossaimSimulation();
+			SimulateAnimation();
 
 			if ( Game.IsServer )
 			{
@@ -635,21 +642,6 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 			{
 				if ( SimulateContextActions() )
 					return;
-			}
-
-			if (Input.Released(InputButton.Jump))
-			{
-				if (timeSinceJumpReleased < 0.3f)
-				{
-					
-				}
-
-				timeSinceJumpReleased = 0;
-			}
-
-			if (InputDirection.y != 0 || InputDirection.x != 0f)
-			{
-				timeSinceJumpReleased = 1;
 			}
 
 			SimulateConsumable();
@@ -765,21 +757,6 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		base.OnDestroy();
 	}
 
-	private bool HasPrivilegeAt( Vector3 position )
-	{
-		var foundationsInRange = FindInSphere( position, Structure.PrivilegeRange ).OfType<Foundation>();
-
-		foreach ( var foundation in foundationsInRange )
-		{
-			if ( foundation.Stockpile.IsValid() && !foundation.Stockpile.IsAuthorized( this ) )
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	private void SimulateSleeping()
 	{
 		var trace = Trace.Ray( Position + Vector3.Up * 8f, Position + Vector3.Down * 100f )
@@ -878,6 +855,8 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 	}
 
+	private List<IContextActionProvider> LastEntitiesInRange { get; set; } = new();
+
 	private bool SimulateContextActions()
 	{
 		var actions = HoveredEntity as IContextActionProvider;
@@ -885,25 +864,43 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 
 		if ( Game.IsClient )
 		{
-			if ( actions.IsValid() )
-			{
-				var glow = HoveredEntity.Components.GetOrCreate<Glow>();
-				glow.Enabled = true;
-				glow.Width = actions.GlowWidth;
+			var entities = FindInSphere( Position, 500f ).OfType<IContextActionProvider>();
 
-				if ( Position.Distance( actions.Position ) <= actions.InteractionRange )
-					glow.Color = actions.GlowColor;
-				else
-					glow.Color = Color.Gray;
-			}
-
-			if ( LastHoveredEntity.IsValid() && LastHoveredEntity != HoveredEntity )
+			foreach ( var entity in LastEntitiesInRange )
 			{
-				var glow = LastHoveredEntity.Components.GetOrCreate<Glow>();
+				var glow = entity.Components.GetOrCreate<Glow>();
 				glow.Enabled = false;
 			}
 
-			LastHoveredEntity = HoveredEntity;
+			LastEntitiesInRange.Clear();
+
+			foreach ( var entity in entities )
+			{
+				if ( Position.Distance( entity.Position ) > entity.InteractionRange * 3f )
+					continue;
+
+				if ( !entity.AlwaysGlow )
+					continue;
+
+				var glow = entity.Components.GetOrCreate<Glow>();
+				glow.InsideObscuredColor = entity.GlowColor.WithAlpha( 0.05f );
+				glow.Color = entity.GlowColor.WithAlpha( 0.1f );
+				glow.Width = 0.15f;
+				glow.Enabled = true;
+
+				LastEntitiesInRange.Add( entity );
+			}
+
+			if ( actions.IsValid() && Position.Distance( actions.Position ) <= actions.InteractionRange )
+			{
+				var glow = HoveredEntity.Components.GetOrCreate<Glow>();
+				glow.InsideObscuredColor = actions.GlowColor.WithAlpha( 0.8f );
+				glow.Color = actions.GlowColor;
+				glow.Width = 0.2f;
+				glow.Enabled = true;
+
+				LastEntitiesInRange.Add( actions );
+			}
 
 			ContextActionId = 0;
 		}
@@ -921,9 +918,6 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 					return true;
 				}
 			}
-
-			if ( Input.Down( InputButton.PrimaryAttack ) )
-				return true;
 		}
 
 		return false;
@@ -959,10 +953,16 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		var startPosition = cameraPosition;
 		var endPosition = cameraPosition + cursorDirection * 1000f;
 
-		var trace = Trace.Ray( cameraPosition, endPosition )
+		var trace = Trace.Ray( startPosition, endPosition )
 			.WithoutTags( "trigger" )
 			.WithAnyTags( deployable.ValidTags )
 			.Run();
+
+		if ( !trace.Hit )
+		{
+			Deployable.ClearGhost();
+			return;
+		}
 
 		var model = Model.Load( deployable.Model );
 		var hitPosition = trace.EndPosition + Vector3.Up * 4f;
@@ -989,7 +989,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 					ghost.RenderColor = Color.Orange.WithAlpha( 0.5f );
 				else
 					ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
-				
+
 				ghost.Position = cursor.EndPosition + Vector3.Up * 4f;
 			}
 			else
@@ -1052,23 +1052,6 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 	}
 
-	// //
-	// // Camera
-	// //
-
-	// public CameraMode Camera
-	// {
-	// 	get => Components.Get<CameraMode>();
-	// 	set
-	// 	{
-	// 		var current = Camera;
-	// 		if ( current == value ) return;
-
-	// 		Components.RemoveAny<CameraMode>();
-	// 		Components.Add( value );
-	// 	}
-	// }
-
 	private bool CanSeePosition( Vector3 position )
 	{
 		var trace = Trace.Ray( EyePosition, position )
@@ -1118,8 +1101,8 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		var startPosition = cameraPosition;
 		var endPosition = cameraPosition + cursorDirection * 1000f;
 
-
 		var trace = Trace.Ray( cameraPosition, endPosition )
+			.WithoutTags( "trigger" )
 			.WorldOnly()
 			.Run();
 
@@ -1136,7 +1119,6 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 			var ghost = Structure.GetOrCreateGhost( structureType );
 			var match = ghost.LocateSocket( trace.EndPosition );
 			var isCollisionError = false;
-
 			var isWithinRange = IsPlacementRange( trace.EndPosition );
 			var isWithinSight = CanSeePosition( trace.EndPosition );
 			var isValid = isAuthorized && Structure.CanAfford( this, structureType ) && isWithinRange && isWithinSight;
@@ -1156,7 +1138,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 					isValid = false;
 				}
 			}
-			
+
 			if ( ghost.IsCollidingWithWorld() )
 			{
 				isCollisionError = true;
@@ -1212,7 +1194,6 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 				{
 					structure.SnapToSocket( match );
 					isValid = true;
-
 				}
 				else if ( !structure.RequiresSocket )
 				{

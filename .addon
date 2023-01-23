@@ -18,9 +18,9 @@
     "MaxPlayers": 32,
     "MinPlayers": 1,
     "GameNetworkType": "Multiplayer",
-    "MapSelect": "Official",
+    "MapSelect": "Unrestricted",
     "MapList": [
-      "facepunch.construct"
+      ""
     ],
     "RankType": "None",
     "PerMapRanking": false,
@@ -47,7 +47,8 @@
         "ladder": "Ignore",
         "water": "Trigger",
         "player": "Collide",
-        "passplayers": "Collide"
+        "passplayers": "Collide",
+        "npc": "Collide"
       },
       "Pairs": [
         {
@@ -78,6 +79,11 @@
         {
           "a": "player",
           "b": "passplayers",
+          "r": "Ignore"
+        },
+        {
+          "a": "passplayers",
+          "b": "npc",
           "r": "Ignore"
         }
       ]

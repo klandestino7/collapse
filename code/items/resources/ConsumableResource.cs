@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NxtStudio.Collapse;
 
-[GameResource( "Consumable", "cons", "A type of consumable item for use with Collapse.", Icon = "food-apple" )]
+[GameResource( "Consumable", "cons", "A type of consumable item for use with Collapse.", Icon = "lunch_dining" )]
 [ItemClass( typeof( ConsumableItem ) )]
 public class ConsumableResource : CollapseItemResource
 {

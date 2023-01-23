@@ -1,4 +1,4 @@
-using Editor;
+﻿using Editor;
 using Sandbox;
 
 namespace NxtStudio.Collapse

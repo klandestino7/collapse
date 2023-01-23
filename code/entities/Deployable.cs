@@ -1,9 +1,10 @@
 ﻿using Sandbox;
+using System.IO;
 using System.Linq;
 
 namespace NxtStudio.Collapse;
 
-public partial class Deployable : ModelEntity
+public partial class Deployable : ModelEntity, IDamageable, IPersistence
 {
 	public static ModelEntity Ghost { get; private set; }
 
@@ -45,8 +46,48 @@ public partial class Deployable : ModelEntity
 		return (collision.Hit || collision.StartedSolid);
 	}
 
+	public virtual float MaxHealth => 100f;
+
+	public PersistenceHandle Handle { get; private set; }
+
+	public virtual bool ShouldSaveState()
+	{
+		return true;
+	}
+
+	public virtual void BeforeStateLoaded()
+	{
+
+	}
+
+	public virtual void AfterStateLoaded()
+	{
+
+	}
+
+	public virtual void SerializeState( BinaryWriter writer )
+	{
+		writer.Write( Handle );
+		writer.Write( Transform );
+		writer.Write( Health );
+	}
+
+	public virtual void DeserializeState( BinaryReader reader )
+	{
+		Handle = reader.ReadPersistenceHandle();
+		Transform = reader.ReadTransform();
+		Health = reader.ReadSingle();
+	}
+
 	public virtual void OnPlacedByPlayer( CollapsePlayer player, TraceResult trace )
 	{
 
+	}
+
+	public override void Spawn()
+	{
+		Handle = new();
+
+		base.Spawn();
 	}
 }
