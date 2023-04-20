@@ -443,6 +443,9 @@
 									}
 									m_bForceFootPlant = false
 									m_bDisabled = false
+									m_bRandomTimeBetween = false
+									m_flRandomTimeStart = 0.0
+									m_flRandomTimeEnd = 0.0
 								},
 							]
 							m_tags = [  ]
@@ -500,6 +503,9 @@
 									}
 									m_bForceFootPlant = false
 									m_bDisabled = false
+									m_bRandomTimeBetween = false
+									m_flRandomTimeStart = 0.0
+									m_flRandomTimeEnd = 0.0
 								},
 							]
 							m_tags = [  ]
@@ -557,6 +563,9 @@
 									}
 									m_bForceFootPlant = false
 									m_bDisabled = false
+									m_bRandomTimeBetween = false
+									m_flRandomTimeStart = 0.0
+									m_flRandomTimeEnd = 0.0
 								},
 							]
 							m_tags = [  ]
@@ -614,6 +623,9 @@
 									}
 									m_bForceFootPlant = false
 									m_bDisabled = false
+									m_bRandomTimeBetween = false
+									m_flRandomTimeStart = 0.0
+									m_flRandomTimeEnd = 0.0
 								},
 							]
 							m_tags = [  ]
@@ -678,6 +690,9 @@
 									}
 									m_bForceFootPlant = false
 									m_bDisabled = false
+									m_bRandomTimeBetween = false
+									m_flRandomTimeStart = 0.0
+									m_flRandomTimeEnd = 0.0
 								},
 								{
 									_class = "CAnimStateTransition"
@@ -712,6 +727,9 @@
 									}
 									m_bForceFootPlant = false
 									m_bDisabled = false
+									m_bRandomTimeBetween = false
+									m_flRandomTimeStart = 0.0
+									m_flRandomTimeEnd = 0.0
 								},
 								{
 									_class = "CAnimStateTransition"
@@ -746,6 +764,9 @@
 									}
 									m_bForceFootPlant = false
 									m_bDisabled = false
+									m_bRandomTimeBetween = false
+									m_flRandomTimeStart = 0.0
+									m_flRandomTimeEnd = 0.0
 								},
 								{
 									_class = "CAnimStateTransition"
@@ -780,6 +801,9 @@
 									}
 									m_bForceFootPlant = false
 									m_bDisabled = false
+									m_bRandomTimeBetween = false
+									m_flRandomTimeStart = 0.0
+									m_flRandomTimeEnd = 0.0
 								},
 							]
 							m_tags = [  ]
@@ -849,7 +873,7 @@
 				{
 					_class = "CBoneMaskAnimNode"
 					m_sName = "Unnamed"
-					m_vecPosition = [ -768.0, -50.0 ]
+					m_vecPosition = [ -768.0, -48.0 ]
 					m_nNodeID = 
 					{
 						m_id = 1918217739
