@@ -1,7 +1,8 @@
+using Sandbox;
 
 namespace NxtStudio.Collapse;
 
-public interface IPurchasableItem
+public interface IPurchasableItem : IValid
 {
 	public int StockStackSize { get; }
 	public float StockChance { get; }

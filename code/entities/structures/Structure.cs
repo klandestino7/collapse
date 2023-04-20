@@ -1,4 +1,5 @@
-﻿using Sandbox;
+using Sandbox;
+using Sandbox.Component;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,6 +31,11 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 			Ghost.EnableShadowReceive = false;
 			Ghost.EnableAllCollisions = false;
 			Ghost.SetMaterialOverride( Material.Load( "materials/blueprint.vmat" ) );
+
+			var glow = Ghost.Components.GetOrCreate<Glow>();
+			glow.Color = Color.White.WithAlpha( 0.8f );
+			glow.InsideObscuredColor = Color.White.WithAlpha( 0.6f );
+			glow.Width = 0.2f;
 		}
 
 		return Ghost;
@@ -69,16 +75,20 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 	{
 		var testPosition = Position + Vector3.Up * 4f;
 		var collision = Trace.Body( PhysicsBody, Transform.WithPosition( testPosition ), testPosition )
-			.WithAnyTags( "nobuild", "world" )
+			.WithAnyTags( "world" )
 			.Run();
 
-		return (collision.Hit || collision.StartedSolid);
+		if ( collision.Hit || collision.StartedSolid )
+			return true;
+
+		var zones = All.OfType<BuildExclusionZone>()
+			.Where( z => PhysicsBody.CheckOverlap( z.PhysicsBody ) );
+
+		return zones.Any();
 	}
 
 	public void SnapToSocket( Socket.Match match )
 	{
-		// TODO: Speak to the Rust team. I brute forced all of this until it kind of worked.
-
 		var transform = match.Theirs.Transform;
 
 		Rotation = Rotation.Identity;
@@ -97,6 +107,7 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		if ( ShouldRotate )
 			Rotation = rotation;
 
+		PhysicsBody.Transform = Transform;
 		ResetInterpolation();
 	}
 
@@ -127,6 +138,8 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		{
 			socket.Serialize( writer );
 		}
+
+		writer.Write( Health );
 	}
 
 	public virtual void DeserializeState( BinaryReader reader )
@@ -144,6 +157,8 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 				socket.Deserialize( reader );
 			}
 		}
+
+		Health = reader.ReadSingle();
 	}
 
 	public virtual string GetContextName()
@@ -168,7 +183,7 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 
 	public virtual void OnPlacedByPlayer( CollapsePlayer player )
 	{
-
+		Navigation.Update( Position, 256f );
 	}
 
 	public virtual void OnConnected( Socket ours, Socket theirs )
@@ -217,6 +232,30 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		return default;
 	}
 
+	public override void OnKilled()
+	{
+
+	}
+
+	public override void TakeDamage( DamageInfo info )
+	{
+		if ( info.HasTag( "undead" ) )
+		{
+			// Let's only do 30% of the damage if a monster is attacking us.
+			info.Damage *= 0.3f;
+		}
+
+		Health -= info.Damage;
+
+		if ( Health <= 0f )
+		{
+			Breakables.Break( this );
+
+			OnKilled();
+			Delete();
+		}
+	}
+
 	public override void Spawn()
 	{
 		Health = MaxHealth;
@@ -252,5 +291,15 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		socket.SetParent( this );
 		Sockets.Add( socket );
 		return socket;
+	}
+
+	protected override void OnDestroy()
+	{
+		if ( Game.IsServer )
+		{
+			Navigation.Update( Position, 256f );
+		}
+
+		base.OnDestroy();
 	}
 }

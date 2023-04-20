@@ -6,10 +6,10 @@
     display: flex;
     pointer-events: all;
     backdrop-filter-blur: 24px;
+    z-index: 1000;
     background-color: rgba(0, 0, 0, 0.9);
     transition: backdrop-filter-blur 0.15s ease-in;
     transition: opacity 0.15s ease-in;
-    z-index: 100;
     opacity: 1;
 
     > .vertical {
@@ -20,7 +20,7 @@
 
         > .title {
             color: white;
-            font-family: Rubik;
+            font-family: Vollkorn;
             font-size: 40px;
             display: none;
         }
@@ -31,7 +31,7 @@
 
             > .title {
                 color: white;
-                font-family: Rubik;
+                font-family: Vollkorn;
                 font-size: 40px;
             }
 
@@ -58,7 +58,7 @@
                     border-radius: 4px;
                     padding: 12px;
                     font-size: 24px;
-                    font-family: Rubik;
+                    font-family: Vollkorn;
                     transition: all 0.15s ease-in;
                     color: white;
 
@@ -115,7 +115,7 @@
                 flex-direction: column;
                 border-radius: 4px;
                 margin-right: 32px;
-                font-family: Rubik;
+                font-family: Vollkorn;
                 font-size: 24px;
                 color: white;
                 padding: 16px;
@@ -139,13 +139,13 @@
                 width: 30%;
 
                 > .item-name {
-                    font-family: Rubik;
+                    font-family: Vollkorn;
                     font-size: 40px;
-                    color: white;
+                    color: lightgoldenrodyellow;
                 }
 
                 > .item-description {
-                    font-family: Rubik;
+                    font-family: Vollkorn;
                     font-size: 24px;
                     color: rgba( white 0.8 );
                 }
@@ -224,7 +224,7 @@
                         padding-left: 48px;
 
                         label {
-                            font-family: Rubik;
+                            font-family: Vollkorn;
                             font-size: 24px;
                             color: white;
                         }
@@ -242,14 +242,14 @@
                         flex-direction: row;
 
                         > .name {
-                            font-family: Rubik;
+                            font-family: Vollkorn;
                             margin-right: 32px;
                             font-size: 24px;
                             color: white;
                         }
 
                         > .quantity {
-                            font-family: Rubik;
+                            font-family: Vollkorn;
                             font-size: 24px;
                             color: rgba( white 0.8 );
 

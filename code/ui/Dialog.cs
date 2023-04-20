@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 
 namespace NxtStudio.Collapse.UI;
 
@@ -35,10 +35,13 @@ public static class Dialog
 	[Event.Client.BuildInput]
 	private static void BuildInput()
 	{
-		if ( Active?.IsOpen ?? false )
+		if ( Active is null || !Active.IsOpen ) return;
+
+		if ( !Active.AllowMovement )
 		{
-			Input.StopProcessing = true;
 			Input.AnalogMove = Vector3.Zero;
 		}
+
+		Input.StopProcessing = true;
 	}
 }

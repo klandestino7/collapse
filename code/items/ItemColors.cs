@@ -1,4 +1,4 @@
-﻿namespace NxtStudio.Collapse;
+namespace NxtStudio.Collapse;
 
 public static class ItemColors
 {

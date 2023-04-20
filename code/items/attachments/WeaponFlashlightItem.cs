@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System.IO;
 
 namespace NxtStudio.Collapse;
@@ -38,17 +38,22 @@ public class WeaponFlashlightItem : AttachmentItem
 		base.Read( reader );
 	}
 
-	public override void OnWeaponChanged( Weapon weapon )
+	public override void OnActiveStart( WeaponItem item, CollapsePlayer player )
 	{
-		if ( weapon.IsValid() && weapon.WeaponItem.IsValid() )
-			CreateEntity( weapon );
+		if ( item.Weapon.IsValid() )
+			CreateEntity( item.Weapon );
 		else
 			DestroyEntity();
 	}
 
+	public override void OnActiveEnd( WeaponItem item, CollapsePlayer player )
+	{
+		DestroyEntity();
+	}
+
 	public override void OnAttached( WeaponItem item )
 	{
-		if ( item.Weapon.IsValid() )
+		if ( item.Weapon.IsValid() && item.Weapon.IsActive )
 			CreateEntity( item.Weapon );
 		else
 			DestroyEntity();

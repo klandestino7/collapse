@@ -1,4 +1,5 @@
-﻿using Sandbox;
+using Sandbox;
+using System.Collections.Generic;
 
 namespace NxtStudio.Collapse;
 
@@ -6,8 +7,17 @@ namespace NxtStudio.Collapse;
 [ItemClass( typeof( ArmorItem ) )]
 public class ArmorResource : CollapseItemResource
 {
+	[Property, Description( "The percentage of damage protection this armor provides." )]
+	public float DamageProtection { get; set; } = 5f;
+
+	[Property, Description( "The percentage of poison protection this armor provides." )]
+	public float PoisonProtection { get; set; } = 0f;
+
 	[Property]
-	public float DamageMultiplier { get; set; } = 1f;
+	public HashSet<string> DamageTags { get; set; } = new();
+
+	[Property]
+	public string DamageHitbox { get; set; } = string.Empty;
 
 	[Property]
 	public ArmorSlot ArmorSlot { get; set; } = ArmorSlot.None;

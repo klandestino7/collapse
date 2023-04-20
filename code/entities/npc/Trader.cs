@@ -1,16 +1,51 @@
-﻿using Editor;
+using Editor;
 using Sandbox;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace NxtStudio.Collapse.NPC;
+namespace NxtStudio.Collapse;
 
 [HammerEntity]
 [Title( "Trader" )]
 [Model( Model = "models/citizen/citizen.vmdl" )]
-public partial class Trader : NPC, IContextActionProvider, IPersistence, INametagProvider
+public partial class Trader : Human, IContextActionProvider, IPersistence, INametagProvider
 {
+	[ConCmd.Server]
+	public static void PurchaseItemCmd( int networkId, int slotId )
+	{
+		if ( ConsoleSystem.Caller.Pawn is not CollapsePlayer player ) return;
+
+		var trader = FindByIndex( networkId ) as Trader;
+		if ( !trader.IsValid() ) return;
+
+		var item = trader.Inventory.GetFromSlot( (ushort)slotId );
+		var purchasable = item as IPurchasableItem;
+
+		if ( !purchasable.IsValid() ) return;
+
+		if ( !player.HasItems<SalvageItem>( purchasable.SalvageCost ) )
+			return;
+
+		var copy = InventorySystem.DuplicateItem( item );
+		copy.StackSize = 1;
+
+		var remainder = player.TryGiveItem( copy );
+
+		if ( remainder == 0 )
+		{
+			Sound.FromScreen( To.Single( player ), "ui.purchase" );
+			player.TakeItems<SalvageItem>( purchasable.SalvageCost );
+			item.StackSize--;
+		}
+	}
+
+	[Net, Property] public string DisplayName { get; set; } = "NPC";
+	[Property] public bool DoesWander { get; set; } = false;
+	[Property] public float MinIdleDuration { get; set; } = 30f;
+	[Property] public float MaxIdleDuration { get; set; } = 60f;
+	public float MoveSpeed { get; set; } = 80f;
+
 	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Cyan;
 	public bool AlwaysGlow => true;
@@ -62,7 +97,7 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 		{
 			if ( Game.IsServer )
 			{
-
+				UI.Trading.Open( player, this );
 			}
 		}
 	}
@@ -82,7 +117,7 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 	{
 		NextRestockTime = RestockTime * reader.ReadSingle();
 
-		Inventory = reader.ReadInventoryContainer();
+		Inventory = reader.ReadInventoryContainer( Inventory );
 		Inventory.SetSlotLimit( (ushort)MaxItemsForSale );
 	}
 
@@ -96,8 +131,10 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 
 	}
 
-	protected virtual void Restock()
+	public virtual void Restock()
 	{
+		Inventory.RemoveAll();
+
 		var possibleItems = InventorySystem.GetDefinitions()
 			.OfType<IPurchasableItem>()
 			.Where( i => i.IsPurchasable )
@@ -128,9 +165,53 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 		}
 	}
 
-	protected override void ServerTick()
+	public override string GetDisplayName()
 	{
-		base.ServerTick();
+		return DisplayName;
+	}
+
+	public override float GetMoveSpeed()
+	{
+		return MoveSpeed;
+	}
+
+	protected override void HandleBehavior()
+	{
+		if ( DoesWander && NextChangeState )
+		{
+			if ( State == MovementState.Idle )
+			{
+				NextChangeState = Game.Random.Float( MinIdleDuration, MaxIdleDuration );
+				State = MovementState.Moving;
+			}
+			else
+			{
+				NextChangeState = Game.Random.Float( 6f, 16f );
+				State = MovementState.Idle;
+			}
+		}
+
+		base.HandleBehavior();
+	}
+
+	protected override void UpdateVelocity()
+	{
+		var isTrading = EntityComponent.GetAllOfType<InventoryViewer>()
+			.Where( c => c.Containers.Contains( Inventory ) )
+			.Any();
+
+		if ( isTrading )
+		{
+			Velocity = Vector3.Zero;
+			return;
+		}
+
+		base.UpdateVelocity();
+	}
+
+	protected override void UpdateLogic()
+	{
+		base.UpdateLogic();
 
 		if ( NextRestockTime )
 		{
@@ -154,6 +235,7 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 		AttachArmor( FeetArmor );
 
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+		EnableSolidCollisions = false;
 
 		NextRestockTime = 0f;
 

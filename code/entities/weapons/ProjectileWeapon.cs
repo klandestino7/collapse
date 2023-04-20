@@ -1,19 +1,13 @@
-﻿using Sandbox;
+using Sandbox;
 using System;
 
 namespace NxtStudio.Collapse;
 
 public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile, new()
 {
-	public virtual string ProjectileModel => "";
-	public virtual float ProjectileRadius => 10f;
-	public virtual float ProjectileLifeTime => 10f;
+	public virtual string ProjectileData => "";
 	public virtual int ProjectileCount => 1;
-	public virtual string TrailEffect => null;
-	public virtual string HitSound => null;
 	public virtual float InheritVelocity => 0f;
-	public virtual float Gravity => 50f;
-	public virtual float Speed => 2000f;
 	public virtual float Spread => 0.05f;
 
 	public override void AttackPrimary()
@@ -30,27 +24,26 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 		if ( Owner is not CollapsePlayer player )
 			return;
 
+		var cursorTrace = Trace.Ray( player.CameraPosition, player.CameraPosition + player.CursorDirection * 3000f )
+			.WithoutTags( "trigger" )
+			.WithAnyTags( "solid", "world", "player", "npc" )
+			.Ignore( player )
+			.Ignore( this )
+			.Run();
+
+		var eyePosition = player.EyePosition;
+
 		for ( var i = 0; i < ProjectileCount; i++ )
 		{
-			var projectile = new T()
-			{
-				ExplosionEffect = ImpactEffect,
-				FaceDirection = true,
-				IgnoreEntity = this,
-				TrailEffect = TrailEffect,
-				Simulator = player.Projectiles,
-				Attacker = player,
-				HitSound = HitSound,
-				LifeTime = ProjectileLifeTime,
-				Gravity = Gravity,
-				ModelName = ProjectileModel
-			};
+			var projectile = Projectile.Create<T>( ProjectileData );
+
+			projectile.IgnoreEntity = this;
+			projectile.Simulator = player.Projectiles;
+			projectile.Attacker = player;
 
 			OnCreateProjectile( projectile );
 
-			var eyePosition = player.EyePosition;
-			var forward = player.EyeRotation.Forward;
-			var position = eyePosition + forward * 40f;
+			var position = eyePosition + player.EyeRotation.Forward * 40f;
 			var muzzle = GetMuzzlePosition();
 
 			if ( muzzle.HasValue )
@@ -70,15 +63,27 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 				position = trace.EndPosition - trace.Direction * 4f;
 			}
 
-			var direction = forward;
-			direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random).WithZ( 0f ) * Spread * 0.25f;
+			Vector3 direction;
+
+			if ( player.IsAiming() )
+				direction = (cursorTrace.EndPosition - position).Normal;
+			else
+				direction = player.EyeRotation.Forward;
+
+			var spread = (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * Spread * 0.25f;
+
+			if ( !CollapseGame.Isometric )
+				spread = spread.WithZ( 0f );
+
+			direction += spread;
 			direction = direction.Normal;
 
-			var velocity = (direction * Speed) + (player.Velocity * InheritVelocity);
+			var speed = projectile.Data.Speed.GetValue();
+			var velocity = (direction * speed) + (player.Velocity * InheritVelocity);
 			velocity = AdjustProjectileVelocity( velocity );
 
-			position -= direction * Speed * Time.Delta;
-			projectile.Initialize( position, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
+			position -= direction * speed * Time.Delta;
+			projectile.Initialize( position, velocity, ( p, t ) => OnProjectileHit( (T)p, t ) );
 
 			OnProjectileFired( projectile );
 		}
@@ -128,11 +133,19 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 	protected virtual void OnProjectileHit( T projectile, TraceResult trace )
 	{
-		if ( Game.IsServer && trace.Entity.IsValid() )
+		if ( Game.IsServer && trace.Entity is IDamageable victim )
 		{
-			var distance = trace.Entity.Position.Distance( projectile.StartPosition );
-			var damage = GetDamageFalloff( distance, WeaponItem.Damage );
-			DealDamage( trace.Entity, projectile.Position, projectile.Velocity * 0.1f, damage );
+			var info = new DamageInfo()
+				.WithAttacker( Owner )
+				.WithWeapon( this )
+				.WithPosition( trace.EndPosition )
+				.WithForce( projectile.Velocity * 0.02f )
+				.WithTag( DamageType )
+				.UsingTraceResult( trace );
+
+			info.Damage = GetDamageFalloff( projectile.StartPosition.Distance( victim.Position ), WeaponItem.Damage );
+
+			victim.TakeDamage( info );
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using Editor;
+using Editor;
 using Sandbox;
 
 namespace NxtStudio.Collapse
@@ -13,10 +13,7 @@ namespace NxtStudio.Collapse
 		{
 			base.Spawn();
 
-			EnableTraceAndQueries = true;
 			Transmit = TransmitType.Always;
-
-			Tags.Add( "nobuild" );
 		}
 	}
 }

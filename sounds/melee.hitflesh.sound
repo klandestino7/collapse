@@ -1,0 +1,13 @@
+{
+  "UI": false,
+  "Volume": "0.75,0.75,0",
+  "Pitch": "1.00,1.00,0",
+  "Decibels": 50,
+  "SelectionMode": "Random",
+  "Sounds": [
+    "sounds/melee.hitflesh1.vsnd",
+    "sounds/melee.hitflesh2.vsnd"
+  ],
+  "MaximumDistance": 599.31305,
+  "MinimumDistance": 29.965652
+}

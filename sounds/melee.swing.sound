@@ -1,0 +1,12 @@
+{
+  "UI": false,
+  "Volume": "0.70,0.70,0",
+  "Pitch": "1.00,1.00,0",
+  "Decibels": 35,
+  "SelectionMode": "Random",
+  "Sounds": [
+    "sounds/melee.swing.vsnd"
+  ],
+  "MaximumDistance": 309.98337,
+  "MinimumDistance": 15.499168
+}

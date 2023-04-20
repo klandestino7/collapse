@@ -1,30 +1,35 @@
-﻿using Sandbox;
+using Sandbox;
 using System;
+using System.Linq;
 
 namespace NxtStudio.Collapse;
 
-[Library]
 public partial class Projectile : ModelEntity
 {
-	[Net, Predicted] public string ExplosionEffect { get; set; } = "";
-	[Net, Predicted] public string LaunchSoundName { get; set; } = null;
-	[Net, Predicted] public string FollowEffect { get; set; } = "";
-	[Net, Predicted] public string TrailEffect { get; set; } = "";
-	[Net, Predicted] public string HitSound { get; set; } = "";
-	[Net, Predicted] public string ModelName { get; set; } = "";
+	public static T Create<T>( string dataName ) where T : Projectile, new()
+	{
+		var data = ResourceLibrary.GetAll<ProjectileData>()
+			.FirstOrDefault( d => d.ResourceName.ToLower() == dataName.ToLower() );
+
+		if ( data == null )
+		{
+			throw new Exception( $"Unable to find Projectile Data by name {dataName}" );
+		}
+
+		var projectile = new T();
+		projectile.Data = data;
+		return projectile;
+	}
+
+	[Net, Predicted] public ProjectileData Data { get; set; }
 
 	public Action<Projectile, TraceResult> Callback { get; private set; }
-	public bool PlayFlybySounds { get; set; } = false;
 	public RealTimeUntil CanHitTime { get; set; } = 0.1f;
 	public ProjectileSimulator Simulator { get; set; }
-	public float? LifeTime { get; set; }
 	public string Attachment { get; set; } = null;
 	public Entity Attacker { get; set; } = null;
 	public bool ExplodeOnDestroy { get; set; } = true;
 	public Entity IgnoreEntity { get; set; }
-	public float Gravity { get; set; } = 10f;
-	public float Radius { get; set; } = 8f;
-	public bool FaceDirection { get; set; } = false;
 	public Vector3 StartPosition { get; private set; }
 	public bool Debug { get; set; } = false;
 
@@ -35,24 +40,17 @@ public partial class Projectile : ModelEntity
 	protected Sound LaunchSound { get; set; }
 	protected Particles Follower { get; set; }
 	protected Particles Trail { get; set; }
-
-	public void Initialize( Vector3 start, Vector3 velocity, float radius, Action<Projectile, TraceResult> callback = null )
-	{
-		Initialize( start, velocity, callback );
-		Radius = radius;
-	}
+	protected float LifeTime { get; set; }
+	protected float Gravity { get; set; }
 
 	public void Initialize( Vector3 start, Vector3 velocity, Action<Projectile, TraceResult> callback = null )
 	{
-		if ( LifeTime.HasValue )
-		{
-			DestroyTime = LifeTime.Value;
-		}
+		LifeTime = Data.LifeTime.GetValue();
+		Gravity = Data.Gravity.GetValue();
 
-		if ( Simulator != null && Simulator.IsValid() )
+		if ( LifeTime > 0f )
 		{
-			Simulator?.Add( this );
-			Owner = Simulator.Owner;
+			DestroyTime = LifeTime;
 		}
 
 		InitialVelocity = velocity;
@@ -61,6 +59,30 @@ public partial class Projectile : ModelEntity
 		Velocity = velocity;
 		Callback = callback;
 		Position = start;
+
+		if ( Simulator.IsValid() )
+		{
+			Simulator?.Add( this );
+			Owner = Simulator.Owner;
+
+			if ( Game.IsServer )
+			{
+				using ( LagCompensation() )
+				{
+					// Work out the number of ticks for this client's latency that it took for us to receive this input.
+					var tickDifference = ((float)(Owner.Client.Ping / 2000f) / Time.Delta).CeilToInt();
+
+					// Advance the simulation by that number of ticks.
+					for ( var i = 0; i < tickDifference; i++ )
+					{
+						if ( IsValid )
+						{
+							Simulate();
+						}
+					}
+				}
+			}
+		}
 
 		if ( IsClientOnly )
 		{
@@ -80,8 +102,8 @@ public partial class Projectile : ModelEntity
 
     public override void ClientSpawn()
     {
-		// We only want to create effects if we don't have a client proxy.
-		if ( !HasClientProxy() )
+		// We only want to create effects if we're the server-side copy.
+		if ( !IsServerSideCopy() )
         {
 			CreateEffects();
 		}
@@ -91,9 +113,9 @@ public partial class Projectile : ModelEntity
 
 	public virtual void CreateEffects()
     {
-		if ( !string.IsNullOrEmpty( TrailEffect ) )
+		if ( !string.IsNullOrEmpty( Data.TrailEffect ) )
 		{
-			Trail = Particles.Create( TrailEffect, this );
+			Trail = Particles.Create( Data.TrailEffect, this );
 
 			if ( !string.IsNullOrEmpty( Attachment ) )
 				Trail.SetEntityAttachment( 0, this, Attachment );
@@ -101,25 +123,27 @@ public partial class Projectile : ModelEntity
 				Trail.SetEntity( 0, this );
 		}
 
-		if ( !string.IsNullOrEmpty( FollowEffect ) )
+		if ( !string.IsNullOrEmpty( Data.FollowEffect ) )
 		{
-			Follower = Particles.Create( FollowEffect, this );
+			Follower = Particles.Create( Data.FollowEffect, this );
 		}
 
-		if ( !string.IsNullOrEmpty( LaunchSoundName ) )
-			LaunchSound = PlaySound( LaunchSoundName );
+		if ( !string.IsNullOrEmpty( Data.LaunchSound ) )
+		{
+			LaunchSound = PlaySound( Data.LaunchSound );
+		}
 	}
 
     public virtual void Simulate()
     {
-		if ( FaceDirection )
+		if ( Data.FaceDirection )
         {
 			Rotation = Rotation.LookAt( Velocity.Normal );
         }
 
 		if ( Debug )
         {
-			DebugOverlay.Sphere( Position, Radius, Game.IsClient ? Color.Blue : Color.Red );
+			DebugOverlay.Sphere( Position, Data.Radius, Game.IsClient ? Color.Blue : Color.Red );
         }
 
 		var newPosition = GetTargetPosition();
@@ -127,14 +151,14 @@ public partial class Projectile : ModelEntity
 		var trace = Trace.Ray( Position, newPosition )
 			.UseHitboxes()
 			.WithoutTags( "trigger" )
-			.Size( Radius )
+			.Size( Data.Radius )
 			.Ignore( this )
 			.Ignore( IgnoreEntity )
 			.Run();
 
 		Position = trace.EndPosition;
 
-		if ( LifeTime.HasValue && DestroyTime )
+		if ( LifeTime > 0f && DestroyTime )
 		{
 			if ( ExplodeOnDestroy )
 			{
@@ -155,7 +179,7 @@ public partial class Projectile : ModelEntity
 		}
 	}
 
-	public bool HasClientProxy()
+	public bool IsServerSideCopy()
     {
 		return !IsClientOnly && Owner.IsValid() && Owner.IsLocalPawn;
 
@@ -180,15 +204,15 @@ public partial class Projectile : ModelEntity
 	[ClientRpc]
 	protected virtual void PlayHitEffects( Vector3 normal )
     {
-		if ( HasClientProxy() )
+		if ( IsServerSideCopy() )
         {
-			// We don't want to play hit effects if we have a client proxy.
+			// We don't want to play hit effects if we're the server-side copy.
 			return;
         }
 
-		if ( !string.IsNullOrEmpty( ExplosionEffect ) )
+		if ( !string.IsNullOrEmpty( Data.ExplosionEffect ) )
 		{
-			var explosion = Particles.Create( ExplosionEffect );
+			var explosion = Particles.Create( Data.ExplosionEffect );
 
 			if ( explosion != null )
 			{
@@ -197,14 +221,14 @@ public partial class Projectile : ModelEntity
 			}
 		}
 
-		if ( !string.IsNullOrEmpty( HitSound ) )
+		if ( !string.IsNullOrEmpty( Data.HitSound ) )
 		{
-			Sound.FromWorld( HitSound, Position );
+			Sound.FromWorld( Data.HitSound, Position );
 		}
 	}
 
-	[Event.Tick.Client]
-	protected virtual void ClientTick()
+	[Event.PreRender]
+	protected virtual void PreRender()
 	{
 		if ( ModelEntity.IsValid() )
 		{

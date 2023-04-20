@@ -1,4 +1,4 @@
-﻿@using System;
+@using System;
 @using Sandbox;
 @using Sandbox.UI;
 @using NxtStudio.Collapse;
@@ -20,98 +20,46 @@
 
     var hotbar = CollapsePlayer.Me.Hotbar;
     if ( !hotbar.IsValid() ) return;
-} 
+}
 
 <root>
     <div class="body-container">
-
         <div class="equipment">
-        
-            <div class="head clothcomponents">
-                <label class="title">Head</label>
+            <label class="title">Equipment</label>
 
-                <div class="slots">
-                    <InventorySlot
-                        OnSelected=@OnEquipmentSlotSelected
-                        DefaultIcon="textures/ui/armor_slot_head.png"
-                        Container=@equipment
-                        Slot=@((ushort)0)>
-                    </InventorySlot>
+            <div class="slots">
+                <InventorySlot
+                    OnSelected=@OnEquipmentSlotSelected
+                    DefaultIcon="textures/ui/armor_slot_head.png"
+                    Container=@equipment
+                    Slot=@((ushort)0)>
+                </InventorySlot>
 
-                    <InventorySlot
-                        OnSelected=@OnEquipmentSlotSelected
-                        DefaultIcon="textures/ui/armor_slot_head.png"
-                        Container=@equipment
-                        Slot=@((ushort)0)>
-                    </InventorySlot>
+                <InventorySlot
+                    OnSelected=@OnEquipmentSlotSelected
+                    DefaultIcon="textures/ui/armor_slot_chest.png"
+                    Container=@equipment
+                    Slot=@((ushort)1)>
+                </InventorySlot>
 
-                    <InventorySlot
-                        OnSelected=@OnEquipmentSlotSelected
-                        DefaultIcon="textures/ui/armor_slot_head.png"
-                        Container=@equipment
-                        Slot=@((ushort)0)>
-                    </InventorySlot>
-                </div>
+                <InventorySlot
+                    OnSelected=@OnEquipmentSlotSelected
+                    DefaultIcon="textures/ui/armor_slot_legs.png"
+                    Container=@equipment
+                    Slot=@((ushort)2)>
+                </InventorySlot>
+
+                <InventorySlot
+                    OnSelected=@OnEquipmentSlotSelected
+                    DefaultIcon="textures/ui/armor_slot_feet.png"
+                    Container=@equipment
+                    Slot=@((ushort)3)>
+                </InventorySlot>
             </div>
-            
-            <div class="upperBody clothcomponents">
-                <label class="title">Upper Body</label>
-                
-                <div class="slots">
-                    <InventorySlot
-                        OnSelected=@OnEquipmentSlotSelected
-                        DefaultIcon="textures/ui/armor_slot_chest.png"
-                        Container=@equipment
-                        Slot=@((ushort)1)>
-                    </InventorySlot>
-
-                    <InventorySlot
-                        OnSelected=@OnEquipmentSlotSelected
-                        DefaultIcon="textures/ui/armor_slot_chest.png"
-                        Container=@equipment
-                        Slot=@((ushort)1)>
-                    </InventorySlot>
-
-                    <InventorySlot
-                        OnSelected=@OnEquipmentSlotSelected
-                        DefaultIcon="textures/ui/armor_slot_chest.png"
-                        Container=@equipment
-                        Slot=@((ushort)1)>
-                    </InventorySlot>
-
-                    <InventorySlot
-                        OnSelected=@OnEquipmentSlotSelected
-                        DefaultIcon="textures/ui/armor_slot_chest.png"
-                        Container=@equipment
-                        Slot=@((ushort)1)>
-                    </InventorySlot>
-                </div>
-            </div>
-            
-            <div class="lowerBody clothcomponents">
-                <label class="title">Lower Body</label>
-                
-                <div class="slots">
-                    <InventorySlot
-                        OnSelected=@OnEquipmentSlotSelected
-                        DefaultIcon="textures/ui/armor_slot_legs.png"
-                        Container=@equipment
-                        Slot=@((ushort)2)>
-                    </InventorySlot>
-
-                    <InventorySlot
-                        OnSelected=@OnEquipmentSlotSelected
-                        DefaultIcon="textures/ui/armor_slot_feet.png"
-                        Container=@equipment
-                        Slot=@((ushort)3)>
-                    </InventorySlot>
-                </div>
-            </div>
-
         </div>
 
         <div class="backpack">
-            <label class="title">Inventory</label>
+            <label class="title">Backpack</label>
 
             <div class="slots">
                 @for ( ushort i = 0; i < backpack.SlotLimit; i++ )
@@ -155,13 +103,8 @@
     public static Backpack Current { get; private set; }
 
     public InventorySlot Selected { get; private set; }
-    public bool IsOpen { get; set; }
-
-    public Backpack()
-    {
-        BindClass( "hidden", () => !IsOpen );
-        Current = this;
-    }
+    public bool AllowMovement => false;
+    public bool IsOpen { get; private set; }
 
     public void Open()
     {
@@ -226,6 +169,14 @@
     protected virtual void OnHotbarSlotSelected( InventorySlot slot )
     {
         Select( slot );
+    }
+
+    protected override void OnParametersSet()
+    {
+        Current = this;
+        BindClass( "hidden", () => !IsOpen );
+
+        base.OnParametersSet();
     }
 
     protected override int BuildHash()

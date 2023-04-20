@@ -1,4 +1,4 @@
-﻿@using System;
+@using System;
 @using Sandbox;
 @using Sandbox.UI;
 @using NxtStudio.Collapse;
@@ -25,7 +25,45 @@
 
 <root>
     <div class="body-container">
+        <div class="equipment">
+            <label class="title">Equipment</label>
 
+            <div class="slots">
+                <InventorySlot
+                    DefaultIcon="textures/ui/armor_slot_head.png"
+                    Container=@equipment
+                    Slot=@((ushort)0)>
+                </InventorySlot>
+
+                <InventorySlot
+                    DefaultIcon="textures/ui/armor_slot_chest.png"
+                    Container=@equipment
+                    Slot=@((ushort)1)>
+                </InventorySlot>
+
+                <InventorySlot
+                    DefaultIcon="textures/ui/armor_slot_legs.png"
+                    Container=@equipment
+                    Slot=@((ushort)2)>
+                </InventorySlot>
+
+                <InventorySlot
+                    DefaultIcon="textures/ui/armor_slot_feet.png"
+                    Container=@equipment
+                    Slot=@((ushort)3)>
+                </InventorySlot>
+            </div>
+        </div>
+        <div class="backpack">
+            <label class="title">Backpack</label>
+
+            <div class="slots">
+                @for ( ushort i = 0; i < backpack.SlotLimit; i++ )
+                {
+                    <InventorySlot OnSelected=@OnBackpackSlotSelected Container=@backpack Slot=@i></InventorySlot>
+                }
+            </div>
+        </div>
         <div class="storage">
             <label class="title">@Name</label>
 
@@ -36,95 +74,6 @@
                 }
             </div>
         </div>
-
-        <div >
-            <div class="equipment">
-                <div class="head clothcomponents">
-                    <label class="title">Head</label>
-
-                    <div class="slots">
-                        <InventorySlot
-                            DefaultIcon="textures/ui/armor_slot_head.png"
-                            Container=@equipment
-                            Slot=@((ushort)0)>
-                        </InventorySlot>
-
-                        <InventorySlot
-                            DefaultIcon="textures/ui/armor_slot_head.png"
-                            Container=@equipment
-                            Slot=@((ushort)0)>
-                        </InventorySlot>
-
-                        <InventorySlot
-                            DefaultIcon="textures/ui/armor_slot_head.png"
-                            Container=@equipment
-                            Slot=@((ushort)0)>
-                        </InventorySlot>
-                    </div>
-                </div>
-                
-                <div class="upperBody clothcomponents">
-                    <label class="title">Upper Body</label>
-                    
-                    <div class="slots">
-                        <InventorySlot
-                            DefaultIcon="textures/ui/armor_slot_chest.png"
-                            Container=@equipment
-                            Slot=@((ushort)1)>
-                        </InventorySlot>
-
-                        <InventorySlot
-                            DefaultIcon="textures/ui/armor_slot_chest.png"
-                            Container=@equipment
-                            Slot=@((ushort)1)>
-                        </InventorySlot>
-
-                        <InventorySlot
-                            DefaultIcon="textures/ui/armor_slot_chest.png"
-                            Container=@equipment
-                            Slot=@((ushort)1)>
-                        </InventorySlot>
-
-                        <InventorySlot
-                            DefaultIcon="textures/ui/armor_slot_chest.png"
-                            Container=@equipment
-                            Slot=@((ushort)1)>
-                        </InventorySlot>
-                    </div>
-                </div>
-                
-                <div class="lowerBody clothcomponents">
-                    <label class="title">Lower Body</label>
-                    
-                    <div class="slots">
-                        <InventorySlot
-                            DefaultIcon="textures/ui/armor_slot_legs.png"
-                            Container=@equipment
-                            Slot=@((ushort)2)>
-                        </InventorySlot>
-
-                        <InventorySlot
-                            DefaultIcon="textures/ui/armor_slot_feet.png"
-                            Container=@equipment
-                            Slot=@((ushort)3)>
-                        </InventorySlot>
-                    </div>
-                </div>
-
-            </div>
-            <div class="backpack">
-                <label class="title">Inventory</label>
-
-                <div class="slots">
-                    @for ( ushort i = 0; i < backpack.SlotLimit; i++ )
-                    {
-                        <InventorySlot OnSelected=@OnBackpackSlotSelected Container=@backpack Slot=@i></InventorySlot>
-                    }
-                </div>
-            </div>
-        </div>
-        
-
     </div>
 
     <div class="hotbar">
@@ -161,15 +110,10 @@
 
     public InventoryContainer Container { get; private set; }
     public InventorySlot Selected { get; private set; }
+    public bool AllowMovement => false;
     public bool IsOpen { get; private set; }
     public Entity Entity { get; private set; }
     public string Name { get; private set; }
-
-    public Storage()
-    {
-        Current = this;
-        BindClass( "hidden", () => !IsOpen );
-    }
 
     public void Open()
     {
@@ -198,7 +142,7 @@
 
     public override void Tick()
     {
-        if ( IsOpen && !Entity.IsValid() || ( Entity is LootSpawner spawner && Container.IsEmpty ) )
+        if ( IsOpen && ( !Entity.IsValid() || ( Entity is LootSpawner spawner && Container.IsEmpty ) ) )
         {
             Close();
         }
@@ -262,6 +206,14 @@
     protected virtual void OnStorageSlotSelected( InventorySlot slot )
     {
         Select( slot );
+    }
+
+    protected override void OnParametersSet()
+    {
+        Current = this;
+        BindClass( "hidden", () => !IsOpen );
+
+        base.OnParametersSet();
     }
 
     protected override int BuildHash()

@@ -1,4 +1,4 @@
-﻿@using System;
+@using System;
 @using Sandbox;
 @using Sandbox.UI;
 @using NxtStudio.Collapse;
@@ -35,8 +35,9 @@
     public ushort Slot { get; set; }
     public int DisplaySlot { get; set; }
     public InventoryItem Item => Container.GetFromSlot( Slot );
+    public bool HideStackSize { get; set; }
     public bool IsSelected { get; set; }
-    public string StackSize => GetStackSize();
+    public string StackSize => HideStackSize ? string.Empty : GetStackSize();
     public float IconSize => Box.Rect.Size.Length;
     public string DefaultIcon { get; set; }
     public Action<InventorySlot> OnSelected { get; set; }
@@ -111,6 +112,14 @@
             InventorySystem.SendSplitEvent( slot.Container, Container, slot.Slot, Slot );
 
         Sound.FromScreen( "inventory.move" );
+    }
+
+    public void AddTooltipInfo( Panel container )
+    {
+        if ( Item.IsValid() )
+        {
+            Item.AddTooltipInfo( container );
+        }
     }
 
     protected override void OnClick( MousePanelEvent e )

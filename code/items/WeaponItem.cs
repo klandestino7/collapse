@@ -1,12 +1,13 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Collections.Generic;
 using System.IO;
 
 namespace NxtStudio.Collapse;
 
-public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem, ILootSpawnerItem, IPurchasableItem
+public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem, ILootSpawnerItem, IPurchasableItem, IRecyclableItem
 {
-	public override string PrimaryUseHint => "Attack";
+	public override string PrimaryUseHint => InternalWeapon?.PrimaryUseHint ?? "Attack";
+	public override string SecondaryUseHint => InternalWeapon?.SecondaryUseHint ?? (CollapseGame.Isometric ? "(Hold) Aim" : string.Empty);
 	public override Color Color => ItemColors.Weapon;
 
 	public virtual int WorldModelMaterialGroup => Resource?.WorldModelMaterialGroup ?? 0;
@@ -25,6 +26,9 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	public virtual int SalvageCost => Resource?.SalvageCost ?? default;
 	public virtual bool IsPurchasable => Resource?.IsPurchasable ?? default;
 	public virtual bool IsLootable => Resource?.IsLootable ?? default;
+	public virtual Dictionary<string, int> RecycleOutput => Resource?.RecycleOutput ?? default;
+	public virtual float BaseComponentReturn => Resource?.BaseComponentReturn ?? 0.5f;
+	public virtual bool IsRecyclable => Resource?.IsRecyclable ?? default;
 
 	public AttachmentContainer Attachments { get; private set; }
 	public InventoryContainer Container => Attachments;
@@ -73,9 +77,36 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	private Weapon InternalWeapon;
 	private int InternalAmmoCount;
 
+	public virtual void OnActiveStart( CollapsePlayer player )
+	{
+		foreach ( var attachment in Attachments.FindItems<AttachmentItem>() )
+		{
+			attachment.OnActiveStart( this, player );
+		}
+	}
+
+	public virtual void OnActiveEnd( CollapsePlayer player )
+	{
+		foreach ( var attachment in Attachments.FindItems<AttachmentItem>() )
+		{
+			attachment.OnActiveEnd( this, player );
+		}
+	}
+
 	public override bool CanStackWith( InventoryItem other )
 	{
 		return false;
+	}
+
+	public override bool OnTrySwap( InventoryItem other )
+	{
+		if ( other is AttachmentItem )
+		{
+			Attachments.Give( other );
+			return false;
+		}
+
+		return true;
 	}
 
 	public override void Write( BinaryWriter writer )
@@ -132,7 +163,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	{
 		if ( Game.IsServer && Attachments.IsValid() )
 		{
-			InventorySystem.Remove( Attachments, true );
+			InventorySystem.Remove( Attachments );
 		}
 
 		if ( Game.IsServer && Weapon.IsValid() )

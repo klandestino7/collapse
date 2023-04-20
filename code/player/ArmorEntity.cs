@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 
 namespace NxtStudio.Collapse;
 
@@ -14,5 +14,12 @@ public partial class ArmorEntity : ModelEntity
 		}
 
 		base.ClientSpawn();
+	}
+
+	public override void Spawn()
+	{
+		Tags.Add( "armor" );
+
+		base.Spawn();
 	}
 }

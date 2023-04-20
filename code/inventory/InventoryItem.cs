@@ -1,7 +1,8 @@
-﻿using Sandbox;
+using Sandbox;
 using System.IO;
 using System.Collections.Generic;
 using System;
+using Sandbox.UI;
 
 namespace NxtStudio.Collapse;
 
@@ -105,7 +106,7 @@ public class InventoryItem : IValid
 	}
 
 	public bool IsValid { get; set; }
-	public ulong ItemId { get; set; }
+	public ulong ItemId { get; private set; }
 	public ushort SlotId { get; set; }
 
 	public void SetWorldEntity( ItemEntity entity )
@@ -114,6 +115,11 @@ public class InventoryItem : IValid
 		IsWorldEntity = entity.IsValid();
 		IsDirty = true;
 		Remove();
+	}
+
+	public void SetItemId( ulong itemId )
+	{
+		ItemId = itemId;
 	}
 
 	public void ClearWorldEntity()
@@ -139,6 +145,11 @@ public class InventoryItem : IValid
 		}
 	}
 
+	public virtual bool OnTrySwap( InventoryItem other )
+	{
+		return true;
+	}
+
 	public virtual bool IsSameType( InventoryItem other )
 	{
 		return (GetType() == other.GetType() && UniqueId == other.UniqueId);
@@ -147,6 +158,11 @@ public class InventoryItem : IValid
 	public virtual bool CanStackWith( InventoryItem other )
 	{
 		return true;
+	}
+
+	public virtual void AddTooltipInfo( Panel container )
+	{
+
 	}
 
 	public virtual void Write( BinaryWriter writer )
@@ -201,6 +217,6 @@ public class InventoryItem : IValid
 
 	public override int GetHashCode()
 	{
-		return HashCode.Combine( IsValid, ItemId, StackSize );
+		return HashCode.Combine( IsValid, UniqueId, ItemId, StackSize );
 	}
 }

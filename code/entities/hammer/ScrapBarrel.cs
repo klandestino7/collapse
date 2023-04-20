@@ -1,4 +1,4 @@
-﻿using Editor;
+using Editor;
 
 namespace NxtStudio.Collapse;
 
@@ -8,6 +8,7 @@ namespace NxtStudio.Collapse;
 [EditorModel( "models/rust_props/barrels/fuel_barrel.vmdl" )]
 public partial class ScrapBarrel : LootSpawner
 {
+	public override string BreakSound { get; set; } = "fsk.break.barrel";
 	public override string Title { get; set; } = "Barrel";
 	public override float RestockTime { get; set; } = 90f;
 	public override int SlotLimit { get; set; } = 2;

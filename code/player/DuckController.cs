@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 
 namespace NxtStudio.Collapse;
 
@@ -20,17 +20,10 @@ public class DuckController
 	public void PreTick()
 	{
 		bool wants = Input.Down( InputButton.Duck );
-		
-		var runButtonPressed = Input.Down(InputButton.Run);
 
-		if ( IsActive && runButtonPressed)
+		if ( wants != IsActive )
 		{
-			TryUnDuck();
-		}
-
-		if ( wants )
-		{
-			if ( !IsActive )
+			if ( wants )
 				TryDuck();
 			else
 				TryUnDuck();

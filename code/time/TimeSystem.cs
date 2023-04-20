@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 
 namespace NxtStudio.Collapse;
 
@@ -29,6 +29,27 @@ public partial class TimeSystem : Entity
 
 	[ConVar.Server( "fsk.time.speed" )]
 	public static float Speed { get; set; } = 0.05f;
+
+	public static bool IsTimeBetween( float min, float max )
+	{
+		if ( min == 0f && max == 0f )
+			return true;
+
+		var time = TimeOfDay;
+
+		if ( min <= max )
+		{
+			if ( time >= min && time <= max )
+				return true;
+		}
+		else
+		{
+			if ( time >= min || time <= max )
+				return true;
+		}
+
+		return false;
+	}
 
 	public static TimeSection ToSection( float time )
 	{

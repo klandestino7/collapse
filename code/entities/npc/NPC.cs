@@ -1,125 +1,309 @@
-﻿using Sandbox;
+using Sandbox;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace NxtStudio.Collapse.NPC;
+namespace NxtStudio.Collapse;
 
-public partial class NPC : AnimatedEntity
+public abstract partial class NPC : AnimatedEntity
 {
-	/// <summary>
-	/// The display name of the NPC.
-	/// </summary>
-	[Net, Property] public string DisplayName { get; set; } = "NPC";
+	[ConVar.Server( "fsk.npc.debug" )]
+	public static bool Debug { get; set; } = false;
 
-	/// <summary>
-	/// Whether or not the NPC randomly wanders around the map.
-	/// </summary>
-	[Property] public bool DoesWander { get; set; } = false;
+	[Property]
+	[Description( "The path that this NPC should try to patrol." )]
+	public string PatrolPathTarget { get; set; }
 
-	/// <summary>
-	/// The minumum amount of time that the NPC will stay idle for before wandering again.
-	/// </summary>
-	[Property] public float MinIdleDuration { get; set; } = 30f;
+	protected GenericPathEntity PatrolPathEntity => FindByName( PatrolPathTarget ) as GenericPathEntity;
+	protected Vector3[] PathPoints { get; set; } = new Vector3[64];
+	protected bool IsPatrolling { get; private set; }
+	protected List<Vector3> Path { get; set; }
 
-	/// <summary>
-	/// The maximum amount of time that the NPC will stay idle for before wandering again.
-	/// </summary>
-	[Property] public float MaxIdleDuration { get; set; } = 60f;
-
-	/// <summary>
-	/// The speed at which the NPC moves.
-	/// </summary>
-	public virtual float MoveSpeed { get; set; } = 80f;
-
-	protected TimeUntil NextWanderTime { get; set; }
-	protected NavPath Path { get; set; }
+	private GravityComponent Gravity { get; set; }
+	private FrictionComponent Friction { get; set; }
+	private TimeUntil NextCheckSimulate { get; set; }
+	private TimeSince TimeSinceLastFootstep { get; set; }
+	private bool ReversePatrolDirection { get; set; }
+	private bool ShouldSimulate { get; set; }
 
 	public override void Spawn()
 	{
-		Tags.Add( "npc", "solid" );
+		Tags.Add( "npc" );
+
+		Gravity = Components.GetOrCreate<GravityComponent>();
+		Friction = Components.GetOrCreate<FrictionComponent>();
 
 		base.Spawn();
+	}
+
+	public void ClearPath()
+	{
+		Path?.Clear();
+		Path = null;
+	}
+
+	public void FindPatrolPath( bool snapToPath )
+	{
+		var pathEntity = PatrolPathEntity;
+
+		if ( !pathEntity.IsValid() )
+			return;
+
+		BasePathNode closestNode = null;
+		var smallestDistance = 0f;
+		var index = 0;
+
+		for ( int i = 0; i < pathEntity.PathNodes.Count; i++ )
+		{
+			BasePathNode node = pathEntity.PathNodes[i];
+			var distance = Position.Distance( node.WorldPosition );
+			if ( closestNode is null || distance < smallestDistance )
+			{
+				smallestDistance = distance;
+				closestNode = node;
+				index = i;
+			}
+		}
+
+		Path ??= new();
+		Path.Clear();
+
+		if ( ReversePatrolDirection )
+		{
+			for ( var i = index; i >= 0; i-- )
+			{
+				var position = pathEntity.PathNodes[i].WorldPosition;
+				Path.Add( position );
+			}
+		}
+		else
+		{
+			for ( var i = index; i < pathEntity.PathNodes.Count; i++ )
+			{
+				var position = pathEntity.PathNodes[i].WorldPosition;
+				Path.Add( position );
+			}
+		}
+
+		if ( snapToPath )
+		{
+			Position = pathEntity.PathNodes[index].WorldPosition;
+		}
+
+		IsPatrolling = true;
+	}
+
+	public bool TryFindPath( Vector3 position, bool requireFullPath = false )
+	{
+		var p = Navigation.CalculatePath( Position, position, PathPoints, requireFullPath );
+
+		IsPatrolling = false;
+
+		if ( p > 0 )
+		{
+			Path ??= new();
+			Path.Clear();
+
+			for ( var i = 0; i < p; i++ )
+			{
+				Path.Add( Navigation.WithZOffset( PathPoints[i] ) );
+			}
+
+			return true;
+		}
+		else
+		{
+			Path?.Clear();
+			return false;
+		}
+	}
+
+	public bool HasValidPath()
+	{
+		if ( Path is null ) return false;
+		if ( Path.Count == 0 ) return false;
+		return true;
+	}
+
+	public virtual string GetDisplayName()
+	{
+		return "NPC";
+	}
+
+	public virtual float GetMoveSpeed()
+	{
+		return 80f;
+	}
+
+	public override void OnAnimEventFootstep( Vector3 position, int foot, float volume )
+	{
+		if ( LifeState != LifeState.Alive )
+			return;
+
+		if ( !Game.IsClient )
+			return;
+
+		if ( TimeSinceLastFootstep < 0.2f )
+			return;
+
+		volume *= 1f;
+
+		TimeSinceLastFootstep = 0f;
+
+		var tr = Trace.Ray( position, position + Vector3.Down * 20f )
+			.WithoutTags( "trigger" )
+			.Radius( 1f )
+			.Ignore( this )
+			.Run();
+
+		if ( !tr.Hit ) return;
+
+		tr.Surface.DoFootstep( this, tr, foot, volume );
+	}
+
+	protected bool CheckShouldSimulate()
+	{
+		if ( NextCheckSimulate )
+		{
+			ShouldSimulate = FindInSphere( Position, 2048f )
+				.OfType<CollapsePlayer>()
+				.Any();
+
+			NextCheckSimulate = 1f;
+		}
+
+		return ShouldSimulate;
+	}
+
+	protected Vector3 GetPathTarget()
+	{
+		if ( !HasValidPath() )
+			return Vector3.Zero;
+
+		return Path.First();
+	}
+
+	protected void RotateOverTime( Vector3 direction )
+	{
+		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
+		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
+	}
+
+	protected void RotateOverTime( Entity target )
+	{
+		var closestPoint = target.WorldSpaceBounds.ClosestPoint( Position );
+		var direction = (closestPoint - Position).Normal;
+		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
+		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
+	}
+
+	protected void UpdatePath()
+	{
+		if ( !HasValidPath() ) return;
+
+		var position = Path[0];
+
+		if ( Debug )
+		{
+			for ( var i = 0; i < Path.Count; i++ )
+			{
+				var a = Path[i];
+
+				DebugOverlay.Sphere( a, 32f, Color.Orange );
+
+				if ( Path.Count > i + 1 )
+				{
+					var b = Path[i + 1];
+					DebugOverlay.Line( a, b, Color.Orange );
+				}
+			}
+		}
+
+		if ( Position.Distance( position ) > 10f )
+			return;
+
+		Path.RemoveAt( 0 );
+
+		if ( Path.Count == 0 )
+		{
+			OnFinishedPath();
+		}
 	}
 
 	[Event.Tick.Server]
 	protected virtual void ServerTick()
 	{
-		if ( DoesWander && NextWanderTime && NavMesh.IsLoaded )
+		if ( CheckShouldSimulate() )
 		{
-			NextWanderTime = Game.Random.Float( MinIdleDuration, MaxIdleDuration );
+			UpdateLogic();
+		}
+	}
 
-			var targetPosition = NavMesh.GetPointWithinRadius( Position, 500f, 5000f );
-			if ( !targetPosition.HasValue ) return;
+	[Event.Entity.PostSpawn]
+	protected virtual void OnMapLoaded()
+	{
+		if ( PatrolPathEntity.IsValid() )
+		{
+			FindPatrolPath( true );
+		}
+	}
 
-			Path = NavMesh.PathBuilder( Position )
-				.WithMaxClimbDistance( 8f )
-				.WithMaxDropDistance( 8f )
-				.WithStepHeight( 24f )
-				.Build( targetPosition.Value );
+	protected virtual void UpdateLogic()
+	{
+		if ( LifeState == LifeState.Dead )
+		{
+			Velocity = Vector3.Zero;
+			HandleAnimation();
+			return;
 		}
 
-		var hull = GetHull();
-		var pm = TraceBBox( Position + Vector3.Up * 8f, Position + Vector3.Down * 32f, hull.Mins, hull.Maxs );
+		UpdatePath();
+		HandleBehavior();
 
-		GroundEntity = pm.Entity;
+		Gravity.Update();
+		Friction.Update();
 
-		if ( !GroundEntity.IsValid() )
-		{
-			Velocity += Vector3.Down * 600f * Time.Delta;
-		}
-		else
-		{
-			Position = Position.WithZ( pm.EndPosition.z );
-			Velocity = Velocity.WithZ( 0f );
-		}
+		UpdateVelocity();
+		UpdateRotation();
 
-		ApplyFriction( 4f );
-		UpdatePathVelocity();
 		HandleAnimation();
 
 		var mover = new MoveHelper( Position, Velocity );
-		mover.Trace = mover.Trace.Size( GetHull() ).Ignore( this );
-		mover.MaxStandableAngle = 46f;
-		mover.TryMoveWithStep( Time.Delta, 28f );
+
+		mover.Trace = mover.SetupTrace()
+			.WithoutTags( "passplayers", "player", "npc" )
+			.WithAnyTags( "solid", "playerclip", "passbullets" )
+			.Size( GetHull() )
+			.Ignore( this );
+
+		mover.MaxStandableAngle = 20f;
+
+		if ( mover.TryUnstuck() )
+		{
+			mover.TryMoveWithStep( Time.Delta, 24f );
+		}
 
 		Position = mover.Position;
 		Velocity = mover.Velocity;
 	}
 
-	protected virtual void ApplyFriction( float amount = 1f )
+	protected virtual void UpdateRotation()
 	{
-		var speed = Velocity.Length;
-		if ( speed < 0.1f ) return;
 
-		var control = (speed < 100f) ? 100f : speed;
-		var newSpeed = speed - (control * Time.Delta * amount);
+	}
 
-		if ( newSpeed < 0 )
-			newSpeed = 0;
+	protected virtual void UpdateVelocity()
+	{
 
-		if ( newSpeed != speed )
-		{
-			newSpeed /= speed;
-			Velocity *= newSpeed;
-		}
+	}
+
+	protected virtual void HandleBehavior()
+	{
+
 	}
 
 	protected virtual void HandleAnimation()
 	{
-		var animHelper = new CitizenAnimationHelper( this );
 
-		animHelper.WithWishVelocity( Velocity );
-		animHelper.WithVelocity( Velocity );
-		animHelper.WithLookAt( Position + Rotation.Forward * 100f, 1f, 1f, 0.5f );
-		animHelper.AimAngle = Rotation;
-		animHelper.DuckLevel = 0f;
-		animHelper.VoiceLevel = 0f;
-		animHelper.IsGrounded = GroundEntity.IsValid();
-		animHelper.IsSitting = false;
-		animHelper.IsNoclipping = false;
-		animHelper.IsClimbing = false;
-		animHelper.IsSwimming = false;
-		animHelper.IsWeaponLowered = false;
-		animHelper.HoldType = CitizenAnimationHelper.HoldTypes.None;
-		animHelper.AimBodyWeight = 0.5f;
 	}
 
 	protected virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
@@ -136,52 +320,18 @@ public partial class NPC : AnimatedEntity
 
 	protected virtual BBox GetHull()
 	{
-		var girth = 16f;
+		var girth = 12f;
 		var mins = new Vector3( -girth, -girth, 0f );
 		var maxs = new Vector3( +girth, +girth, 72f );
 		return new BBox( mins, maxs );
 	}
 
-	protected virtual void Accelerate( Vector3 wishDir, float wishSpeed, float speedLimit, float acceleration )
+	protected virtual void OnFinishedPath()
 	{
-		if ( speedLimit > 0 && wishSpeed > speedLimit )
-			wishSpeed = speedLimit;
-
-		var currentSpeed = Velocity.Dot( wishDir );
-		var addSpeed = wishSpeed - currentSpeed;
-
-		if ( addSpeed <= 0 )
-			return;
-
-		var accelSpeed = acceleration * Time.Delta * wishSpeed * 1f;
-
-		if ( accelSpeed > addSpeed )
-			accelSpeed = addSpeed;
-
-		Velocity += wishDir * accelSpeed;
-	}
-
-	protected virtual void UpdatePathVelocity()
-	{
-		if ( Path == null ) return;
-		if ( Path.Count == 0 ) return;
-
-		var firstSegment = Path.Segments[0];
-
-		if ( firstSegment.SegmentType == NavNodeType.OnGround )
+		if ( IsPatrolling )
 		{
-			if ( Position.Distance( firstSegment.Position ) > 80f )
-			{
-				var direction = (firstSegment.Position - Position).Normal.WithZ( 0f );
-				Accelerate( direction, MoveSpeed, 0f, 8f );
-
-				var targetRotation = Rotation.LookAt( direction, Vector3.Up );
-				Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
-
-				return;
-			}
+			ReversePatrolDirection = !ReversePatrolDirection;
+			FindPatrolPath( false );
 		}
-
-		Path.Segments.RemoveAt( 0 );
 	}
 }

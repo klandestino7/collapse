@@ -3,7 +3,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    z-index: 200;
+    z-index: 1001;
 
     .container {
         backdrop-filter-blur: 8px;
@@ -31,7 +31,7 @@
             flex-direction: column;
 
             .name {
-                font-family: Rubik;
+                font-family: Vollkorn;
                 font-size: 24px;
                 color: red;
             }
@@ -50,7 +50,7 @@
                         margin-right: 4px;
                         margin-left: 4px;
                         font-size: 20px;
-                        font-family: Rubik;
+                        font-family: Vollkorn;
                     }
 
                     margin-right: 4px;
@@ -62,8 +62,27 @@
             }
         }
 
+        .info {
+            margin-top: 16px;
+            flex-direction: column;
+            align-items: center;
+
+            label {
+                font-family: Vollkorn;
+                font-size: 22px;
+
+                &.primary {
+                    color: lightgoldenrodyellow;
+                }
+
+                &.secondary {
+                    color: white;
+                }
+            }
+        }
+
         .description {
-            font-family: Rubik;
+            font-family: Vollkorn;
             max-width: 400px;
             font-size: 20px;
             color: white;

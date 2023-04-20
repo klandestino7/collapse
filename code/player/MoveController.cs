@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Collections.Generic;
 
 namespace NxtStudio.Collapse;
@@ -123,7 +123,7 @@ public partial class MoveController
 
 	public virtual void FrameSimulate()
 	{
-		Player.EyeRotation = Player.ViewAngles.ToRotation();
+		Player.EyeRotation = Camera.Rotation.Angles().WithPitch( 0 ).ToRotation();
 	}
 
 	public virtual void Simulate()
@@ -153,7 +153,7 @@ public partial class MoveController
 		Player.Velocity += new Vector3( 0, 0, Player.BaseVelocity.z ) * Time.Delta;
 		Player.BaseVelocity = Player.BaseVelocity.WithZ( 0 );
 
-		var startOnGround = Player.GroundEntity != null;
+		var startOnGround = Player.GroundEntity.IsValid();
 
 		if ( startOnGround )
 		{
@@ -162,6 +162,10 @@ public partial class MoveController
 		}
 
 		WishVelocity = new Vector3( Player.InputDirection.x, Player.InputDirection.y, 0 );
+
+		if ( CollapseGame.Isometric )
+			WishVelocity *= Rotation.From( 0f, 45f, 0f );
+
 		var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
 
 		WishVelocity = WishVelocity.WithZ( 0 );
@@ -170,12 +174,9 @@ public partial class MoveController
 
 		Duck.PreTick();
 
-		// #TODO - Drenar stamina com multiplicador de peso do inventario
 		if ( Input.Down( InputButton.Run ) && !Input.Down( InputButton.Duck ) && WishVelocity.Length > 1f )
-			Player.ReduceStamina( 1f * Time.Delta );
-		else if (WishVelocity.Length >= 0.1f )
-			Player.ReduceStamina(.01f * Time.Delta);
-		else
+			Player.ReduceStamina( 5f * Time.Delta );
+		else if ( Player.CanStaminaRegenerate() )
 			Player.GainStamina( 15f * Time.Delta );
 
 		var stayOnGround = false;
@@ -281,7 +282,13 @@ public partial class MoveController
 	private void StepMove()
 	{
 		var mover = new MoveHelper( Player.Position, Player.Velocity );
-		mover.Trace = mover.Trace.Size( Mins, Maxs ).Ignore( Player );
+
+		mover.Trace = mover.SetupTrace()
+			.WithoutTags( "passplayers" )
+			.WithAnyTags( "solid", "playerclip", "passbullets", "player" )
+			.Size( Mins, Maxs )
+			.Ignore( Player );
+
 		mover.MaxStandableAngle = GroundAngle;
 		mover.TryMoveWithStep( Time.Delta, StepSize );
 
@@ -292,7 +299,13 @@ public partial class MoveController
 	private void Move()
 	{
 		var mover = new MoveHelper( Player.Position, Player.Velocity );
-		mover.Trace = mover.Trace.Size( Mins, Maxs ).Ignore( Player );
+
+		mover.Trace = mover.SetupTrace()
+			.WithoutTags( "passplayers" )
+			.WithAnyTags( "solid", "playerclip", "passbullets", "player" )
+			.Size( Mins, Maxs )
+			.Ignore( Player );
+
 		mover.MaxStandableAngle = GroundAngle;
 		mover.TryMove( Time.Delta );
 

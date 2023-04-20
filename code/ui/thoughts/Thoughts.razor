@@ -1,4 +1,4 @@
-﻿@using System;
+@using System;
 @using Sandbox;
 @using Sandbox.UI;
 @using NxtStudio.Collapse;
@@ -29,9 +29,10 @@
         Instance = this;
     }
 
-    private void AddEntry( string thought )
+    private ThoughtEntry AddEntry( string thought )
     {
         var entry = Entries.AddChild<ThoughtEntry>();
         entry.Initialize( thought );
+        return entry;
     }
 }

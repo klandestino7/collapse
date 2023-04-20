@@ -18,7 +18,7 @@
         transition: all 0.2s ease-in;
         text-shadow: 0px 0px 2px black;
         position: absolute;
-        font-family: Rubik;
+        font-family: Vollkorn;
         font-weight: bold;
         font-size: 16px;
         color: lightyellow;
@@ -29,7 +29,7 @@
         transition: all 0.2s ease-in;
         text-shadow: 0px 0px 2px black;
         position: absolute;
-        font-family: Rubik;
+        font-family: Vollkorn;
         font-weight: bold;
         font-size: 16px;
         color: white;
@@ -75,26 +75,29 @@
 
         width: 64px;
         height: 64px;
-        opacity: 1; 
+        opacity: 1;
     }
 }
 
 Cursor {
     position: absolute;
-    background-color: transparent;
+    background-color: black;
     border: 2px solid white;
     border-radius: 50%;
     width: 16px;
     height: 16px;
-    z-index: 100;
     align-items: center;
     justify-content: center;
+
+    &.is-aiming {
+        border-color: red;
+    }
 
     .title {
         transition: all 0.2s ease-in;
         text-shadow: 0px 0px 2px black;
         position: absolute;
-        font-family: Rubik;
+        font-family: Vollkorn;
         font-size: 18px;
         color: white;
         opacity: 0;

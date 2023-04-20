@@ -1,15 +1,16 @@
-﻿using Sandbox;
+using Sandbox;
 using System;
 using System.Collections.Generic;
 
 namespace NxtStudio.Collapse;
 
-public class DeployableItem : InventoryItem, ILootSpawnerItem, IPurchasableItem
+public abstract class DeployableItem : InventoryItem, ILootSpawnerItem, IPurchasableItem
 {
 	public override Color Color => ItemColors.Deployable;
 	public override string PrimaryUseHint => "Deploy";
-	
-	public virtual Type Deployable => null;
+
+	public abstract Type Deployable { get; }
+
 	public virtual string PlaceSoundName => "deployable.place";
 	public virtual string Model => "models/citizen_props/crate01.vmdl";
 	public virtual string[] ValidTags => new string[] { "world" };

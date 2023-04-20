@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 using System;
@@ -120,6 +120,7 @@ public class Cursor : Panel
 		}
 
 		SetClass( "recent-action", LastActionTime < 0.5f );
+		SetClass( "is-aiming", player.IsAiming() );
 
 		if ( LastActionTime > 0.5f && provider.IsValid() && player.Position.Distance( provider.Position ) <= provider.InteractionRange )
 			SetActionProvider( provider );

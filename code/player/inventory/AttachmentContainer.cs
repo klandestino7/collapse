@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Linq;
 
 namespace NxtStudio.Collapse;

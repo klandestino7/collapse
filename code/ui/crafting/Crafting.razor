@@ -1,4 +1,4 @@
-﻿@using System;
+@using System;
 @using Sandbox;
 @using Sandbox.UI;
 @using NxtStudio.Collapse;
@@ -120,7 +120,7 @@
 
                 @for ( var i = 0; i < 10; i++ )
                 {
-                    if (craftingQueue.Count > i)
+                    if ( craftingQueue.Count > i )
                     {
                         <CraftingQueueItem Entry=@craftingQueue[i] OnSelected=@OnCraftingEntrySelected></CraftingQueueItem>
                     }
@@ -138,7 +138,8 @@
 {
     public static Crafting Current { get; private set; }
 
-    public bool IsOpen { get; set; }
+    public bool AllowMovement => false;
+    public bool IsOpen { get; private set; }
 
     private RecipeCategory? SelectedCategory { get; set; }
     private RecipeResource SelectedRecipe { get; set; }
@@ -169,8 +170,9 @@
 
     protected override int BuildHash()
     {
-        if ( !CollapsePlayer.Me.IsValid() ) return 0;
-        return HashCode.Combine( CollapsePlayer.Me, SelectedRecipe, SelectedCategory, SearchQuery, Quantity, CollapsePlayer.Me.CraftingQueue.Count );
+        var player = CollapsePlayer.Me;
+        if ( !player.IsValid() ) return 0;
+        return HashCode.Combine( CollapsePlayer.Me, SelectedRecipe, SelectedCategory, SearchQuery, Quantity, player.CraftingQueue.Count );
     }
 
     private void OnSearchQueryChanged( string value )

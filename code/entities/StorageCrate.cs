@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Collections.Generic;
 using System.IO;
 
@@ -86,8 +86,9 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 	{
 		base.DeserializeState( reader );
 
-		var container = reader.ReadInventoryContainer();
+		var container = reader.ReadInventoryContainer( Inventory );
 		InternalInventory = new( container );
+
 		IsEmpty = container.IsEmpty;
 	}
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace NxtStudio.Collapse;
 
@@ -7,7 +7,7 @@ public class ToolboxItem : InventoryItem
 	public override Color Color => ItemColors.Tool;
 	public override string PrimaryUseHint => "Place";
 	public override string SecondaryUseHint => "(Hold) Build Menu";
-	
+
 	public override string Description => "A useful set of tools for construction.";
 	public override string UniqueId => "toolbox";
 	public override string Name => "Toolbox";

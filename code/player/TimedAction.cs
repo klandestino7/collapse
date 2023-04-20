@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System;
 
 namespace NxtStudio.Collapse;
@@ -60,8 +60,8 @@ public partial class TimedAction : BaseNetworkable
 		OnFinished = info.OnFinished;
 		Duration = info.Duration;
 		EndTime = info.Duration;
-		SoundName = info.SoundName;
 		Origin = info.Origin;
+		SoundName = info.SoundName;
 		Title = info.Title;
 		Icon = info.Icon;
 	}

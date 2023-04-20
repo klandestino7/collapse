@@ -1,4 +1,4 @@
-﻿
+
 namespace NxtStudio.Collapse;
 
 public interface IConsumableItem

@@ -1,4 +1,5 @@
-﻿using Sandbox;
+using Sandbox;
+using Sandbox.Component;
 using System.IO;
 using System.Linq;
 
@@ -23,6 +24,11 @@ public partial class Deployable : ModelEntity, IDamageable, IPersistence
 				Model = model
 			};
 
+			var glow = Ghost.Components.GetOrCreate<Glow>();
+			glow.Color = Color.White.WithAlpha( 0.8f );
+			glow.InsideObscuredColor = Color.White.WithAlpha( 0.6f );
+			glow.Width = 0.2f;
+
 			Ghost.SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 			Ghost.SetMaterialOverride( Material.Load( "materials/blueprint.vmat" ) );
 		}
@@ -40,10 +46,16 @@ public partial class Deployable : ModelEntity, IDamageable, IPersistence
 	{
 		var testPosition = entity.Position + Vector3.Up * 4f;
 		var collision = Trace.Body( entity.PhysicsBody, entity.Transform.WithPosition( testPosition ), testPosition )
-			.WithAnyTags( "nobuild", "solid", "world" )
+			.WithAnyTags( "solid", "world" )
 			.Run();
 
-		return (collision.Hit || collision.StartedSolid);
+		if ( collision.Hit || collision.StartedSolid )
+			return true;
+
+		var zones = All.OfType<BuildExclusionZone>()
+			.Where( z => entity.PhysicsBody.CheckOverlap( z.PhysicsBody ) );
+
+		return zones.Any();
 	}
 
 	public virtual float MaxHealth => 100f;
@@ -81,7 +93,7 @@ public partial class Deployable : ModelEntity, IDamageable, IPersistence
 
 	public virtual void OnPlacedByPlayer( CollapsePlayer player, TraceResult trace )
 	{
-
+		Navigation.Update( Position, 256f );
 	}
 
 	public override void Spawn()
@@ -89,5 +101,15 @@ public partial class Deployable : ModelEntity, IDamageable, IPersistence
 		Handle = new();
 
 		base.Spawn();
+	}
+
+	protected override void OnDestroy()
+	{
+		if ( Game.IsServer )
+		{
+			Navigation.Update( Position, 256f );
+		}
+
+		base.OnDestroy();
 	}
 }

@@ -1,10 +1,10 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Collections.Generic;
 using System.IO;
 
 namespace NxtStudio.Collapse;
 
-public class AmmoItem : ResourceItem<AmmoResource, AmmoItem>, ILootSpawnerItem, IPurchasableItem
+public class AmmoItem : ResourceItem<AmmoResource, AmmoItem>, ILootSpawnerItem, IPurchasableItem, IRecyclableItem
 {
 	public override Color Color => ItemColors.Ammo;
 	public override ushort DefaultStackSize => (ushort)(Resource?.DefaultStackSize ?? 1);
@@ -18,6 +18,9 @@ public class AmmoItem : ResourceItem<AmmoResource, AmmoItem>, ILootSpawnerItem, 
 	public virtual int SalvageCost => Resource?.SalvageCost ?? default;
 	public virtual bool IsPurchasable => Resource?.IsPurchasable ?? default;
 	public virtual bool IsLootable => Resource?.IsLootable ?? default;
+	public virtual Dictionary<string, int> RecycleOutput => Resource?.RecycleOutput ?? default;
+	public virtual float BaseComponentReturn => Resource?.BaseComponentReturn ?? 0.5f;
+	public virtual bool IsRecyclable => Resource?.IsRecyclable ?? default;
 
 	public override bool CanStackWith( InventoryItem other )
 	{

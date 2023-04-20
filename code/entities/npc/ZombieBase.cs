@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace NxtStudio.Collapse.NPC;
+namespace NxtStudio.Collapse;
 
 [HammerEntity]
 [Title( "Zombie" )]
-[Model( Model = "models/zombie/citizen_zombie_mixamo.vmdl" )]
+[Model( Model = "models/zombie/charger/charger_zombie.vmdl" )]
 public partial class ZombieBase : NPC, IPersistence
 {
-	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Cyan;
 	public float GlowWidth => 0.2f;
 
@@ -31,10 +30,10 @@ public partial class ZombieBase : NPC, IPersistence
 		SearchAction = new( "search", "Search", "textures/ui/actions/open.png" );
 	}
 
-	public string GetContextName()
-	{
-		return DisplayName;
-	}
+	// public string GetContextName()
+	// {
+	// 	return DisplayName;
+	// }
 
 	// public void Search( ZombieBase zombie )
 	// {
@@ -109,7 +108,8 @@ public partial class ZombieBase : NPC, IPersistence
 		AttachArmor( LegsArmor );
 		AttachArmor( FeetArmor );
 
-		SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
+		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+		EnableSolidCollisions = false;
 
 		Tags.Add( "hover", "solid", "zombie" );
 

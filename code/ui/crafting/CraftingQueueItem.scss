@@ -4,14 +4,15 @@
     transition: box-shadow 0.15s ease-in;
     transition: border 0.15s ease-in;
     transition: transform 0.15s ease-in;
+    align-items: center;
+    justify-content: center;
     border-radius: 2px;
     height: 100px;
     width: 100px;
 
     > .icon {
-        width: 90%;
-        height: 90%;
-        background-position: center;
+        width: 80%;
+        height: 80%;
         background-size: cover;
         pointer-events: none;
     }
@@ -19,7 +20,7 @@
     > .timeleft {
         position: absolute;
         pointer-events: none;
-        font-family: Rubik;
+        font-family: Vollkorn;
         text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
         font-size: 24px;
         color: white;
@@ -30,7 +31,7 @@
     > .quantity {
         position: absolute;
         pointer-events: none;
-        font-family: Rubik;
+        font-family: Vollkorn;
         text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
         font-size: 24px;
         color: white;
@@ -41,8 +42,17 @@
     > .glow {
         position: absolute;
         border-radius: 4px;
-        width: 0%;
-        height: 0%;
+        width: 100%;
+        height: 100%;
+    }
+
+    &:first-child {
+        &:not( .is-empty ) {
+            animation-name: pulse;
+            animation-duration: 0.5s;
+            animation-timing-function: ease-in;
+            animation-direction: alternate;
+        }
     }
 
     &:not( :last-child ) {
@@ -57,7 +67,7 @@
 
     &:hover {
         &:not( .is-empty ) {
-            box-shadow: 0 0 16px 2px rgba( red 0.2 );
+            box-shadow: 0 0 16px 2px rgba( red 0.05 );
             border-color: rgba( red 0.2 );
             transform: scale( 1.05 1.05 );
             sound-in: "ui.hover";
@@ -70,5 +80,19 @@
         .glow {
             display: none;
         }
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale( 1 );
+    }
+
+    50% {
+        transform: scale( 1.1 );
+    }
+
+    100% {
+        transform: scale( 1 );
     }
 }

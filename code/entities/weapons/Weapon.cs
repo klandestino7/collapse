@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +15,8 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual bool IsMelee => false;
 	public virtual float MeleeRange => 100f;
 	public virtual float BulletRange => 20000f;
+	public virtual string PrimaryUseHint => null;
+	public virtual string SecondaryUseHint => null;
 	public virtual string TracerEffect => null;
 	public virtual bool ReloadAnimation => true;
 	public virtual bool UnlimitedAmmo => false;
@@ -45,7 +47,7 @@ public abstract partial class Weapon : BaseWeapon
 	[Net]
 	private string AmmoItemId { get; set; }
 
-	public AnimatedEntity AnimationOwner => Owner as AnimatedEntity;
+	public CollapsePlayer Player => Owner as CollapsePlayer;
 	public float ChargeAttackEndTime { get; private set; }
 
 	private TimeSince TimeSinceReloadPressed { get; set; }
@@ -74,6 +76,7 @@ public abstract partial class Weapon : BaseWeapon
 	}
 
 	public WeaponItem WeaponItem => InternalWeaponItem.IsValid() ? InternalWeaponItem.Value as WeaponItem : null;
+	public bool IsActive => Player?.ActiveChild == this;
 
 	public int AvailableAmmo()
 	{
@@ -136,7 +139,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public virtual void PlayAttackAnimation()
 	{
-		AnimationOwner?.SetAnimParameter( "b_attack", true );
+		Player?.SetAnimParameter( "b_attack", true );
 	}
 
 	public override bool CanReload()
@@ -158,8 +161,11 @@ public abstract partial class Weapon : BaseWeapon
 	public override void ActiveStart( Entity owner )
 	{
 		base.ActiveStart( owner );
+
 		PlaySound( $"weapon.pickup{Game.Random.Int( 1, 4 )}" );
 		TimeSinceDeployed = 0f;
+
+		WeaponItem?.OnActiveStart( Player );
 	}
 
 	public override void ActiveEnd( Entity ent, bool dropped )
@@ -169,6 +175,8 @@ public abstract partial class Weapon : BaseWeapon
 		ReloadSound.Stop();
 		TimeSinceReload = 0f;
 		IsReloading = false;
+
+		WeaponItem?.OnActiveEnd( Player );
 	}
 
 	public override void SimulateAnimator( CitizenAnimationHelper anim )
@@ -180,7 +188,10 @@ public abstract partial class Weapon : BaseWeapon
 	public override void Spawn()
 	{
 		base.Spawn();
+
 		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
+
+		Tags.Add( "weapon" );
 	}
 
 	public override void BuildInput()
@@ -266,7 +277,7 @@ public abstract partial class Weapon : BaseWeapon
 		{
 			if ( Prediction.FirstTime && !WasReloading )
 			{
-				AnimationOwner?.SetAnimParameter( "b_reload", true );
+				Player?.SetAnimParameter( "b_reload", true );
 			}
 		}
 		else
@@ -424,11 +435,6 @@ public abstract partial class Weapon : BaseWeapon
 		return true;
 	}
 
-	public override void CreateViewModel()
-	{
-		Game.AssertClient();
-	}
-
 	public bool IsUsable()
 	{
 		if ( IsMelee || ClipSize == 0 || AmmoClip > 0 )
@@ -507,8 +513,6 @@ public abstract partial class Weapon : BaseWeapon
 		{
 			CreateMuzzleFlash();
 		}
-
-		ViewModelEntity?.SetAnimParameter( "fire", true );
 	}
 
 	protected virtual void OnWeaponItemChanged()
@@ -522,7 +526,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	protected virtual ModelEntity GetEffectEntity()
 	{
-		return EffectEntity;
+		return this;
 	}
 
 	[ClientRpc]

@@ -1,4 +1,4 @@
-﻿@using System;
+@using System;
 @using Sandbox;
 @using Sandbox.UI;
 @using NxtStudio.Collapse;
@@ -34,6 +34,14 @@
         AddEventListener( "onclick", () => OnSelected?.Invoke( Recipe ) );
         BindClass( "selected", () => IsSelected );
         BindClass( "unaffordable", IsUnaffordable );
+    }
+
+    public void AddTooltipInfo( Panel container )
+    {
+        if ( Output.IsValid() )
+        {
+            Output.AddTooltipInfo( container );
+        }
     }
 
     protected override void OnMouseOver( MousePanelEvent e )

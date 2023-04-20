@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 
 namespace NxtStudio.Collapse.UI;
 
@@ -15,7 +15,9 @@ public partial class Thoughts
 			return;
 		}
 
-		Instance?.AddEntry( thought );
+		var entry = Instance?.AddEntry( thought );
+		entry?.AddClass( id );
+
 		Sound.FromScreen( "thought" );
 
 		LastThoughtTime = 0f;

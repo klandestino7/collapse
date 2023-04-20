@@ -1,4 +1,4 @@
-﻿using Editor;
+using Editor;
 
 namespace NxtStudio.Collapse;
 

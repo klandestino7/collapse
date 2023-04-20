@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using Sandbox;
@@ -50,22 +50,22 @@ public partial class CookingProcessor : BaseNetworkable
 		}
 	}
 
-	public void Serialize( BinaryWriter writer )
+	public void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( Fuel );
 		writer.Write( Input );
 		writer.Write( Output );
 	}
 
-	public void Deserialize( BinaryReader reader )
+	public void DeserializeState( BinaryReader reader )
 	{
-		var fuel = reader.ReadInventoryContainer();
+		var fuel = reader.ReadInventoryContainer( Fuel );
 		InternalFuelInventory = new( fuel );
 
-		var input = reader.ReadInventoryContainer();
+		var input = reader.ReadInventoryContainer( Input );
 		InternalInputInventory = new( input );
 
-		var output = reader.ReadInventoryContainer();
+		var output = reader.ReadInventoryContainer( Output );
 		InternalOutputInventory = new( output );
 	}
 
@@ -144,7 +144,7 @@ public partial class CookingProcessor : BaseNetworkable
 
 	public string GetContainerIdString()
 	{
-		return $"{Fuel.InventoryId},{Input.InventoryId},{Output.InventoryId}";
+		return $"{Fuel.ContainerId},{Input.ContainerId},{Output.ContainerId}";
 	}
 
 	private void OnIsActiveChanged()

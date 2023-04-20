@@ -1,36 +1,43 @@
-﻿// sandbox
-global using Sandbox;
-global using Sandbox.Component;
-global using Sandbox.UI;
-global using Sandbox.UI.Construct;
-// system
-global using System;
-global using System.Collections.Generic;
-global using System.IO;
-global using System.ComponentModel;
-global using System.Linq;
-global using System.Threading.Tasks;
-
+using Sandbox;
+using Sandbox.Effects;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace NxtStudio.Collapse;
 
 public partial class CollapseGame : GameManager
 {
 	public static CollapseGame Entity => Current as CollapseGame;
+	public static string UniqueSaveId => Entity?.InternalSaveId ?? string.Empty;
+
+	[ConVar.Replicated( "fsk.isometric" )]
+	public static bool Isometric { get; set; } = true;
 
 	[ConVar.Server( "fsk.autosave", Saved = true )]
 	public static bool ShouldAutoSave { get; set; } = true;
-	
+
+	[ConVar.Server( "fsk.pvp" )]
+	public static bool EnablePvP { get; set; } = true;
+
+	[ConVar.Server( "fsk.pve" )]
+	public static bool EnablePvE { get; set; } = true;
+
 	private TimeUntil NextDespawnItems { get; set; }
 	private TimeUntil NextAutoSave { get; set; }
-	private TopDownCamera Camera { get; set; }
+	private IsometricCamera IsometricCamera { get; set; }
+	private TopDownCamera TopDownCamera { get; set; }
 	private bool HasLoadedWorld { get; set; }
+
+	[Net] private string InternalSaveId { get; set; }
+	private ScreenEffects PostProcessing { get; set; }
 
 	public CollapseGame() : base()
 	{
-		
-	} 
-	
+
+	}
+
 	public override void LoadSavedGame( SavedGame save )
 	{
 		Log.Info( "[Collapse] Loading world..." );
@@ -58,7 +65,12 @@ public partial class CollapseGame : GameManager
 		Game.RootPanel?.Delete( true );
 		Game.RootPanel = new UI.Hud();
 
-		Camera = new();
+		IsometricCamera = new();
+		TopDownCamera = new();
+
+		PostProcessing = new();
+		Camera.Main.RemoveAllHooks();
+		Camera.Main.AddHook( PostProcessing );
 
 		base.ClientSpawn();
 	}
@@ -110,44 +122,90 @@ public partial class CollapseGame : GameManager
 		base.ClientDisconnect( client, reason );
 	}
 
+	public override bool CanHearPlayerVoice( IClient source, IClient receiver )
+	{
+		if ( !source.IsValid() || !receiver.IsValid() ) return false;
+
+		var a = source.Pawn as CollapsePlayer;
+		var b = source.Pawn as CollapsePlayer;
+
+		if ( !a.IsValid() || !b.IsValid() ) return false;
+
+		return a.Position.Distance( b.Position ) <= 2000f;
+	}
+
+	public override void OnVoicePlayed( IClient cl )
+	{
+		cl.Voice.WantsStereo = false;
+		base.OnVoicePlayed( cl );
+	}
+
 	public override void PostLevelLoaded()
 	{
 		Game.WorldEntity.Tags.Add( "world" );
 
 		{
-			var spawner = new PickupSpawner();
+			var spawner = new LimitedSpawner();
 			spawner.SetType<WoodPickup>();
-			spawner.MaxPickups = 100;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 80;
-			spawner.Interval = 60f;
-		}
-
-		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<StonePickup>();
-			spawner.MaxPickups = 70;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
+			spawner.UseNavMesh = true;
+			spawner.MaxTotal = 400;
+			spawner.MinPerSpawn = 200;
+			spawner.MaxPerSpawn = 300;
 			spawner.Interval = 120f;
 		}
 
 		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<MetalOrePickup>();
-			spawner.MaxPickups = 50;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
+			var spawner = new LimitedSpawner();
+			spawner.SetType<StonePickup>();
+			spawner.UseNavMesh = true;
+			spawner.MaxTotal = 300;
+			spawner.MinPerSpawn = 100;
+			spawner.MaxPerSpawn = 200;
 			spawner.Interval = 180f;
 		}
 
 		{
-			var spawner = new PickupSpawner();
+			var spawner = new LimitedSpawner();
+			spawner.SetType<MetalOrePickup>();
+			spawner.UseNavMesh = true;
+			spawner.MaxTotal = 200;
+			spawner.MinPerSpawn = 100;
+			spawner.MaxPerSpawn = 150;
+			spawner.Interval = 300f;
+		}
+
+		{
+			var spawner = new LimitedSpawner();
 			spawner.SetType<PlantFiberPickup>();
-			spawner.MaxPickups = 40;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
-			spawner.Interval = 90f;
+			spawner.UseNavMesh = true;
+			spawner.MaxTotal = 250;
+			spawner.MinPerSpawn = 150;
+			spawner.MaxPerSpawn = 200;
+			spawner.Interval = 120f;
+		}
+
+		{
+			var spawner = new LimitedSpawner();
+			spawner.SetType<Deer>();
+			spawner.UseNavMesh = true;
+			spawner.MaxTotal = 20;
+			spawner.MinPerSpawn = 1;
+			spawner.MaxPerSpawn = 10;
+			spawner.Interval = 120f;
+		}
+
+		{
+			var spawner = new LimitedSpawner();
+			spawner.SetType<Undead>();
+			spawner.OnSpawned = ( e ) => (e as Undead)?.RiseFromGround();
+			spawner.SpawnNearPlayers = true;
+			spawner.TimeOfDayStart = 19.5f;
+			spawner.TimeOfDayEnd = 7f;
+			spawner.UseNavMesh = true;
+			spawner.MaxTotal = 20;
+			spawner.MinPerSpawn = 10;
+			spawner.MaxPerSpawn = 20;
+			spawner.Interval = 10f;
 		}
 
 		NextDespawnItems = 30f;
@@ -156,7 +214,6 @@ public partial class CollapseGame : GameManager
 
 		base.PostLevelLoaded();
 	}
-	
 
 	[Event.Tick.Server]
 	private void ServerTick()
@@ -182,77 +239,45 @@ public partial class CollapseGame : GameManager
 
 			NextDespawnItems = 30f;
 		}
+
+		InternalSaveId = PersistenceSystem.UniqueId;
 	}
 
 	[Event.Client.Frame]
 	private void OnFrame()
 	{
-		Camera?.Update();
-	}
-		static async Task<string> SpawnPackageModel( string packageName, Vector3 pos, Rotation rotation, Entity source )
-	{
-		var package = await Package.Fetch( packageName, false );
-		if ( package == null || package.PackageType != Package.Type.Model || package.Revision == null )
-		{
-			// spawn error particles
-			return null;
-		}
+		if ( Isometric )
+			IsometricCamera?.Update();
+		else
+			TopDownCamera?.Update();
 
-		if ( !source.IsValid ) return null; // source entity died or disconnected or something
-
-		var model = package.GetMeta( "PrimaryAsset", "models/dev/error.vmdl" );
-		var mins = package.GetMeta( "RenderMins", Vector3.Zero );
-		var maxs = package.GetMeta( "RenderMaxs", Vector3.Zero );
-
-		// downloads if not downloads, mounts if not mounted
-		await package.MountAsync();
-
-		return model;
-	}
-
-	[ConCmd.Server( "spawn" )]
-	public static async Task Spawn( string modelname )
-	{
-		var owner = ConsoleSystem.Caller?.Pawn as Player;
-
-		if ( ConsoleSystem.Caller == null )
+		if ( Game.LocalPawn is not CollapsePlayer player )
 			return;
 
-		var tr = Trace.Ray( owner.EyePosition, owner.EyePosition + owner.EyeRotation.Forward * 500 )
-			.UseHitboxes()
-			.Ignore( owner )
-			.Run();
+		var pp = PostProcessing;
 
-		var modelRotation = Rotation.From( new Angles( 0, owner.EyeRotation.Angles().yaw, 0 ) ) * Rotation.FromAxis( Vector3.Up, 180 );
+		pp.ChromaticAberration.Scale = 0.05f;
+		pp.ChromaticAberration.Offset = Vector3.Zero;
 
-		//
-		// Does this look like a package?
-		//
-		if ( modelname.Count( x => x == '.' ) == 1 && !modelname.EndsWith( ".vmdl", System.StringComparison.OrdinalIgnoreCase ) && !modelname.EndsWith( ".vmdl_c", System.StringComparison.OrdinalIgnoreCase ) )
-		{
-			modelname = await SpawnPackageModel( modelname, tr.EndPosition, modelRotation, owner as Entity );
-			if ( modelname == null )
-				return;
-		}
+		pp.Brightness = 0.99f;
+		pp.Contrast = 1.01f;
+		pp.Sharpen = 0.25f;
 
-		var model = Model.Load( modelname );
-		if ( model == null || model.IsError )
-			return;
+		var healthScale = (0.2f / player.MaxHealth) * player.Health;
 
-		var ent = new Prop
-		{
-			Position = tr.EndPosition + Vector3.Down * model.PhysicsBounds.Mins.z,
-			Rotation = modelRotation,
-			Model = model
-		};
+		if ( player.LifeState == LifeState.Alive )
+			pp.Saturation = 0.8f + healthScale;
+		else
+			pp.Saturation = 0f;
 
-		// Let's make sure physics are ready to go instead of waiting
-		ent.SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
+		pp.Vignette.Intensity = 0.8f - healthScale * 4f;
+		pp.Vignette.Color = Color.Red.WithAlpha( 0.1f );
+		pp.Vignette.Smoothness = 0.9f;
+		pp.Vignette.Roundness = 0.3f;
 
-		// If there's no physics model, create a simple OBB
-		if ( !ent.PhysicsBody.IsValid() )
-		{
-			ent.SetupPhysicsFromOBB( PhysicsMotionType.Dynamic, ent.CollisionBounds.Mins, ent.CollisionBounds.Maxs );
-		}
+		var sum = ScreenShake.List.OfType<ScreenShake.Random>().Sum( s => (1f - s.Progress) );
+
+		pp.Pixelation = 0.02f * sum;
+		pp.ChromaticAberration.Scale += (0.05f * sum);
 	}
 }

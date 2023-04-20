@@ -1,15 +1,15 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Collections.Generic;
 
 namespace NxtStudio.Collapse;
 
-public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootSpawnerItem, IConsumableItem, ICookableItem, IPurchasableItem
+public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootSpawnerItem, IConsumableItem, ICookableItem, IPurchasableItem, IRecyclableItem
 {
 	public override Color Color => ItemColors.Consumable;
 	public override ushort DefaultStackSize => (ushort)(Resource?.DefaultStackSize ?? 1);
 	public override ushort MaxStackSize => (ushort)(Resource?.MaxStackSize ?? 1);
 	public override string PrimaryUseHint => "Consume";
-	
+
 	public virtual int StockStackSize => Resource?.StockStackSize.GetValue().CeilToInt() ?? default;
 	public virtual int LootStackSize => Resource?.LootStackSize.GetValue().CeilToInt() ?? default;
 	public virtual float StockChance => Resource?.StockChance ?? default;
@@ -26,6 +26,9 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 	public virtual string CookedItemId => Resource?.CookedItemId ?? default;
 	public virtual int CookedQuantity => Resource?.CookedQuantity ?? default;
 	public virtual bool IsCookable => Resource?.IsCookable ?? default;
+	public virtual Dictionary<string, int> RecycleOutput => Resource?.RecycleOutput ?? default;
+	public virtual float BaseComponentReturn => Resource?.BaseComponentReturn ?? 0.5f;
+	public virtual bool IsRecyclable => Resource?.IsRecyclable ?? default;
 
 	public async void Consume( CollapsePlayer player )
 	{

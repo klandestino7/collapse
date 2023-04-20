@@ -1,4 +1,4 @@
-﻿@using System;
+@using System;
 @using Sandbox;
 @using Sandbox.UI;
 @using NxtStudio.Collapse;
@@ -19,15 +19,12 @@
     {
         var item = hotbar.GetFromSlot( i );
         var index = i;
-
         <InventorySlot IsSelected=@(GetHotbarIndex() == i) Container=@hotbar Slot=@i DisplaySlot=@(i + 1)></InventorySlot>
     }
 </root>
 
 @code
 {
-    //bool isHideHotbar = false;
-
     public Hotbar()
     {
         BindClass( "hidden", IsHidden );
@@ -52,7 +49,6 @@
         if ( Dialog.IsActive() )
             return true;
 
-        <!-- Log.Info( $"HideHotbar {isHideHotbar} "); -->
         return false;
     }
 }

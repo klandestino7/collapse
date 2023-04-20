@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Collections.Generic;
 
 namespace NxtStudio.Collapse;
@@ -32,6 +32,16 @@ public class AttachmentItem : InventoryItem, ILootSpawnerItem, IPurchasableItem
 		tags.Add( "attachment" );
 
 		base.BuildTags( tags );
+	}
+
+	public virtual void OnActiveStart( WeaponItem item, CollapsePlayer player )
+	{
+
+	}
+
+	public virtual void OnActiveEnd( WeaponItem item, CollapsePlayer player )
+	{
+
 	}
 
 	public virtual void OnWeaponChanged( Weapon weapon )

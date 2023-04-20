@@ -6,12 +6,12 @@
     display: flex;
     pointer-events: all;
     backdrop-filter-blur: 24px;
+    z-index: 1000;
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.9);
     transition: backdrop-filter-blur 0.15s ease-in;
     transition: opacity 0.15s ease-in;
     padding-bottom: 100px;
-    z-index: 100;
     opacity: 1;
 
     .body-container {
@@ -19,14 +19,14 @@
         margin-top: 100px;
 
         .title {
-            color: white;
-            font-family: Rubik;
+            color: lightgoldenrodyellow;
+            font-family: Vollkorn;
             font-size: 40px;
         }
 
         .subtitle {
             color: rgba( white 0.8 );
-            font-family: Rubik;
+            font-family: Vollkorn;
             font-size: 28px;
         }
 
@@ -42,7 +42,6 @@
     }
 
     .backpack,
-    .equipment,
     .cooking,
     .hotbar {
         .slots {
@@ -62,6 +61,14 @@
         }
     }
 
+    &.is-active {
+        .cooking {
+            .toggle-button {
+                background-color: rgba( 150 50 50 0.5 );
+            }
+        }
+    }
+
     .cooking {
         .subtitle {
             margin-top: 24px;
@@ -72,16 +79,17 @@
         }
 
         .toggle-button {
-            background-color: rgba( 0 0 0 0.4 );
+            background-color: rgba( 50 150 50 0.5 );
             justify-content: center;
             align-items: center;
             border-radius: 4px;
+            border: 2px solid white;
             transition: all 0.15s ease-in;
             margin-top: 32px;
             height: 64px;
 
             label {
-                font-family: Rubik;
+                font-family: Vollkorn;
                 font-size: 24px;
                 color: white;
             }
@@ -91,9 +99,13 @@
             }
 
             &:hover {
-                background-color: rgba( 0 0 0 0.6 );
+                background-color: white;
                 transform: scale( 1.05, 1.05 );
                 sound-in: "ui.hover";
+
+                label {
+                    color: black;
+                }
             }
         }
     }
@@ -106,8 +118,8 @@
         bottom: 32px;
 
         .title {
-            color: white;
-            font-family: Rubik;
+            color: lightgoldenrodyellow;
+            font-family: Vollkorn;
             font-size: 40px;
         }
 
@@ -122,7 +134,6 @@
         }
     }
 
-    .equipment,
     .cooking,
     .backpack {
         margin-bottom: 32px;
@@ -131,7 +142,6 @@
     &.hidden {
         opacity: 0;
 
-        .equipment,
         .backpack,
         .cooking,
         .hotbar {

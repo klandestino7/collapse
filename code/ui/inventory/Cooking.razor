@@ -1,4 +1,4 @@
-﻿@using System;
+@using System;
 @using Sandbox;
 @using Sandbox.UI;
 @using NxtStudio.Collapse;
@@ -92,15 +92,10 @@
     public static Cooking Current { get; private set; }
 
     public ICookerEntity Cooker { get; private set; }
+    public bool AllowMovement => false;
     public bool IsOpen { get; private set; }
     public Entity Entity { get; private set; }
     public string Name { get; private set; }
-
-    public Cooking()
-    {
-        Current = this;
-        BindClass( "hidden", () => !IsOpen );
-    }
 
     public void Open()
     {
@@ -141,6 +136,15 @@
         {
             CollapsePlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
         }
+    }
+
+    protected override void OnParametersSet()
+    {
+        Current = this;
+        BindClass( "is-active", () => Cooker?.Processor?.IsActive ?? false );
+        BindClass( "hidden", () => !IsOpen );
+
+        base.OnParametersSet();
     }
 
     protected override int BuildHash()

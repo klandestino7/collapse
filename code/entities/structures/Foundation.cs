@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,9 +10,6 @@ namespace NxtStudio.Collapse;
 [ItemCost( "wood", 100 )]
 public partial class Foundation : UpgradableStructure
 {
-	protected override int StoneUpgradeCost => 100;
-	protected override int MetalUpgradeCost => 50;
-
 	public override bool RequiresSocket => false;
 	public override bool ShouldRotate => false;
 	public override float MaxHealth => 250f;
@@ -103,6 +100,38 @@ public partial class Foundation : UpgradableStructure
 		}
 
 		base.OnNewModel( model );
+	}
+
+	public override void OnKilled()
+	{
+		base.OnKilled();
+
+		// Let's destroy any walls attached to the foundation.
+		foreach ( var socket in Sockets )
+		{
+			if ( socket.Connection.IsValid() )
+			{
+				var entity = socket.Connection.Parent as Structure;
+
+				if ( entity is Wall || entity is Doorway )
+				{
+					Breakables.Break( entity );
+
+					entity.OnKilled();
+					entity.Delete();
+				}
+			}
+		}
+
+		var deployables = FindInBox( WorldSpaceBounds.AddPoint( Position + Vector3.Up * 64f ) )
+			.OfType<Deployable>();
+
+		foreach ( var deployable in deployables )
+		{
+			Breakables.Break( deployable );
+			deployable.OnKilled();
+			deployable.Delete();
+		}
 	}
 
 	private void AddFoundationSocket( string direction, string connectorDirection )

@@ -1,4 +1,4 @@
-﻿namespace NxtStudio.Collapse.UI;
+namespace NxtStudio.Collapse.UI;
 
 public interface IDraggable
 {

@@ -14,14 +14,14 @@
   ],
   "HasCode": true,
   "CodePath": "/code/",
+  "PackageReferences": [],
+  "EditorReferences": null,
   "Metadata": {
     "MaxPlayers": 32,
     "MinPlayers": 1,
     "GameNetworkType": "Multiplayer",
-    "MapSelect": "Unrestricted",
-    "MapList": [
-      ""
-    ],
+    "MapSelect": "Tagged",
+    "MapList": [],
     "RankType": "None",
     "PerMapRanking": false,
     "LeaderboardType": "None",
@@ -85,6 +85,11 @@
           "a": "passplayers",
           "b": "npc",
           "r": "Ignore"
+        },
+        {
+          "a": "player",
+          "b": "npc",
+          "r": "Ignore"
         }
       ]
     },
@@ -94,6 +99,27 @@
     "Public": true,
     "SavedGames": true,
     "MapDependentSaves": true,
-    "SaveFormatVersion": 1001
+    "SaveFormatVersion": 1001,
+    "PackageSettings": [
+      {
+        "DisplayType": "Boolean",
+        "Choices": [],
+        "ConVarName": "fsk.pvp",
+        "DisplayName": "Enable PvP",
+        "DefaultValue": "true",
+        "Description": "Whether or not players are allowed to attack eachother.",
+        "Group": ""
+      },
+      {
+        "DisplayType": "Boolean",
+        "Choices": [],
+        "ConVarName": "fsk.isometric",
+        "DisplayName": "Isometric Camera",
+        "DefaultValue": "true",
+        "Description": "Enable the isometric camera. The alternative option is a top-down view.",
+        "Group": ""
+      }
+    ],
+    "CsProjName": ""
   }
 }

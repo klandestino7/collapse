@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -145,7 +145,7 @@ public partial class Stockpile : Deployable, IContextActionProvider, ICodeLockab
 	{
 		base.DeserializeState( reader );
 
-		var container = reader.ReadInventoryContainer();
+		var container = reader.ReadInventoryContainer( Inventory );
 		InternalInventory = new( container );
 
 		IsLocked = reader.ReadBoolean();
@@ -178,7 +178,6 @@ public partial class Stockpile : Deployable, IContextActionProvider, ICodeLockab
 
 		if ( trace.Entity is Foundation foundation )
 		{
-			Log.Info( "Placed Stockpile on Foundation" );
 			foundation.PropagateStockpile( this );
 		}
 

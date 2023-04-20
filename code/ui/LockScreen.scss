@@ -7,11 +7,11 @@
     display: flex;
     pointer-events: all;
     backdrop-filter-blur: 24px;
+    z-index: 1000;
     flex-direction: column;
     background-color: rgba( 0 0 0 0.9 );
     transition: backdrop-filter-blur 0.15s ease-in;
     transition: opacity 0.15s ease-in;
-    z-index: 100;
     opacity: 1;
 
     > .container {
@@ -27,7 +27,7 @@
             height: 80px;
 
             .code {
-                font-family: Rubik;
+                font-family: Vollkorn;
                 margin-top: 40px;
                 font-size: 64px;
                 color: greenyellow;
@@ -64,7 +64,7 @@
 
                 label {
                     pointer-events: none;
-                    font-family: Rubik;
+                    font-family: Poppins;
                     font-size: 40px;
                 }
             }

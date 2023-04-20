@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 
 namespace NxtStudio.Collapse;
 
@@ -13,17 +13,22 @@ public struct MoveHelper
 	public float MaxStandableAngle;
 	public Trace Trace;
 
-	public MoveHelper( Vector3 position, Vector3 velocity ) : this()
+	public MoveHelper( Vector3 position, Vector3 velocity )  : this()
 	{
 		Velocity = velocity;
 		Position = position;
 		GroundBounce = 0f;
 		WallBounce = 0f;
 		MaxStandableAngle = 10f;
-		Trace = Trace.Ray( 0f, 0f )
-			.WorldAndEntities()
+
+		Trace = SetupTrace()
 			.WithoutTags( "passplayers" )
-			.WithAnyTags( "solid", "playerclip", "passbullets", "player" );
+			.WithAnyTags( "solid", "playerclip", "passbullets" );
+	}
+
+	public Trace SetupTrace()
+	{
+		return Trace.Ray( 0f, 0f ).WorldAndEntities();
 	}
 
 	public TraceResult TraceFromTo( Vector3 start, Vector3 end )
@@ -115,5 +120,43 @@ public struct MoveHelper
 		HitWall = stepMove.HitWall;
 
 		return stepFraction;
+	}
+
+	public bool TryUnstuck()
+	{
+		var tr = TraceFromTo( Position, Position );
+		if ( !tr.StartedSolid ) return true;
+		return Unstuck();
+	}
+
+	private bool Unstuck()
+	{
+		for ( int i = 1; i < 20; i++ )
+		{
+			var tryPos = Position + Vector3.Up * i;
+
+			var tr = TraceFromTo( tryPos, Position );
+			if ( !tr.StartedSolid )
+			{
+				Position = tryPos + tr.Direction.Normal * (tr.Distance - 0.5f);
+				Velocity = 0;
+				return true;
+			}
+		}
+
+		for ( int i = 1; i < 100; i++ )
+		{
+			var tryPos = Position + Vector3.Random * i;
+
+			var tr = TraceFromTo( tryPos, Position );
+			if ( !tr.StartedSolid )
+			{
+				Position = tryPos + tr.Direction.Normal * (tr.Distance - 0.5f);
+				Velocity = 0;
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

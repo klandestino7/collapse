@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,11 +9,11 @@ namespace NxtStudio.Collapse;
 
 public static class PersistenceSystem
 {
-	public static int Version => 16;
+	public static string UniqueId { get; private set; }
+	public static int Version => 20;
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
 	private static ulong PersistentId { get; set; }
-	private static string FileName => $"{Game.Server.MapIdent.ToLower()}.save";
 
 	[ConCmd.Admin( "fsk.save.me" )]
 	private static void SaveMe()
@@ -74,7 +74,13 @@ public static class PersistenceSystem
 		using var s = new MemoryStream();
 		using var w = new BinaryWriter( s );
 
+		if ( string.IsNullOrEmpty( UniqueId ) )
+		{
+			UniqueId = Guid.NewGuid().ToString();
+		}
+
 		w.Write( Version );
+		w.Write( UniqueId );
 
 		InventorySystem.Serialize( w );
 
@@ -104,7 +110,10 @@ public static class PersistenceSystem
 			return;
 		}
 
+		UniqueId = reader.ReadString();
+
 		InventorySystem.Deserialize( reader );
+		InventorySystem.ReassignIds();
 
 		LoadPlayers( reader );
 		LoadEntities( reader );

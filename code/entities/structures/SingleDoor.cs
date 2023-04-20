@@ -1,14 +1,19 @@
-﻿using Sandbox;
+using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace NxtStudio.Collapse;
 
-public partial class SingleDoor : Structure, ICodeLockable
+public abstract partial class SingleDoor : Structure, ICodeLockable
 {
+	public virtual StructureMaterial Material => StructureMaterial.Wood;
+	public abstract Type ItemType { get; }
+
 	public override Color GlowColor => IsAuthorized() ? Color.Green : Color.Red;
 
+	private ContextAction PickupAction { get; set; }
 	private ContextAction OpenAction { get; set; }
 	private ContextAction CloseAction { get; set; }
 	private ContextAction LockAction { get; set; }
@@ -18,12 +23,23 @@ public partial class SingleDoor : Structure, ICodeLockable
 	[Net] public bool IsLocked { get; private set; }
 	[Net] public bool IsOpen { get; private set; }
 
+	private TimeSince LastOpenOrCloseTime { get; set; }
+	private bool DoorOpensAway { get; set; }
 	private Socket Socket { get; set; }
 
 	public string Code { get; private set; }
 
 	public SingleDoor()
 	{
+		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
+		PickupAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = IsAuthorized( p )
+			};
+		} );
+
 		CloseAction = new( "close", "Close", "textures/ui/actions/close_door.png" );
 		CloseAction.SetCondition( p =>
 		{
@@ -98,6 +114,8 @@ public partial class SingleDoor : Structure, ICodeLockable
 		{
 			yield return LockAction;
 		}
+
+		yield return PickupAction;
 	}
 
 	public override ContextAction GetPrimaryAction( CollapsePlayer player )
@@ -123,11 +141,20 @@ public partial class SingleDoor : Structure, ICodeLockable
 		if ( action == OpenAction && IsAuthorized( player ) )
 		{
 			PlaySound( "door.single.open" );
+			LastOpenOrCloseTime = 0f;
+			EnableAllCollisions = false;
 			IsOpen = true;
+
+			var direction = (Position - player.Position).Normal;
+			var dot = Rotation.Forward.Dot( direction );
+
+			DoorOpensAway = dot > 0f;
 		}
 		else if ( action == CloseAction && IsAuthorized( player ) )
 		{
 			PlaySound( "door.single.close" );
+			LastOpenOrCloseTime = 0f;
+			EnableAllCollisions = false;
 			IsOpen = false;
 		}
 		else if ( action == LockAction && IsAuthorized( player ) )
@@ -138,15 +165,22 @@ public partial class SingleDoor : Structure, ICodeLockable
 		{
 			UI.LockScreen.OpenToUnlock( player, this );
 		}
+		else if ( action == PickupAction && IsAuthorized( player ) )
+		{
+			if ( Game.IsServer )
+			{
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
+
+				var item = InventorySystem.CreateItem( ItemType );
+				player.TryGiveItem( item );
+				Delete();
+			}
+		}
 	}
 
 	public override void Spawn()
 	{
 		base.Spawn();
-
-		SetModel( "models/structures/single_door.vmdl" );
-		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
-
 		Tags.Add( "hover", "solid", "door" );
 	}
 
@@ -169,6 +203,8 @@ public partial class SingleDoor : Structure, ICodeLockable
 	{
 		if ( Game.IsServer || IsClientOnly )
 		{
+			Socket?.Delete();
+
 			Socket = AddSocket( "center" );
 			Socket.ConnectAny.Add( "doorway" );
 			Socket.Tags.Add( "door" );
@@ -181,6 +217,7 @@ public partial class SingleDoor : Structure, ICodeLockable
 	{
 		writer.Write( IsOpen );
 		writer.Write( IsLocked );
+		writer.Write( DoorOpensAway );
 		writer.Write( string.IsNullOrEmpty( Code ) ? "" : Code );
 		writer.Write( Authorized.Count );
 
@@ -196,6 +233,7 @@ public partial class SingleDoor : Structure, ICodeLockable
 	{
 		IsOpen = reader.ReadBoolean();
 		IsLocked = reader.ReadBoolean();
+		DoorOpensAway = reader.ReadBoolean();
 		Code = reader.ReadString();
 
 		var count = reader.ReadInt32();
@@ -209,6 +247,8 @@ public partial class SingleDoor : Structure, ICodeLockable
 		base.DeserializeState( reader );
 	}
 
+	private bool LastEnableAllCollisions { get; set; }
+
 	[Event.Tick.Server]
 	protected virtual void Tick()
 	{
@@ -217,9 +257,17 @@ public partial class SingleDoor : Structure, ICodeLockable
 		var parent = Socket.Connection;
 		if ( !parent.IsValid() ) return;
 
-		if ( IsOpen )
-			LocalRotation = Rotation.Slerp( LocalRotation, parent.Rotation.RotateAroundAxis( Vector3.Up, 90f ), Time.Delta * 8f );
-		else
-			LocalRotation = Rotation.Slerp( LocalRotation, parent.Rotation, Time.Delta * 8f );
+		var targetRotation = IsOpen ? parent.Rotation.RotateAroundAxis( Vector3.Up, DoorOpensAway ? -90f : 90f ) : parent.Rotation;
+		LocalRotation = Rotation.Slerp( LocalRotation, targetRotation, Time.Delta * 8f );
+
+		var enableAllCollisions = (LocalRotation.Distance( targetRotation ) <= 1f && LastOpenOrCloseTime > 0.2f);
+		EnableAllCollisions = enableAllCollisions;
+
+		if ( LastEnableAllCollisions != enableAllCollisions )
+		{
+			// This is kinda meh.
+			LastEnableAllCollisions = enableAllCollisions;
+			Navigation.Update( Position, 256f );
+		}
 	}
 }

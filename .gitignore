@@ -11,15 +11,3 @@ release.zip
 *.los
 .vs
 *.generated.*
-
-.idea/
-
-*.vpk
-*.vtex_c
-*.vmat_c
-*.vmdl_c
-*.vanmgrph_c
-*.vsnd_c
-*.vpcf_c
-*.vpost_c
-*.*_c
