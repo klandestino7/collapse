@@ -8,7 +8,7 @@ public partial class IsometricCamera : EntityComponent<CollapsePlayer>, ISinglet
 {
 	protected float WheelSpeed => 30f;
 	protected Vector2 CameraDistance => new( 125, 1000 );
-	protected Vector2 PitchClamp => new( 20, 70 ); 
+	protected Vector2 PitchClamp => new( 35, 70 );
 
 	float OrbitDistance = 400f;
 	float TargetOrbitDistance = 400f;
@@ -77,14 +77,14 @@ public partial class IsometricCamera : EntityComponent<CollapsePlayer>, ISinglet
 		}
 		else
 		{
-			var direction = Screen.GetDirection( Mouse.Position, Camera.FieldOfView, Camera.Rotation, Screen.Size );
-			var hitPos = IntersectPlane( Camera.Position, direction, Entity.EyePosition.z );
+//			var direction = Screen.GetDirection( Mouse.Position, Camera.FieldOfView, Camera.Rotation, Screen.Size );
+//			var hitPos = IntersectPlane( Camera.Position, direction, Entity.EyePosition.z );
 
-			Entity.ViewAngles = (hitPos - Entity.EyePosition).EulerAngles;
+//			Entity.ViewAngles = (hitPos - Entity.EyePosition).EulerAngles;
 		}
 
 		OrbitAngles.pitch = OrbitAngles.pitch.Clamp( PitchClamp.x, PitchClamp.y );
 
-	/*	Entity.InputDirection = Input.AnalogMove;*/
+//		Entity.InputDirection = Input.AnalogMove;
 	}
 }

@@ -129,7 +129,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 	[ClientInput] public bool HasDialogOpen { get; private set; }
 
 	[Net, Predicted] public Entity ActiveChild { get; set; }
-	[ClientInput] public Vector3 InputDirection { get; protected set; }
+	[ClientInput] public Vector3 InputDirection { get; set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
 	[ClientInput] public int DeployableYaw { get; set; }
 	public Angles OriginalViewAngles { get; private set; }
@@ -787,6 +787,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		if ( LifeState == LifeState.Alive )
 		{
 			Controller?.FrameSimulate();
+			SimulateRotation();
 		}
 
 		SimulateConstruction();
@@ -806,6 +807,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		if ( LifeState == LifeState.Alive )
 		{
 			Controller?.Simulate();
+			SimulateRotation();
 
 			if ( Stamina <= 10f )
 				IsOutOfBreath = true;
@@ -815,6 +817,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 			Projectiles.Simulate();
 
 			SimulateAnimation();
+			CrossaimSimulation();
 
 			if ( Game.IsServer )
 			{
@@ -1043,6 +1046,7 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 		GroundEntity = trace.Entity;
 
 		SimulateAnimation();
+		CrossaimSimulation();
 	}
 
 	private void SimulateTimedAction()
@@ -1510,5 +1514,12 @@ public partial class CollapsePlayer : AnimatedEntity, IPersistence, INametagProv
 				}
 			}
 		}
+	}
+
+	protected void SimulateRotation()
+	{
+		var idealRotation = ViewAngles.ToRotation();
+		EyeRotation = Rotation.Slerp( Rotation, idealRotation, Time.Delta * 10f );
+		Rotation = EyeRotation;
 	}
 }

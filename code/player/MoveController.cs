@@ -131,7 +131,11 @@ public partial class MoveController
 		Events?.Clear();
 		Tags?.Clear();
 
-		Player.EyeLocalPosition = Vector3.Up * Scale( EyeHeight );
+		var movement = Player.InputDirection.Normal;
+		var angles = Camera.Rotation.Angles().WithPitch( 0 );
+		var moveVector = Rotation.From( angles ) * movement * 320f;
+
+		Player.EyeLocalPosition = Vector3.Up ;
 		UpdateBBox();
 
 		Player.EyeLocalPosition += TraceOffset;
@@ -139,7 +143,7 @@ public partial class MoveController
 		if ( Input.Down( InputButton.Run ) )
 			Player.EyeRotation = Player.Rotation;
 		else
-			Player.EyeRotation = Player.ViewAngles.ToRotation();
+			Player.EyeRotation = angles.ToRotation();
 
 		if ( CheckStuckAndFix() )
 		{
@@ -161,14 +165,14 @@ public partial class MoveController
 			ApplyFriction( GroundFriction * SurfaceFriction );
 		}
 
-		WishVelocity = new Vector3( Player.InputDirection.x, Player.InputDirection.y, 0 );
+		WishVelocity = moveVector;
 
 		if ( CollapseGame.Isometric )
 			WishVelocity *= Rotation.From( 0f, 45f, 0f );
 
 		var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
 
-		WishVelocity = WishVelocity.WithZ( 0 );
+//		WishVelocity = WishVelocity.WithZ( 0 );
 		WishVelocity = WishVelocity.Normal * inSpeed;
 		WishVelocity *= GetWishSpeed();
 
