@@ -5,12 +5,15 @@
       "Id": "bfc59c12-1ed2-4f91-8956-a95a315eac3c",
       "Name": "Sun",
       "Rotation": "-0.0000000377291,0.6329893,0.0000000000000005185386,0.774161",
+      "Scale": "2,2,2",
       "Enabled": true,
       "Components": [
         {
           "__version": 0,
           "__type": "DirectionalLight",
           "__enabled": true,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
           "LightColor": "0.91373,0.98039,1,1",
           "Shadows": true,
           "SkyColor": "0.05882,0.07451,0.08235,1"
@@ -20,6 +23,7 @@
     {
       "Id": "00344a8c-fa5e-45ae-b12a-10bb781a1dc3",
       "Name": "2D Skybox",
+      "Scale": "2,2,1",
       "Enabled": true,
       "Components": [
         {
@@ -48,7 +52,7 @@
       "Id": "6ad70641-3c6c-4402-9c85-9a4969af4764",
       "Name": "Surface",
       "Position": "0.6326401,-4.426731,-3.744614",
-      "Scale": "20,20,20",
+      "Scale": "20,20,18.70629",
       "Enabled": true,
       "Components": [
         {
@@ -68,7 +72,7 @@
           "__enabled": true,
           "Center": "0,0,0",
           "IsTrigger": false,
-          "Scale": "100,100,0.1",
+          "Scale": "100,100,0.3",
           "Static": false,
           "Surface": null
         }
@@ -107,7 +111,7 @@
     },
     {
       "Id": "ae21f418-2d53-4e9d-8a56-43694b7cb2f3",
-      "Name": "Player",
+      "Name": "Player ",
       "Position": "-27.28112,-51.02454,5.657212",
       "Enabled": true,
       "Components": [
@@ -153,8 +157,8 @@
           "__version": 0,
           "__type": "PlayerCamera",
           "__enabled": true,
-          "CameraDistance": "200,1000",
-          "PitchClamp": "25,70",
+          "CameraDistance": "500,1300",
+          "PitchClamp": "40,65",
           "playerBody": "b5ef135d-b42a-4599-bc83-8fd4bd38e947",
           "WheelSpeed": 30
         },
@@ -199,6 +203,7 @@
           "Name": "Camera",
           "Position": "-40,-78.25645,122.8318",
           "Rotation": "-0.2112172,0.3191144,0.5099233,0.7704101",
+          "Tags": "maincamera",
           "Enabled": true,
           "Components": [
             {
@@ -220,6 +225,174 @@
               "ZNear": 10
             }
           ]
+        },
+        {
+          "Id": "c42c0b6b-065c-4501-8bfe-b811c27331ed",
+          "Name": "Cursor",
+          "Position": "5.00491,45.21744,36.34293",
+          "Enabled": true,
+          "Components": [
+            {
+              "__version": 0,
+              "__type": "CursorAction",
+              "__enabled": true,
+              "LerpSpeed": 10,
+              "Range": 100,
+              "Speed": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "228e5e48-c300-4d58-b33a-1dd7dd6ef5bd",
+      "Name": "Wall",
+      "Position": "-992.4373,-2.453242,46.92635",
+      "Rotation": "0.5,0.5,0.5,0.5",
+      "Scale": "20.13902,1.448292,1",
+      "Enabled": true,
+      "Components": [
+        {
+          "__version": 0,
+          "__type": "ModelRenderer",
+          "__enabled": true,
+          "BodyGroups": 18446744073709551615,
+          "MaterialGroup": null,
+          "MaterialOverride": "materials/generic/wall_panel_grey_b.vmat",
+          "Model": "models/dev/plane.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__version": 0,
+          "__type": "BoxCollider",
+          "__enabled": true,
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Scale": "100,80,10",
+          "Static": false,
+          "Surface": null
+        }
+      ]
+    },
+    {
+      "Id": "ac642787-8171-4ca3-889a-cab65aa1477b",
+      "Name": "Wall",
+      "Position": "987.804,-2.453242,46.92635",
+      "Rotation": "0.5,-0.5,-0.5,0.5",
+      "Scale": "20.13902,1.448292,1",
+      "Enabled": true,
+      "Components": [
+        {
+          "__version": 0,
+          "__type": "ModelRenderer",
+          "__enabled": true,
+          "BodyGroups": 18446744073709551615,
+          "MaterialGroup": null,
+          "MaterialOverride": "materials/generic/wall_panel_grey_b.vmat",
+          "Model": "models/dev/plane.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__version": 0,
+          "__type": "BoxCollider",
+          "__enabled": true,
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Scale": "100,80,10",
+          "Static": false,
+          "Surface": null
+        }
+      ]
+    },
+    {
+      "Id": "da4d0c5c-b558-40dd-80ff-4f60c0bd9c22",
+      "Name": "Wall",
+      "Position": "1.277954,971.0945,46.92658",
+      "Rotation": "0.7071068,0,0,0.7071067",
+      "Scale": "20.13902,1.448292,1",
+      "Enabled": true,
+      "Components": [
+        {
+          "__version": 0,
+          "__type": "ModelRenderer",
+          "__enabled": true,
+          "BodyGroups": 18446744073709551615,
+          "MaterialGroup": null,
+          "MaterialOverride": "materials/generic/wall_panel_grey_b.vmat",
+          "Model": "models/dev/plane.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__version": 0,
+          "__type": "BoxCollider",
+          "__enabled": true,
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Scale": "100,80,10",
+          "Static": false,
+          "Surface": null
+        }
+      ]
+    },
+    {
+      "Id": "efb6f03d-86ce-4312-840f-ecb31d26e0d9",
+      "Name": "Wall",
+      "Position": "1.277931,-993.8094,46.92641",
+      "Rotation": "-0.00000003090862,-0.7071068,-0.7071067,-0.00000003090862",
+      "Scale": "20.13902,1.448292,1",
+      "Enabled": true,
+      "Components": [
+        {
+          "__version": 0,
+          "__type": "ModelRenderer",
+          "__enabled": true,
+          "BodyGroups": 18446744073709551615,
+          "MaterialGroup": null,
+          "MaterialOverride": "materials/generic/wall_panel_grey_b.vmat",
+          "Model": "models/dev/plane.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__version": 0,
+          "__type": "BoxCollider",
+          "__enabled": true,
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Scale": "100,80,10",
+          "Static": false,
+          "Surface": null
+        }
+      ]
+    },
+    {
+      "Id": "ccf38a05-ac9a-4afc-8b72-00df2d1d64ea",
+      "Name": "GameObject",
+      "Enabled": true
+    },
+    {
+      "Id": "f8ce9c4e-346d-4c0f-8c16-2f376c7dee3d",
+      "Name": "Screen",
+      "Position": "-22.41381,10.33328,-22.1658",
+      "Enabled": true,
+      "Components": [
+        {
+          "__version": 0,
+          "__type": "ScreenPanel",
+          "__enabled": true,
+          "AutoScreenScale": true,
+          "Opacity": 1,
+          "Scale": 1,
+          "ZIndex": 100
+        },
+        {
+          "__version": 0,
+          "__type": "Cursor",
+          "__enabled": true,
+          "CursorAction": null
         }
       ]
     }
@@ -235,5 +408,7 @@
   },
   "Title": "minimal",
   "Description": "",
-  "__references": []
+  "__references": [
+    "facepunch.v_toolgun"
+  ]
 }
