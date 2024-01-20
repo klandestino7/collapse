@@ -148,6 +148,28 @@
           "LookAt": null,
           "LookAtEnabled": false,
           "Target": "b5ef135d-b42a-4599-bc83-8fd4bd38e947"
+        },
+        {
+          "__version": 0,
+          "__type": "PlayerCamera",
+          "__enabled": true,
+          "CameraDistance": "200,1000",
+          "PitchClamp": "25,70",
+          "playerBody": "b5ef135d-b42a-4599-bc83-8fd4bd38e947",
+          "WheelSpeed": 30
+        },
+        {
+          "__version": 0,
+          "__type": "PlayerAnimation",
+          "__enabled": true,
+          "AnimationHelper": "ae21f418-2d53-4e9d-8a56-43694b7cb2f3",
+          "Body": "b5ef135d-b42a-4599-bc83-8fd4bd38e947"
+        },
+        {
+          "__version": 0,
+          "__type": "PlayerCrossAim",
+          "__enabled": true,
+          "Body": "b5ef135d-b42a-4599-bc83-8fd4bd38e947"
         }
       ],
       "Children": [

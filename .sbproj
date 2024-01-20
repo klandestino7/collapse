@@ -1,8 +1,8 @@
 {
-  "Title": "CollapseTest",
+  "Title": "Collapse",
   "Type": "game",
   "Org": "local",
-  "Ident": "collapsetest",
+  "Ident": "collapse",
   "Tags": null,
   "Schema": 1,
   "HasAssets": true,
