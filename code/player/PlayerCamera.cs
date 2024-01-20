@@ -8,15 +8,15 @@ using System.Numerics;
 public sealed class PlayerCamera : Component
 {
 	[Property] public float WheelSpeed => 30f;
-	[Property] public Vector2 CameraDistance => new( 200, 1000 );
-	[Property] public Vector2 PitchClamp => new( 25, 70 );
+	[Property] public Vector2 CameraDistance => new( 500, 1300 );
+	[Property] public Vector2 PitchClamp => new( 40, 65 );
 	[Property] public SkinnedModelRenderer playerBody { get; set; }
 
 	[Sync]
 	public Angles EyeAngles { get; set; }
 
-	float OrbitDistance = 200f;
-	float TargetOrbitDistance = 400f;
+	float OrbitDistance = 500f;
+	float TargetOrbitDistance = 600f;
 	Angles OrbitAngles = Angles.Zero;
 
 	protected override void OnUpdate()
@@ -54,14 +54,14 @@ public sealed class PlayerCamera : Component
 
 		OrbitDistance = OrbitDistance.LerpTo( TargetOrbitDistance, Time.Delta * 10f );
 
-		if ( Input.UsingController || ( Input.Down( "Walk" ) ) )
+		if ( Input.UsingController || Input.Down( "Walk" ) )
 		{
 			OrbitAngles.yaw += Input.AnalogLook.yaw * 5f;
 			OrbitAngles.pitch += Input.AnalogLook.pitch * 5f;
 			OrbitAngles = OrbitAngles.Normal;
-
-			EyeAngles = OrbitAngles.WithPitch( 0f );
 		}
+
+		EyeAngles = OrbitAngles.WithPitch( 0f );
 
 		OrbitAngles.pitch = OrbitAngles.pitch.Clamp( PitchClamp.x, PitchClamp.y );
 	}

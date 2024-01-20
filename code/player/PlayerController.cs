@@ -7,11 +7,8 @@ using System.Numerics;
 
 public sealed class PlayerController : Component
 {
-
 	[Property] public Vector3 Gravity { get; set; } = new Vector3( 0, 0, 800 );
-
 	public Vector3 WishVelocity { get; private set; }
-
 
 	[Property] public GameObject Body { get; set; }
 	[Property] public GameObject Eye { get; set; }
@@ -20,6 +17,8 @@ public sealed class PlayerController : Component
 
 	[Sync]
 	public Angles EyeAngles { get; set; }
+
+	public Vector3 MoveDirection { get;  set; }
 
 	[Sync]
 	public bool IsRunning { get; set; }
@@ -39,71 +38,19 @@ public sealed class PlayerController : Component
 		}
 	}
 
-	protected static Vector3 IntersectPlane( Vector3 pos, Vector3 dir, float z )
-	{
-		float a = (z - pos.z) / dir.z;
-		return new( dir.x * a + pos.x, dir.y * a + pos.y, z );
-	}
-
-	protected static Rotation LookAt( Vector3 targetPosition, Vector3 position )
-	{
-		var targetDelta = (targetPosition - position);
-		var direction = targetDelta.Normal;
-
-		return Rotation.From( new Angles(
-			((float)Math.Asin( direction.z )).RadianToDegree() * -1.0f,
-			((float)Math.Atan2( direction.y, direction.x )).RadianToDegree(),
-			0.0f ) );
-	}
-
 	protected override void OnUpdate()
 	{
-		// var cc = GameObject.Components.Get<CharacterController>();
+		var cam = GameObject.Components.Get<PlayerCamera>( ) ;
+		var movement = Input.AnalogMove.Normal;
+		var angles = cam.EyeAngles;
+		var moveVector = Rotation.From( angles ) * movement * 320f;
 
-		// // Eye input
-		// if ( !IsProxy )
-		// {
-		// 	var ee = EyeAngles;
-		// 	ee += Input.AnalogLook * 0.5f;
-		// 	ee.roll = 0;
-		// 	EyeAngles = ee;
+		MoveDirection = moveVector;
 
-		// 	IsRunning = Input.Down( "Run" );
-		// }
-
-		// if ( cc is null ) return;
-
-		// float rotateDifference = 0;
-
-		// // rotate body to look angles
-		// if ( Body is not null )
-		// {
-		// 	var targetAngle = new Angles( 0, EyeAngles.yaw, 0 ).ToRotation();
-
-		// 	var v = cc.Velocity.WithZ( 0 );
-
-		// 	if ( v.Length > 10.0f )
-		// 	{
-		// 		targetAngle = Rotation.LookAt( v, Vector3.Up );
-		// 	}
-
-		// 	rotateDifference = Body.Transform.Rotation.Distance( targetAngle );
-
-		// 	if ( rotateDifference > 50.0f || cc.Velocity.Length > 10.0f )
-		// 	{
-		// 		Body.Transform.Rotation = Rotation.Lerp( Body.Transform.Rotation, targetAngle, Time.Delta * 2.0f );
-		// 	}
-		// }
-
-		// if ( AnimationHelper is not null )
-		// {
-		// 	AnimationHelper.WithVelocity( cc.Velocity );
-		// 	AnimationHelper.WithWishVelocity( WishVelocity );
-		// 	AnimationHelper.IsGrounded = cc.IsOnGround;
-		// 	AnimationHelper.FootShuffle = rotateDifference;
-		// 	AnimationHelper.WithLook( EyeAngles.Forward, 1, 1, 1.0f );
-		// 	AnimationHelper.MoveStyle = IsRunning ? CitizenAnimationHelper.MoveStyles.Run : CitizenAnimationHelper.MoveStyles.Walk;
-		// }
+		if ( Input.Down( "run" ) )
+			Body.Transform.Rotation = Body.Transform.Rotation;
+		else
+			Body.Transform.Rotation = Rotation.Lerp( Body.Transform.Rotation, angles.ToRotation(), Time.Delta * 2f);
 	}
 
 	[Broadcast]
@@ -127,11 +74,8 @@ public sealed class PlayerController : Component
 		{
 			float flGroundFactor = 1.0f;
 			float flMul = 268.3281572999747f * 1.2f;
-			//if ( Duck.IsActive )
-			//	flMul *= 0.8f;
 
 			cc.Punch( Vector3.Up * flMul * flGroundFactor );
-			//	cc.IsOnGround = false;
 
 			OnJump( fJumps, "Hello", new object[] { Time.Now.ToString(), 43.0f }, Vector3.Random );
 
@@ -161,14 +105,16 @@ public sealed class PlayerController : Component
 		{
 			cc.Velocity = cc.Velocity.WithZ( 0 );
 		}
+
 	}
 
 	public void BuildWishVelocity()
 	{
 		var rot = EyeAngles.ToRotation();
 
-		WishVelocity = rot * Input.AnalogMove;
+		WishVelocity = rot * MoveDirection;
 		WishVelocity = WishVelocity.WithZ( 0 );
+		WishVelocity *= Rotation.From( 0f, -70f, 0f );
 
 		if ( !WishVelocity.IsNearZeroLength ) WishVelocity = WishVelocity.Normal;
 

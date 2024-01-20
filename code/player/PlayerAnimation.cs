@@ -13,7 +13,7 @@ public sealed class PlayerAnimation : Component
 
 	public Vector3 WishVelocity { get; private set; }
 
-	[Sync]
+	[Sync] 
 	public Angles EyeAngles { get; set; }
 
 	[Sync]
@@ -24,20 +24,15 @@ public sealed class PlayerAnimation : Component
 		Rotation rotation;
         Rotation bodyRotation = Body.Transform.Rotation;
 
+		var cam = GameObject.Components.Get<PlayerCamera>( ) ;
+		EyeAngles = cam.EyeAngles;
 		// Eye input
 		if ( !IsProxy )
 		{
-			var ee = EyeAngles;
-			ee += Input.AnalogLook * 0.5f;
-			ee.roll = 0;
-			EyeAngles = ee;
-
 			IsRunning = Input.Down( "Run" );
 		}
 
 		var cc = GameObject.Components.Get<CharacterController>();
-
-        rotation = EyeAngles.ToRotation();
         
         var aimButtonPressed = Input.Down( "attack2" );
 
@@ -50,19 +45,18 @@ public sealed class PlayerAnimation : Component
 
 			var v = cc.Velocity.WithZ( 0 );
 
-			if ( v.Length > 10.0f )
-			{
-				targetAngle = Rotation.LookAt( v, Vector3.Up );
-			}
+			targetAngle = Rotation.LookAt( v, Vector3.Up );
 
 			rotateDifference = Body.Transform.Rotation.Distance( targetAngle );
 
+			if ( rotateDifference > 50.0f || cc.Velocity.Length > 10.0f )
+			{
+				Body.Transform.Rotation = Rotation.Lerp( Body.Transform.Rotation, targetAngle, Time.Delta * 2.0f );
+			}
+
             if ( aimButtonPressed )
             {
-                if ( rotateDifference > 50.0f || cc.Velocity.Length > 10.0f )
-                {
-                    Body.Transform.Rotation = Rotation.Lerp( Body.Transform.Rotation, targetAngle, Time.Delta * 2.0f );
-                }
+				// Body.Transform.Rotation = Rotation.Lerp( Body.Transform.Rotation, targetAngle, Time.Delta * 2.0f );
             }
 		}
 
