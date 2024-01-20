@@ -9,7 +9,7 @@ public sealed class PlayerCrossAim : Component
 {
 	public Rotation lookToRotation;
 	[Property] public GameObject Body { get; set; }
-	public Vector2 cursorDirection { get; private set; }
+	public Vector3 cursorDirection { get; private set; }
 
 	public Vector3 m_v3PawnCursorDir { get; private set ; }
 
@@ -18,16 +18,39 @@ public sealed class PlayerCrossAim : Component
 	public bool aiming { get; private set;}
 	protected override void OnUpdate()
 	{
+		var cursor = GameObject.Components.Get<CursorAction>();
+		
         var runButtonPressed = Input.Down( "run" );
 		var attackButtonPressed = Input.Down( "attack1" );
 		var aimButtonPressed = Input.Down( "attack2" );
 
-        var cursorTraceStartPos = new Vector2( Body.Transform.Position.x, Body.Transform.Position.y );
+		var eyeHeight = Body.Transform.Position.z + 50f;
 
-        Log.Info( "CURSOR :: " + Mouse.Position );
-        Gizmo.Draw.Line( cursorTraceStartPos, Mouse.Position );
+		var cursorPosition = new Vector3(Mouse.Position.x, Mouse.Position.y, eyeHeight);
+
+		var cursorTraceStartPos = new Vector3( Body.Transform.Position.x, Body.Transform.Position.y, eyeHeight );
+		var cursorTraceEndPos = cursorTraceStartPos + ( cursorPosition * 1000.0f);
+
+		Gizmo.Draw.Line( cursorTraceStartPos, cursorTraceEndPos );
+
+		var tr = Scene.Trace.Ray( cursorTraceEndPos, cursorTraceStartPos )
+				.Run();
+
+		if (aimButtonPressed) {
+			Body.Transform.Rotation = Body.Transform.Rotation;
+		}
+
+
+		// CursorPosition = new Vector3( Mouse.Position.x, Mouse.Position.y, 0f );
+		// // var ray = Scene.Camera.ScreenPixelToRay( CursorPosition.ToScreen() );
+		// DebugOverlay.Line( cursorTraceEndPos, EyePosition, Color.Red );
+		// Gizmo.Draw.Line( Body.Transform.Position, Mouse.Position );
+	
+		// var playerPosition = new Vector3( Body.Transform.Position.x, Body.Transform.Position.y, eyeHeight );
+		// var cursorPosition = new Vector3( cursor.CursorPosition.x, cursor.CursorPosition.y, eyeHeight );
+
+        // Gizmo.Draw.Line( playerPosition, cursorPosition );
 	}
-    
 
 	protected override void OnFixedUpdate()
 	{

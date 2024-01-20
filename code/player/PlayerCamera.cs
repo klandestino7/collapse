@@ -9,7 +9,7 @@ public sealed class PlayerCamera : Component
 {
 	[Property] public float WheelSpeed => 30f;
 	[Property] public Vector2 CameraDistance => new( 500, 1300 );
-	[Property] public Vector2 PitchClamp => new( 40, 65 );
+	[Property] public Vector2 PitchClamp => new( 45, 45 );
 	[Property] public SkinnedModelRenderer playerBody { get; set; }
 
 	[Sync]
@@ -33,10 +33,11 @@ public sealed class PlayerCamera : Component
 			{
 				cam.Transform.Position = playerBody.Transform.Position;
 
-				cam.Transform.Position += Vector3.Up * (playerBody.Bounds.Center.z * playerBody.Transform.Scale);
+				var newCamPos = cam.Transform.Position + Vector3.Up * (playerBody.Bounds.Center.z * playerBody.Transform.Scale);
 				cam.Transform.Rotation = Rotation.From( OrbitAngles );
 
-				targetPos = cam.Transform.Position + cam.Transform.Rotation.Backward * OrbitDistance;
+				targetPos = newCamPos + cam.Transform.Rotation.Backward * OrbitDistance;
+
 				cam.Transform.Position = targetPos;
 			}
 		}
@@ -54,7 +55,7 @@ public sealed class PlayerCamera : Component
 
 		OrbitDistance = OrbitDistance.LerpTo( TargetOrbitDistance, Time.Delta * 10f );
 
-		if ( Input.UsingController || Input.Down( "Walk" ) )
+		if ( Input.UsingController || Input.Down( "MoveCamera" ) )
 		{
 			OrbitAngles.yaw += Input.AnalogLook.yaw * 5f;
 			OrbitAngles.pitch += Input.AnalogLook.pitch * 5f;
