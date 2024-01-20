@@ -1,0 +1,18 @@
+@using Sandbox;
+@using Sandbox.UI;
+@inherits PanelComponent
+@implements Component.INetworkListener
+
+<root >
+    
+</root>
+
+@code
+{	
+
+    protected override void OnUpdate()
+    {
+        Panel.Style.Left =   Mouse.Position.x;
+		Panel.Style.Top =  Mouse.Position.y;
+    }
+}
